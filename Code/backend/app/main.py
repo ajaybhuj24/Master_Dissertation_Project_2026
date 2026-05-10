@@ -1,4 +1,5 @@
 
+
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI, OpenAIError
@@ -7,6 +8,7 @@ from pinecone.exceptions import PineconeException
 
 from .config import Settings, get_settings
 from .deps import get_openai_client, get_pinecone_client
+from .routers.upload import router as paper_router
 
 app = FastAPI(
     title="RAG Comparison API",
@@ -14,7 +16,6 @@ app = FastAPI(
     description="Naive vs. Enhanced RAG comparative evaluation backend.",
 )
 
-# Vite dev server runs on 5173 by default. Tighten this in production.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
@@ -24,8 +25,32 @@ app.add_middleware(
 )
 
 
+@app.get("/", tags=["meta"])
+def root() -> dict:
+    """API map. Hit /docs for Swagger UI."""
+    return {
+        "name": "RAG Comparison API",
+        "version": app.version,
+        "endpoints": {
+            "GET /health": "liveness probe (no external calls)",
+            "GET /health/clients": "verify OpenAI + Pinecone auth and index presence",
+            "GET /health/config": "echo non-secret runtime config",
+            "POST /upload": "ingest a PDF (chunk -> embed -> upsert to 'naive' namespace)",
+            "GET /paper/current": "metadata for currently-loaded paper",
+            "DELETE /paper": "clear current paper + both namespaces",
+            "GET /docs": "Swagger UI",
+            "GET /redoc": "ReDoc UI",
+        },
+    }
+
+
+# Mount paper-management routes.
+app.include_router(paper_router)
+
+
 @app.get("/health", tags=["health"])
 def health() -> dict:
+    """Liveness probe. Does NOT call any external service."""
     return {"status": "ok"}
 
 
@@ -58,12 +83,22 @@ def health_clients(
     try:
         indexes = pinecone_client.list_indexes()
         index_names = [idx.name for idx in indexes]
-        report["pinecone"] = {
+        index_exists = settings.pinecone_index_name in index_names
+        pc_report: dict = {
             "authenticated": True,
             "configured_index": settings.pinecone_index_name,
-            "configured_index_exists": settings.pinecone_index_name in index_names,
+            "configured_index_exists": index_exists,
             "all_indexes": index_names,
         }
+        if index_exists:
+            desc = pinecone_client.describe_index(settings.pinecone_index_name)
+            pc_report["dimension"] = desc.dimension
+            pc_report["metric"] = desc.metric
+            pc_report["dimension_matches_embedding_model"] = (
+                desc.dimension == settings.embedding_dim
+            )
+            pc_report["expected_dimension"] = settings.embedding_dim
+        report["pinecone"] = pc_report
     except PineconeException as e:
         report["pinecone"] = {"authenticated": False, "error": str(e)}
 
@@ -72,6 +107,7 @@ def health_clients(
 
 @app.get("/health/config", tags=["health"])
 def health_config(settings: Settings = Depends(get_settings)) -> dict:
+    """Echoes non-secret config values. Never include API keys here."""
     return {
         "llm_model": settings.llm_model,
         "embedding_model": settings.embedding_model,

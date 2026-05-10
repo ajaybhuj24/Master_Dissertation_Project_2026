@@ -1,4 +1,5 @@
 
+
 from functools import lru_cache
 
 from pydantic import Field
@@ -17,7 +18,7 @@ class Settings(BaseSettings):
     openai_api_key: str = Field(..., description="OpenAI API key")
     llm_model: str = "gpt-4o-mini"
     embedding_model: str = "text-embedding-3-small"
-    embedding_dim: int = 1536  # text-embedding-3-small native dimension
+    embedding_dim: int = 1536  
 
     # --- Pinecone ---
     pinecone_api_key: str = Field(..., description="Pinecone API key")
@@ -33,5 +34,4 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    """FastAPI dependency. Cached so .env is read once per process."""
     return Settings()  # type: ignore[call-arg]
