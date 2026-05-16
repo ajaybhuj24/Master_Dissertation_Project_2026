@@ -62,8 +62,6 @@ def health_clients(
 ) -> dict:
     """Readiness probe. Performs lightweight authenticated calls
     against OpenAI and Pinecone to confirm the configuration works.
-    Returns a structured report rather than 500-ing on partial failure
-    so the frontend can surface clear setup errors.
     """
     report: dict = {"openai": {}, "pinecone": {}}
 

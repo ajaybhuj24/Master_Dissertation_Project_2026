@@ -10,7 +10,7 @@ from pinecone import Pinecone
 
 from ..config import Settings, get_settings
 from ..deps import get_pinecone_client
-from ..ingestion.chunker import chunk_naive
+from ..ingestion.chunker import chunk_naive, chunk_semantic
 from ..ingestion.pdf_loader import load_pdf
 from ..schemas.upload import CurrentPaperResponse, UploadResponse
 from ..state import clear_current_paper, load_current_paper, save_current_paper
@@ -33,9 +33,10 @@ async def upload_pdf(
     Steps:
         1. Validate filename + read bytes to a temp file (PyPDFLoader needs a path).
         2. Load PDF -> Documents (one per page).
-        3. Chunk with RecursiveCharacterTextSplitter (naive).
+        3. Chunk twice (naive + semantic) BEFORE any writes so that if the
+           expensive semantic pass fails, no partial state is written.
         4. Clear both Pinecone namespaces (single-PDF mode).
-        5. Upsert chunks to 'naive' namespace.
+        5. Upsert chunks to 'naive' AND 'semantic' namespaces.
         6. Persist current-paper state to disk.
     """
     if not file.filename or not file.filename.lower().endswith(".pdf"):
@@ -43,7 +44,7 @@ async def upload_pdf(
 
     tmp_path: str | None = None
     try:
-        # 1) Persist upload to a temp file.
+        #  Persist upload to a temp file.
         content = await file.read()
         if not content:
             raise HTTPException(status_code=400, detail="Uploaded file is empty.")
@@ -51,33 +52,39 @@ async def upload_pdf(
             tmp.write(content)
             tmp_path = tmp.name
 
-        # 2) Load.
+        #  Load.
         docs = load_pdf(tmp_path, source_label=file.filename)
         if not docs:
             raise HTTPException(status_code=422, detail="PDF parsed but produced 0 pages.")
 
-        # 3) Chunk (naive).
+        #  Chunk (naive) — fast.
         naive_chunks = chunk_naive(docs)
         if not naive_chunks:
-            raise HTTPException(status_code=422, detail="PDF parsed but produced 0 chunks.")
+            raise HTTPException(status_code=422, detail="PDF parsed but produced 0 naive chunks.")
 
-        # 4) Clear namespaces (clean slate).
+        #  Chunk (semantic) — slower, embedding-based
+        semantic_chunks = chunk_semantic(docs, settings)
+        if not semantic_chunks:
+            raise HTTPException(status_code=422, detail="PDF parsed but produced 0 semantic chunks.")
+
+        # Clear namespaces
         cleared: list[str] = []
         for ns in _ALL_NAMESPACES:
             clear_namespace(pinecone_client, settings, ns)
             cleared.append(ns)
 
-        # 5) Upsert into 'naive'.
+        #  Upsert both namespaces.
         n_naive = upsert_documents(pinecone_client, settings, "naive", naive_chunks)
+        n_semantic = upsert_documents(pinecone_client, settings, "semantic", semantic_chunks)
 
-        # 6) Persist state.
+        #  Persist state.
         paper_id = Path(file.filename).stem
         saved = save_current_paper({
             "paper_id": paper_id,
             "filename": file.filename,
             "pages": len(docs),
             "naive_chunks": n_naive,
-            "semantic_chunks": 0,  # B3 will populate this.
+            "semantic_chunks": n_semantic,
         })
 
         return UploadResponse(
@@ -85,7 +92,7 @@ async def upload_pdf(
             filename=file.filename,
             pages=len(docs),
             naive_chunks=n_naive,
-            semantic_chunks=0,
+            semantic_chunks=n_semantic,
             namespaces_cleared=cleared,
             uploaded_at=datetime.fromisoformat(saved["uploaded_at"]),
         )

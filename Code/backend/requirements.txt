@@ -8,6 +8,7 @@ openai
 pinecone
 langchain
 langchain-community
+langchain-experimental
 langchain-text-splitters
 langchain-openai
 langchain-pinecone
