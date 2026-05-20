@@ -8,6 +8,7 @@ from pinecone.exceptions import PineconeException
 
 from .config import Settings, get_settings
 from .deps import get_openai_client, get_pinecone_client
+from .routers.ask import router as ask_router
 from .routers.upload import router as paper_router
 
 app = FastAPI(
@@ -35,22 +36,24 @@ def root() -> dict:
             "GET /health": "liveness probe (no external calls)",
             "GET /health/clients": "verify OpenAI + Pinecone auth and index presence",
             "GET /health/config": "echo non-secret runtime config",
-            "POST /upload": "ingest a PDF (chunk -> embed -> upsert to 'naive' namespace)",
+            "POST /upload": "ingest a PDF (chunk -> embed -> upsert to both namespaces)",
             "GET /paper/current": "metadata for currently-loaded paper",
             "DELETE /paper": "clear current paper + both namespaces",
+            "GET /pipelines": "list registered RAG pipelines",
+            "POST /ask": "run a question through one or more pipelines",
             "GET /docs": "Swagger UI",
             "GET /redoc": "ReDoc UI",
         },
     }
 
 
-# Mount paper-management routes.
+# Mount routers.
 app.include_router(paper_router)
+app.include_router(ask_router)
 
 
 @app.get("/health", tags=["health"])
 def health() -> dict:
-    """Liveness probe. Does NOT call any external service."""
     return {"status": "ok"}
 
 
@@ -62,6 +65,7 @@ def health_clients(
 ) -> dict:
     """Readiness probe. Performs lightweight authenticated calls
     against OpenAI and Pinecone to confirm the configuration works.
+   
     """
     report: dict = {"openai": {}, "pinecone": {}}
 
@@ -105,7 +109,6 @@ def health_clients(
 
 @app.get("/health/config", tags=["health"])
 def health_config(settings: Settings = Depends(get_settings)) -> dict:
-    """Echoes non-secret config values. Never include API keys here."""
     return {
         "llm_model": settings.llm_model,
         "embedding_model": settings.embedding_model,
