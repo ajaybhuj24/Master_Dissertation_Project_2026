@@ -20,8 +20,7 @@ def chunk_naive(
     chunk_size: int = NAIVE_CHUNK_SIZE,
     chunk_overlap: int = NAIVE_CHUNK_OVERLAP,
 ) -> list[Document]:
-    """Split documents using fixed-size recursive character splitting.
-    """
+   
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
@@ -35,8 +34,7 @@ def chunk_semantic(
     settings: Settings,
     breakpoint_threshold_type: str = SEMANTIC_BREAKPOINT_TYPE,
 ) -> list[Document]:
-    """Split documents using embedding-based semantic boundaries
-    """
+   
     embeddings = get_embeddings(settings)
     splitter = SemanticChunker(
         embeddings=embeddings,

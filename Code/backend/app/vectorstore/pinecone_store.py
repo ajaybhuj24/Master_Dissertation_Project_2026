@@ -1,4 +1,5 @@
 
+
 from langchain_core.documents import Document
 from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone
@@ -13,7 +14,7 @@ def get_vector_store(
     settings: Settings,
     namespace: str,
 ) -> PineconeVectorStore:
-    """Build a PineconeVectorStore bound to the configured index + given namespace."""
+   
     index = pinecone_client.Index(settings.pinecone_index_name)
     embeddings = get_embeddings(settings)
     return PineconeVectorStore(
@@ -29,7 +30,7 @@ def upsert_documents(
     namespace: str,
     documents: list[Document],
 ) -> int:
-    """Embed + upsert documents into the given namespace. Returns count upserted."""
+ 
     store = get_vector_store(pinecone_client, settings, namespace)
     ids = store.add_documents(documents)
     return len(ids)
@@ -40,10 +41,7 @@ def clear_namespace(
     settings: Settings,
     namespace: str,
 ) -> bool:
-    """Delete every vector in the given namespace.
-
-    A non-existent namespace (404) is treated as success,nothing to delete.
-    """
+  
     index = pinecone_client.Index(settings.pinecone_index_name)
     try:
         index.delete(delete_all=True, namespace=namespace)

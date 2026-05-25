@@ -1,13 +1,18 @@
 
+
 from __future__ import annotations
 
 from .base import Pipeline
+from .multi_query import MultiQueryPipeline
 from .naive import NaivePipeline
+from .semantic_chunking import SemanticChunkingPipeline
 
 
 _REGISTRY: dict[str, type[Pipeline]] = {
     NaivePipeline.pipeline_id: NaivePipeline,
-  
+    SemanticChunkingPipeline.pipeline_id: SemanticChunkingPipeline,
+    MultiQueryPipeline.pipeline_id: MultiQueryPipeline,
+   
 }
 
 

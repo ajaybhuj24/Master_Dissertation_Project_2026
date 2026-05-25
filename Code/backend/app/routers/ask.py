@@ -29,8 +29,7 @@ def ask(
     openai_client: OpenAI = Depends(get_openai_client),
     pinecone_client: Pinecone = Depends(get_pinecone_client),
 ) -> AskResponse:
-
-    # --- Validate pipeline selection ---
+   
     selected_ids = payload.pipeline_ids or all_pipeline_ids()
     if not selected_ids:
         raise HTTPException(status_code=400, detail="No pipelines registered.")
@@ -41,7 +40,7 @@ def ask(
             detail=f"Unknown pipeline_id(s): {unknown}. Available: {all_pipeline_ids()}",
         )
 
-    # --- Soft-check: warn (but don't fail) if no paper loaded ---
+   
     paper_state = load_current_paper()
     if paper_state is None:
         raise HTTPException(
@@ -49,7 +48,7 @@ def ask(
             detail="No paper currently loaded. POST /upload a PDF first.",
         )
 
-    # --- Build the shared context and run each selected pipeline serially ---
+  
     ctx = PipelineCtx(
         settings=settings,
         openai_client=openai_client,

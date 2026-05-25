@@ -1,5 +1,4 @@
 
-
 import os
 import tempfile
 from datetime import datetime, timezone
@@ -38,13 +37,16 @@ async def upload_pdf(
         4. Clear both Pinecone namespaces (single-PDF mode).
         5. Upsert chunks to 'naive' AND 'semantic' namespaces.
         6. Persist current-paper state to disk.
+
+    Note: semantic chunking calls the embedding API at sentence granularity
+    during chunking, then the chunks are embedded again at upsert time.
+    Expect upload latency to roughly double vs. naive-only (B2).
     """
     if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only .pdf files are accepted.")
 
     tmp_path: str | None = None
     try:
-        #  Persist upload to a temp file.
         content = await file.read()
         if not content:
             raise HTTPException(status_code=400, detail="Uploaded file is empty.")
@@ -52,32 +54,33 @@ async def upload_pdf(
             tmp.write(content)
             tmp_path = tmp.name
 
-        #  Load.
+        # 2) Load.
         docs = load_pdf(tmp_path, source_label=file.filename)
         if not docs:
             raise HTTPException(status_code=422, detail="PDF parsed but produced 0 pages.")
 
-        #  Chunk (naive) — fast.
+        # 3a) Chunk (naive) — fast.
         naive_chunks = chunk_naive(docs)
         if not naive_chunks:
             raise HTTPException(status_code=422, detail="PDF parsed but produced 0 naive chunks.")
 
-        #  Chunk (semantic) — slower, embedding-based
+        # 3b) Chunk (semantic) — slower, embedding-based. Do BEFORE writes so a
+        #     mid-pipeline failure leaves Pinecone untouched.
         semantic_chunks = chunk_semantic(docs, settings)
         if not semantic_chunks:
             raise HTTPException(status_code=422, detail="PDF parsed but produced 0 semantic chunks.")
 
-        # Clear namespaces
+        # 4) Clear namespaces (clean slate).
         cleared: list[str] = []
         for ns in _ALL_NAMESPACES:
             clear_namespace(pinecone_client, settings, ns)
             cleared.append(ns)
 
-        #  Upsert both namespaces.
+        # 5) Upsert both namespaces.
         n_naive = upsert_documents(pinecone_client, settings, "naive", naive_chunks)
         n_semantic = upsert_documents(pinecone_client, settings, "semantic", semantic_chunks)
 
-        #  Persist state.
+        # 6) Persist state.
         paper_id = Path(file.filename).stem
         saved = save_current_paper({
             "paper_id": paper_id,
