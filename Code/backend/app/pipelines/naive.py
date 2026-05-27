@@ -1,4 +1,4 @@
-
+"
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ class NaivePipeline(Pipeline):
         contexts = self._retrieve(question, ctx)
         retrieval_ms = int(self._now_ms() - t0)
 
-        
+        # nothing retrieved -> refuse without an LLM call.
         if not contexts:
             return self._make_result(
                 answer=REFUSAL_STRING,

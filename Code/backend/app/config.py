@@ -1,5 +1,4 @@
 
-
 from functools import lru_cache
 
 from pydantic import Field
@@ -31,8 +30,12 @@ class Settings(BaseSettings):
     mmr_fetch_k: int = 20
     mmr_lambda: float = 0.5
 
+  
+    rerank_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    rerank_fetch_k: int = 20
+
 
 @lru_cache
 def get_settings() -> Settings:
-    
+  
     return Settings()  

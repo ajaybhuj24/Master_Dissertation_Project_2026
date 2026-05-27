@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 
 class RagasScores(BaseModel):
-
+    
 
     faithfulness: float | None = None
     answer_relevancy: float | None = None
@@ -17,7 +17,7 @@ class RagasScores(BaseModel):
 
 
 class HealthRagasResponse(BaseModel):
-  
+    
 
     scenario: str
     inputs: dict[str, Any]

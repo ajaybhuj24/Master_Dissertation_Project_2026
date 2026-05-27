@@ -12,4 +12,6 @@ langchain-experimental
 langchain-text-splitters
 langchain-openai
 langchain-pinecone
+ragas
+sentence-transformers
 pypdf

@@ -25,7 +25,9 @@ ANSWER:"""
 
 
 def format_context(passages: list[str]) -> str:
- 
+    """Join passages with numbered separators so the model can refer to them
+    implicitly. Newlines between passages help the tokenizer treat them as
+    distinct evidence rather than one wall of text."""
     return "\n\n".join(f"[Passage {i + 1}]\n{p}" for i, p in enumerate(passages))
 
 
@@ -47,3 +49,72 @@ Rules:
 - Output ONLY the {n} phrasings, one per line. No numbering, no bullets, no extra text.
 
 Question: {question}"""
+
+
+
+
+CRAG_GRADER_SYSTEM_PROMPT = """\
+You are a strict relevance grader. For each passage you are given, judge how \
+well it contains information that DIRECTLY answers the user's question.
+
+Use exactly one of these labels per passage:
+- "correct"   : the passage contains a direct, specific answer to the question.
+- "ambiguous" : the passage is tangentially related (same topic) but does not directly answer the question.
+- "incorrect" : the passage is unrelated to the question.
+
+Be conservative: do not label a passage "correct" unless the answer is unambiguously present in it."""
+
+
+CRAG_GRADER_USER_TEMPLATE = """\
+Question: {question}
+
+Passages (1-indexed):
+{passages}
+
+Respond with ONLY a JSON object mapping each passage number to its label, e.g.:
+{{"1": "correct", "2": "ambiguous", "3": "incorrect", "4": "correct"}}
+
+No prose, no preamble, no explanation. JSON only."""
+
+
+CRAG_REFINE_SYSTEM_PROMPT = """\
+You rewrite search queries to surface better passages from a research paper. \
+Given a question whose initial retrieval was insufficient, you produce ONE \
+refined query that uses different keywords and phrasing while preserving the \
+information need."""
+
+
+CRAG_REFINE_USER_TEMPLATE = """\
+Original question: {question}
+
+The initial retrieval surfaced passages that were either tangentially related \
+or unrelated to the question. Generate ONE refined search query that may \
+surface more relevant content.
+
+Rules:
+- Use DIFFERENT keywords from the original question where possible.
+- Stay specific — do not broaden the question into something more general.
+- Output ONLY the refined query, no preamble, no quotes, no explanation."""
+
+
+
+COMPRESSION_NONE_SENTINEL = "NONE"
+
+COMPRESSION_SYSTEM_PROMPT = """\
+You extract only the sentences from a passage that are relevant to answering \
+a given question.
+
+Rules:
+- Return ONLY sentences (or partial sentences) that directly help answer the question.
+- Preserve original wording verbatim — do not rephrase, summarise, or add commentary.
+- If NONE of the passage is relevant, respond with the single token NONE (uppercase, no other text).
+- Do not add preamble or explanation."""
+
+
+COMPRESSION_USER_TEMPLATE = """\
+Question: {question}
+
+Passage:
+{passage}
+
+Extracted relevant sentences:"""

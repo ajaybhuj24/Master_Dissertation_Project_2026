@@ -47,6 +47,7 @@ async def upload_pdf(
 
     tmp_path: str | None = None
     try:
+        # 1) Persist upload to a temp file.
         content = await file.read()
         if not content:
             raise HTTPException(status_code=400, detail="Uploaded file is empty.")

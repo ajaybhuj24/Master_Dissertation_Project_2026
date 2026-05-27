@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 
 def _build_ragas_components(settings: Settings):
-
+    """Wrap our existing LangChain clients so RAGAS uses the same models + key."""
     llm = LangchainLLMWrapper(get_chat_llm(settings))
     embeddings = LangchainEmbeddingsWrapper(get_embeddings(settings))
     return llm, embeddings
@@ -40,7 +40,15 @@ async def evaluate_one(
     ground_truth: str | None,
     settings: Settings,
 ) -> RagasScores:
-  
+    """Score one (question, answer, contexts, ground_truth) tuple.
+
+    Each metric is run independently inside its own try/except — one failing
+    metric does NOT skip the others. Failures land in `scores.errors`.
+
+    When ground_truth is None (out-of-scope benchmark question), context_precision
+    and context_recall are SKIPPED rather than errored, since they're undefined
+    without a reference.
+    """
     llm, embeddings = _build_ragas_components(settings)
     scores = RagasScores()
 
@@ -58,7 +66,7 @@ async def evaluate_one(
         logger.exception("Faithfulness scoring failed")
         scores.errors["faithfulness"] = repr(e)
 
-  
+    # --- 2. Answer Relevancy: needs (question, answer, contexts) + embeddings. ---
     try:
         sample = SingleTurnSample(
             user_input=question,
@@ -72,7 +80,7 @@ async def evaluate_one(
         logger.exception("Answer relevancy scoring failed")
         scores.errors["answer_relevancy"] = repr(e)
 
-
+    # --- 3 + 4. Context Precision + Recall: require reference. ---
     if ground_truth is None:
         scores.skipped.extend(["context_precision", "context_recall"])
         return scores
@@ -114,7 +122,12 @@ def evaluate_one_sync(
     ground_truth: str | None,
     settings: Settings,
 ) -> RagasScores:
-  
+    """Synchronous wrapper for fully-sync callers (scripts, tests).
+
+    WARNING: this calls asyncio.run() internally — do NOT use from inside
+    a FastAPI request handler or any other context where an event loop is
+    already running. Use `await evaluate_one(...)` there instead.
+    """
     return asyncio.run(
         evaluate_one(question, answer, contexts, ground_truth, settings)
     )

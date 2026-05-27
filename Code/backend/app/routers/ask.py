@@ -1,5 +1,4 @@
 
-
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -18,7 +17,8 @@ router = APIRouter(tags=["ask"])
 
 @router.get("/pipelines", response_model=list[PipelineInfo])
 def get_pipelines() -> list[PipelineInfo]:
-   
+    """List every registered pipeline. Used by the frontend to render the
+    pipeline-selector checkboxes on the InteractivePage."""
     return [PipelineInfo(**p) for p in list_pipelines()]
 
 
@@ -29,7 +29,14 @@ def ask(
     openai_client: OpenAI = Depends(get_openai_client),
     pinecone_client: Pinecone = Depends(get_pinecone_client),
 ) -> AskResponse:
-   
+    """Run `question` through the selected pipelines and return per-pipeline results.
+
+    If `pipeline_ids` is omitted, runs every registered pipeline (just naive
+    in B4; all 8 once B6-B8 land).
+
+    Requires a paper to be loaded via /upload first — otherwise Pinecone will
+    return zero contexts and every pipeline will short-circuit with a refusal.
+    """
     selected_ids = payload.pipeline_ids or all_pipeline_ids()
     if not selected_ids:
         raise HTTPException(status_code=400, detail="No pipelines registered.")
@@ -48,7 +55,7 @@ def ask(
             detail="No paper currently loaded. POST /upload a PDF first.",
         )
 
-  
+   
     ctx = PipelineCtx(
         settings=settings,
         openai_client=openai_client,

@@ -3,16 +3,28 @@
 from __future__ import annotations
 
 from .base import Pipeline
+from .compression import ContextualCompressionPipeline
+from .crag import CRAGPipeline
+from .mmr import MMRPipeline
 from .multi_query import MultiQueryPipeline
 from .naive import NaivePipeline
+from .rerank import RerankPipeline
+from .selfcheck import SelfCheckPipeline
 from .semantic_chunking import SemanticChunkingPipeline
 
 
 _REGISTRY: dict[str, type[Pipeline]] = {
     NaivePipeline.pipeline_id: NaivePipeline,
+    # Pre-retrieval (B6)
     SemanticChunkingPipeline.pipeline_id: SemanticChunkingPipeline,
     MultiQueryPipeline.pipeline_id: MultiQueryPipeline,
-   
+    # During-retrieval (B7)
+    MMRPipeline.pipeline_id: MMRPipeline,
+    RerankPipeline.pipeline_id: RerankPipeline,
+    CRAGPipeline.pipeline_id: CRAGPipeline,
+    # Post-retrieval (B8)
+    ContextualCompressionPipeline.pipeline_id: ContextualCompressionPipeline,
+    SelfCheckPipeline.pipeline_id: SelfCheckPipeline,
 }
 
 

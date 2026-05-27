@@ -1,5 +1,4 @@
 
-
 from __future__ import annotations
 
 import re
@@ -33,7 +32,7 @@ class MultiQueryPipeline(Pipeline):
         paraphrases = self._generate_paraphrases(question, ctx)
         all_queries = [question, *paraphrases]
 
-      
+     
         merged: dict[str, RetrievedContext] = {}
         total_retrieved = 0
         for query in all_queries:
@@ -43,7 +42,7 @@ class MultiQueryPipeline(Pipeline):
                 if existing is None or (rc.score or 0.0) > (existing.score or 0.0):
                     merged[rc.text] = rc
 
-       
+      
         contexts = sorted(
             merged.values(), key=lambda c: c.score or 0.0, reverse=True
         )[: ctx.top_k]
@@ -61,7 +60,7 @@ class MultiQueryPipeline(Pipeline):
                 },
             )
 
-       
+      
         t1 = self._now_ms()
         answer = self._generate(question, contexts, ctx)
         generation_ms = int(self._now_ms() - t1)
@@ -84,7 +83,12 @@ class MultiQueryPipeline(Pipeline):
         )
 
     def _generate_paraphrases(self, question: str, ctx: PipelineCtx) -> list[str]:
-     
+        """Ask the LLM for N alternative phrasings; parse one-per-line.
+
+        Returns an empty list on any failure — the original question is always
+        retrieved regardless, so multi-query degrades gracefully to naive
+        rather than erroring the whole request.
+        """
         llm = get_chat_llm(ctx.settings)
         try:
             response = llm.invoke([
@@ -106,7 +110,7 @@ class MultiQueryPipeline(Pipeline):
         for line in raw.splitlines():
             cleaned = _LIST_PREFIX.sub("", line).strip()
             key = cleaned.lower()
-           
+          
             if cleaned and key not in seen:
                 seen.add(key)
                 paraphrases.append(cleaned)

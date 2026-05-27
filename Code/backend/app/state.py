@@ -1,9 +1,9 @@
 
-
 import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[3]
 _STATE_DIR = _PROJECT_ROOT / "data" / "state"
@@ -11,7 +11,7 @@ _CURRENT_PAPER_PATH = _STATE_DIR / "current_paper.json"
 
 
 def save_current_paper(payload: dict[str, Any]) -> dict[str, Any]:
-    """Persist current-paper metadata. Stamps uploaded_at automatically."""
+  
     _STATE_DIR.mkdir(parents=True, exist_ok=True)
     payload = {
         **payload,

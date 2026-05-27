@@ -1,5 +1,4 @@
 
-
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI, OpenAIError
@@ -59,6 +58,7 @@ app.include_router(ask_router)
 
 @app.get("/health", tags=["health"])
 def health() -> dict:
+    
     return {"status": "ok"}
 
 
@@ -68,10 +68,14 @@ def health_clients(
     openai_client: OpenAI = Depends(get_openai_client),
     pinecone_client: Pinecone = Depends(get_pinecone_client),
 ) -> dict:
-    
+    """Readiness probe. Performs lightweight authenticated calls
+    against OpenAI and Pinecone to confirm the configuration works.
+    Returns a structured report rather than 500-ing on partial failure
+    so the frontend can surface clear setup errors.
+    """
     report: dict = {"openai": {}, "pinecone": {}}
 
-   
+  
     try:
         models = openai_client.models.list()
         model_ids = {m.id for m in models.data}
@@ -85,7 +89,7 @@ def health_clients(
     except OpenAIError as e:
         report["openai"] = {"authenticated": False, "error": str(e)}
 
-    
+   
     try:
         indexes = pinecone_client.list_indexes()
         index_names = [idx.name for idx in indexes]
@@ -152,7 +156,7 @@ async def health_ragas(
 
 @app.get("/health/config", tags=["health"])
 def health_config(settings: Settings = Depends(get_settings)) -> dict:
-  
+    
     return {
         "llm_model": settings.llm_model,
         "embedding_model": settings.embedding_model,
