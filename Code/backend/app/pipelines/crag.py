@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import json
@@ -20,7 +19,6 @@ from .prompts import (
 
 logger = logging.getLogger(__name__)
 
-
 _JSON_OBJECT = re.compile(r"\{[^{}]*\}", re.DOTALL)
 
 CORRECT = "correct"
@@ -36,7 +34,6 @@ class CRAGPipeline(Pipeline):
     namespace = "naive"
 
     def run(self, question: str, ctx: PipelineCtx) -> PipelineResult:
-        # --- 1) Initial retrieval ---
         t0 = self._now_ms()
         initial = self._retrieve(question, ctx)
 
@@ -50,14 +47,12 @@ class CRAGPipeline(Pipeline):
                 debug={"short_circuit": "no_contexts_retrieved"},
             )
 
-        # --- 2) Grade each chunk in a single LLM call ---
         labels = self._grade(question, initial, ctx)
         correct_initial = [
             c for c, lbl in zip(initial, labels) if lbl == CORRECT
         ]
         any_non_correct = any(lbl != CORRECT for lbl in labels)
 
-        # --- 3) Refine + re-retrieve if quality was insufficient ---
         refined_query: str | None = None
         refined_results: list[RetrievedContext] = []
         if any_non_correct:
@@ -65,8 +60,6 @@ class CRAGPipeline(Pipeline):
             if refined_query:
                 refined_results = self._retrieve(refined_query, ctx)
 
-        # --- 4) Combine: correct-from-initial first, then refined results.
-        #     De-dup by text; on collision keep the higher score. ---
         merged: dict[str, RetrievedContext] = {}
         for c in correct_initial:
             merged[c.text] = c
@@ -75,7 +68,6 @@ class CRAGPipeline(Pipeline):
             if existing is None or (c.score or 0.0) > (existing.score or 0.0):
                 merged[c.text] = c
 
-       
         if not merged:
             merged = {c.text: c for c in initial}
 
@@ -84,7 +76,6 @@ class CRAGPipeline(Pipeline):
         )[: ctx.top_k]
         retrieval_ms = int(self._now_ms() - t0)
 
-        # --- 5) Generation (shared with naive) ---
         t1 = self._now_ms()
         answer = self._generate(question, contexts, ctx)
         generation_ms = int(self._now_ms() - t1)
@@ -107,7 +98,6 @@ class CRAGPipeline(Pipeline):
             },
         )
 
-    # ---- helpers ----
 
     def _grade(
         self,
@@ -115,11 +105,6 @@ class CRAGPipeline(Pipeline):
         contexts: list[RetrievedContext],
         ctx: PipelineCtx,
     ) -> list[str]:
-        """Single LLM call labels every passage. Returns parallel list of labels.
-
-        On parse failure, defaults to 'ambiguous' for all — this triggers
-        refinement (safer side: do the extra work) without crashing the pipeline.
-        """
         passages_block = "\n\n".join(
             f"[{i + 1}]\n{c.text}" for i, c in enumerate(contexts)
         )
@@ -142,16 +127,10 @@ class CRAGPipeline(Pipeline):
                 return parsed
         except Exception:
             logger.exception("CRAG grader call failed; defaulting to 'ambiguous'")
-        
         return [AMBIGUOUS] * len(contexts)
 
     @staticmethod
     def _parse_grader_json(raw: str, expected_count: int) -> list[str] | None:
-        """Extract the JSON object and map 1-indexed keys -> labels in order.
-
-        Returns None if parsing fails or labels are invalid — caller falls back
-        to all-ambiguous.
-        """
         match = _JSON_OBJECT.search(raw)
         if not match:
             return None
@@ -168,8 +147,6 @@ class CRAGPipeline(Pipeline):
         return labels
 
     def _refine(self, question: str, ctx: PipelineCtx) -> str | None:
-        """Ask the LLM for ONE refined query. Returns None on failure
-        (caller will skip re-retrieval and use only the initial-correct subset)."""
         user_msg = CRAG_REFINE_USER_TEMPLATE.format(question=question)
         llm = get_chat_llm(ctx.settings)
         try:

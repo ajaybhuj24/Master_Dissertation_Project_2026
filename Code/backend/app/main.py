@@ -1,4 +1,3 @@
-
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI, OpenAIError
@@ -11,6 +10,9 @@ from .config import Settings, get_settings
 from .deps import get_openai_client, get_pinecone_client
 from .evaluation.ragas_runner import evaluate_one
 from .routers.ask import router as ask_router
+from .routers.batch import router as batch_router
+from .routers.benchmark import router as benchmark_router
+from .routers.results import router as results_router
 from .routers.upload import router as paper_router
 from .schemas.evaluation import HealthRagasResponse
 
@@ -19,7 +21,6 @@ app = FastAPI(
     version="0.1.0",
     description="Naive vs. Enhanced RAG comparative evaluation backend.",
 )
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -45,20 +46,35 @@ def root() -> dict:
             "DELETE /paper": "clear current paper + both namespaces",
             "GET /pipelines": "list registered RAG pipelines",
             "POST /ask": "run a question through one or more pipelines",
+            "POST /benchmark": "upload + validate a 15-Q benchmark JSON",
+            "GET /benchmarks": "list all saved benchmarks",
+            "GET /benchmarks/{paper_id}": "fetch one benchmark's full content",
+            "DELETE /benchmarks/{paper_id}": "remove a saved benchmark",
+            "POST /batch": "submit a batch eval job (returns job_id)",
+            "GET /jobs": "list all jobs (newest first)",
+            "GET /jobs/{job_id}": "current status + summary",
+            "GET /jobs/{job_id}/results": "full per-unit BatchResultRow list",
+            "GET /jobs/{job_id}/stream": "Server-Sent Events progress",
+            "POST /jobs/{job_id}/cancel": "best-effort cancellation",
+            "POST /jobs/{job_id}/persist": "re-trigger CSV/JSON export for a completed job",
+            "GET /results/master": "download the master append-only CSV",
+            "GET /results/files": "list every file in data/results/",
+            "GET /results/files/{name}": "download one specific result file",
             "GET /docs": "Swagger UI",
             "GET /redoc": "ReDoc UI",
         },
     }
 
 
-# Mount routers.
 app.include_router(paper_router)
 app.include_router(ask_router)
+app.include_router(benchmark_router)
+app.include_router(batch_router)
+app.include_router(results_router)
 
 
 @app.get("/health", tags=["health"])
 def health() -> dict:
-    
     return {"status": "ok"}
 
 
@@ -68,14 +84,8 @@ def health_clients(
     openai_client: OpenAI = Depends(get_openai_client),
     pinecone_client: Pinecone = Depends(get_pinecone_client),
 ) -> dict:
-    """Readiness probe. Performs lightweight authenticated calls
-    against OpenAI and Pinecone to confirm the configuration works.
-    Returns a structured report rather than 500-ing on partial failure
-    so the frontend can surface clear setup errors.
-    """
     report: dict = {"openai": {}, "pinecone": {}}
 
-  
     try:
         models = openai_client.models.list()
         model_ids = {m.id for m in models.data}
@@ -89,7 +99,6 @@ def health_clients(
     except OpenAIError as e:
         report["openai"] = {"authenticated": False, "error": str(e)}
 
-   
     try:
         indexes = pinecone_client.list_indexes()
         index_names = [idx.name for idx in indexes]
@@ -119,15 +128,6 @@ def health_clients(
 async def health_ragas(
     settings: Settings = Depends(get_settings),
 ) -> HealthRagasResponse:
-    """Self-contained RAGAS smoke test.
-
-    Uses a fixed (question, answer, contexts, ground_truth) tuple so it works
-    without a paper loaded. Confirms the four metrics import + compute. Costs
-    ~5-10 OpenAI calls (~$0.001) — don't hammer it.
-
-    A successful run returns all four scores in [0,1]. Out-of-scope handling
-    is tested via /health/ragas?oos=true (skips precision/recall via ground_truth=None).
-    """
     t0 = time.perf_counter()
     inputs = {
         "question": "Where is the Eiffel Tower located?",
@@ -156,7 +156,6 @@ async def health_ragas(
 
 @app.get("/health/config", tags=["health"])
 def health_config(settings: Settings = Depends(get_settings)) -> dict:
-    
     return {
         "llm_model": settings.llm_model,
         "embedding_model": settings.embedding_model,

@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
@@ -22,13 +21,10 @@ class ContextualCompressionPipeline(Pipeline):
     stage = STAGE_POST
     namespace = "naive"
 
-  
     FETCH_K = 8
-   
     MAX_COMPRESSION_WORKERS = 8
 
     def run(self, question: str, ctx: PipelineCtx) -> PipelineResult:
-        # --- 1) Over-fetch candidates ---
         t0 = self._now_ms()
         candidates = self._retrieve(question, ctx, k=self.FETCH_K)
 
@@ -43,13 +39,11 @@ class ContextualCompressionPipeline(Pipeline):
             )
 
         compressed_all = self._compress_parallel(question, candidates, ctx)
-        
         contexts = [c for c in compressed_all if c.text.strip()]
         retrieval_ms = int(self._now_ms() - t0)
         dropped_count = len(compressed_all) - len(contexts)
 
         if not contexts:
-           
             return self._make_result(
                 answer=REFUSAL_STRING,
                 contexts=[],
@@ -62,7 +56,6 @@ class ContextualCompressionPipeline(Pipeline):
                 },
             )
 
-        
         t1 = self._now_ms()
         answer = self._generate(question, contexts, ctx)
         generation_ms = int(self._now_ms() - t1)
@@ -82,7 +75,6 @@ class ContextualCompressionPipeline(Pipeline):
             },
         )
 
-    # ---- helpers ----
 
     def _compress_parallel(
         self,
@@ -90,12 +82,12 @@ class ContextualCompressionPipeline(Pipeline):
         candidates: list[RetrievedContext],
         ctx: PipelineCtx,
     ) -> list[RetrievedContext]:
-        """Run the per-chunk compression LLM calls concurrently in a thread pool."""
+        shared_llm = get_chat_llm(ctx.settings)
         workers = min(self.MAX_COMPRESSION_WORKERS, max(1, len(candidates)))
         with ThreadPoolExecutor(max_workers=workers) as executor:
             return list(
                 executor.map(
-                    lambda c: self._compress_one(question, c, ctx), candidates
+                    lambda c: self._compress_one(question, c, shared_llm), candidates
                 )
             )
 
@@ -103,16 +95,8 @@ class ContextualCompressionPipeline(Pipeline):
         self,
         question: str,
         candidate: RetrievedContext,
-        ctx: PipelineCtx,
+        llm,
     ) -> RetrievedContext:
-        """Ask the LLM to extract only relevant sentences from one chunk.
-
-        Returns a new RetrievedContext with the compressed text; empty text
-        means the chunk had nothing relevant (will be filtered upstream).
-        On any LLM failure, falls back to the ORIGINAL text — better to keep
-        a chunk than silently drop it on a transient API error.
-        """
-        llm = get_chat_llm(ctx.settings)
         try:
             response = llm.invoke([
                 SystemMessage(content=COMPRESSION_SYSTEM_PROMPT),
@@ -126,13 +110,11 @@ class ContextualCompressionPipeline(Pipeline):
                 else str(response.content)
             )
             compressed = raw.strip()
-          
             if compressed.strip(".").upper() == COMPRESSION_NONE_SENTINEL:
                 compressed_text = ""
             else:
                 compressed_text = compressed
         except Exception:
-           
             compressed_text = candidate.text
 
         return RetrievedContext(

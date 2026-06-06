@@ -1,4 +1,3 @@
-
 from functools import lru_cache
 
 from pydantic import Field
@@ -13,29 +12,24 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    # --- OpenAI ---
     openai_api_key: str = Field(..., description="OpenAI API key")
     llm_model: str = "gpt-4o-mini"
     embedding_model: str = "text-embedding-3-small"
-    embedding_dim: int = 1536  
+    embedding_dim: int = 1536
 
-    # --- Pinecone ---
     pinecone_api_key: str = Field(..., description="Pinecone API key")
     pinecone_index_name: str = "rag-comparison"
     pinecone_cloud: str = "aws"
     pinecone_region: str = "us-east-1"
 
-    # --- Retrieval defaults ---
     top_k: int = 4
     mmr_fetch_k: int = 20
     mmr_lambda: float = 0.5
 
-  
     rerank_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
     rerank_fetch_k: int = 20
 
 
 @lru_cache
 def get_settings() -> Settings:
-  
-    return Settings()  
+    return Settings()

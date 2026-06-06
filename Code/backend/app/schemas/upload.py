@@ -1,4 +1,3 @@
-
 from datetime import datetime
 
 from pydantic import BaseModel
@@ -9,7 +8,7 @@ class UploadResponse(BaseModel):
     filename: str
     pages: int
     naive_chunks: int
-    semantic_chunks: int  
+    semantic_chunks: int
     namespaces_cleared: list[str]
     uploaded_at: datetime
 

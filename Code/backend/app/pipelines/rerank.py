@@ -1,5 +1,3 @@
-
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -18,13 +16,11 @@ class RerankPipeline(Pipeline):
     stage = STAGE_DURING
     namespace = "naive"
 
-
     _encoder: "CrossEncoder | None" = None
     _encoder_name: str | None = None
 
     @classmethod
     def _get_encoder(cls, model_name: str) -> "CrossEncoder":
-      
         if cls._encoder is None or cls._encoder_name != model_name:
             from sentence_transformers import CrossEncoder
 
@@ -33,7 +29,6 @@ class RerankPipeline(Pipeline):
         return cls._encoder
 
     def run(self, question: str, ctx: PipelineCtx) -> PipelineResult:
-        
         t0 = self._now_ms()
         candidates = self._retrieve(
             question, ctx, k=ctx.settings.rerank_fetch_k
@@ -49,12 +44,10 @@ class RerankPipeline(Pipeline):
                 debug={"short_circuit": "no_contexts_retrieved"},
             )
 
-       
         encoder = self._get_encoder(ctx.settings.rerank_model)
         pairs = [[question, c.text] for c in candidates]
         ce_scores = encoder.predict(pairs)
 
-       
         rescored: list[RetrievedContext] = []
         for c, ce_score in zip(candidates, ce_scores):
             rescored.append(
@@ -70,13 +63,11 @@ class RerankPipeline(Pipeline):
                 )
             )
 
-        # Keep top-k by cross-encoder score.
         contexts = sorted(rescored, key=lambda x: x.score or 0.0, reverse=True)[
             : ctx.top_k
         ]
         retrieval_ms = int(self._now_ms() - t0)
 
-        #  Generation (shared with naive) ---
         t1 = self._now_ms()
         answer = self._generate(question, contexts, ctx)
         generation_ms = int(self._now_ms() - t1)

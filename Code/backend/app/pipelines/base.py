@@ -1,25 +1,23 @@
-
-
 from __future__ import annotations
 
 import time
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_pinecone import PineconeVectorStore
 
 from ..config import Settings
 from ..llm import get_chat_llm
 from ..schemas.ask import PipelineResult, RetrievedContext
-from ..vectorstore.pinecone_store import get_vector_store
+from ..vectorstore.pinecone_store import get_vector_store as _build_vector_store
 from .prompts import RAG_SYSTEM_PROMPT, RAG_USER_TEMPLATE, format_context
 
 if TYPE_CHECKING:
     from openai import OpenAI
     from pinecone import Pinecone
-
 
 
 STAGE_BASELINE = "baseline"
@@ -30,23 +28,22 @@ STAGE_POST = "post_retrieval"
 
 @dataclass
 class PipelineCtx:
-    """Everything a pipeline needs to do its work.
-
-    Built once per request in the router and passed to every selected pipeline.
-    """
 
     settings: Settings
     openai_client: OpenAI
     pinecone_client: Pinecone
     top_k: int
+    _vector_stores: dict[str, PineconeVectorStore] = field(default_factory=dict)
+
+    def get_vector_store(self, namespace: str) -> PineconeVectorStore:
+        if namespace not in self._vector_stores:
+            self._vector_stores[namespace] = _build_vector_store(
+                self.pinecone_client, self.settings, namespace
+            )
+        return self._vector_stores[namespace]
 
 
 class Pipeline(ABC):
-    """Abstract base for every RAG pipeline.
-
-    Subclasses set the class attributes and implement `run`, composing the
-    shared helpers below.
-    """
 
     pipeline_id: str
     pipeline_name: str
@@ -55,20 +52,16 @@ class Pipeline(ABC):
 
     @abstractmethod
     def run(self, question: str, ctx: PipelineCtx) -> PipelineResult:
-        """Answer `question` and return the answer + the retrieved contexts."""
         raise NotImplementedError
 
-    # ---- timing ----
 
     @staticmethod
     def _now_ms() -> float:
         return time.perf_counter() * 1000.0
 
-    # ---- retrieval ----
 
     @staticmethod
     def _to_context(doc: Document, score: float) -> RetrievedContext:
-        """Convert a (Document, score) pair into a RetrievedContext."""
         return RetrievedContext(
             text=doc.page_content,
             source=doc.metadata.get("source"),
@@ -86,18 +79,12 @@ class Pipeline(ABC):
         namespace: str | None = None,
         k: int | None = None,
     ) -> list[RetrievedContext]:
-        """similarity_search_with_score against a Pinecone namespace.
-
-        Defaults to this pipeline's `namespace` and the request `top_k`.
-        Enhanced pipelines that over-fetch (MMR, re-rank in B7) pass a larger k.
-        """
         ns = namespace if namespace is not None else self.namespace
         k = k if k is not None else ctx.top_k
-        vector_store = get_vector_store(ctx.pinecone_client, ctx.settings, ns)
+        vector_store = ctx.get_vector_store(ns)
         docs_with_scores = vector_store.similarity_search_with_score(query, k=k)
         return [self._to_context(doc, score) for doc, score in docs_with_scores]
 
-    # ---- generation ----
 
     def _generate(
         self,
@@ -105,12 +92,6 @@ class Pipeline(ABC):
         contexts: list[RetrievedContext],
         ctx: PipelineCtx,
     ) -> str:
-        """Format contexts into the faithfulness-tuned prompt and call the LLM.
-
-        Identical generation step for every pipeline — only the contexts vary.
-        Keeping it shared means an enhanced pipeline's RAGAS uplift cannot be
-        an artefact of a different prompt.
-        """
         passages = [c.text for c in contexts]
         user_msg = RAG_USER_TEMPLATE.format(
             context=format_context(passages),
@@ -125,7 +106,6 @@ class Pipeline(ABC):
             return response.content.strip()
         return str(response.content).strip()
 
-    # ---- result construction ----
 
     def _make_result(
         self,

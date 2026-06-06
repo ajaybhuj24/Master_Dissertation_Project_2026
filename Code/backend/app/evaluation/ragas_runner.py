@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import asyncio
@@ -27,7 +26,6 @@ logger = logging.getLogger(__name__)
 
 
 def _build_ragas_components(settings: Settings):
-    """Wrap our existing LangChain clients so RAGAS uses the same models + key."""
     llm = LangchainLLMWrapper(get_chat_llm(settings))
     embeddings = LangchainEmbeddingsWrapper(get_embeddings(settings))
     return llm, embeddings
@@ -40,77 +38,54 @@ async def evaluate_one(
     ground_truth: str | None,
     settings: Settings,
 ) -> RagasScores:
-    """Score one (question, answer, contexts, ground_truth) tuple.
-
-    Each metric is run independently inside its own try/except — one failing
-    metric does NOT skip the others. Failures land in `scores.errors`.
-
-    When ground_truth is None (out-of-scope benchmark question), context_precision
-    and context_recall are SKIPPED rather than errored, since they're undefined
-    without a reference.
-    """
     llm, embeddings = _build_ragas_components(settings)
     scores = RagasScores()
 
-    # --- 1. Faithfulness: needs (question, answer, contexts). No reference. ---
-    try:
+    async def _faithfulness() -> float:
+        sample = SingleTurnSample(
+            user_input=question, response=answer, retrieved_contexts=contexts
+        )
+        return await Faithfulness(llm=llm).single_turn_ascore(sample)
+
+    async def _answer_relevancy() -> float:
+        sample = SingleTurnSample(
+            user_input=question, response=answer, retrieved_contexts=contexts
+        )
+        return await ResponseRelevancy(llm=llm, embeddings=embeddings).single_turn_ascore(sample)
+
+    async def _context_precision() -> float:
+        sample = SingleTurnSample(
+            user_input=question, retrieved_contexts=contexts, reference=ground_truth
+        )
+        return await LLMContextPrecisionWithReference(llm=llm).single_turn_ascore(sample)
+
+    async def _context_recall() -> float:
         sample = SingleTurnSample(
             user_input=question,
             response=answer,
             retrieved_contexts=contexts,
+            reference=ground_truth,
         )
-        metric = Faithfulness(llm=llm)
-        score = await metric.single_turn_ascore(sample)
-        scores.faithfulness = float(score)
-    except Exception as e:
-        logger.exception("Faithfulness scoring failed")
-        scores.errors["faithfulness"] = repr(e)
+        return await LLMContextRecall(llm=llm).single_turn_ascore(sample)
 
-    # --- 2. Answer Relevancy: needs (question, answer, contexts) + embeddings. ---
-    try:
-        sample = SingleTurnSample(
-            user_input=question,
-            response=answer,
-            retrieved_contexts=contexts,
-        )
-        metric = ResponseRelevancy(llm=llm, embeddings=embeddings)
-        score = await metric.single_turn_ascore(sample)
-        scores.answer_relevancy = float(score)
-    except Exception as e:
-        logger.exception("Answer relevancy scoring failed")
-        scores.errors["answer_relevancy"] = repr(e)
-
-    # --- 3 + 4. Context Precision + Recall: require reference. ---
+    tasks: dict[str, object] = {
+        "faithfulness": _faithfulness(),
+        "answer_relevancy": _answer_relevancy(),
+    }
     if ground_truth is None:
         scores.skipped.extend(["context_precision", "context_recall"])
-        return scores
+    else:
+        tasks["context_precision"] = _context_precision()
+        tasks["context_recall"] = _context_recall()
 
-    try:
-        sample = SingleTurnSample(
-            user_input=question,
-            retrieved_contexts=contexts,
-            reference=ground_truth,
-        )
-        metric = LLMContextPrecisionWithReference(llm=llm)
-        score = await metric.single_turn_ascore(sample)
-        scores.context_precision = float(score)
-    except Exception as e:
-        logger.exception("Context precision scoring failed")
-        scores.errors["context_precision"] = repr(e)
+    results = await asyncio.gather(*tasks.values(), return_exceptions=True)
 
-    try:
-        sample = SingleTurnSample(
-            user_input=question,
-            response=answer,
-            retrieved_contexts=contexts,
-            reference=ground_truth,
-        )
-        metric = LLMContextRecall(llm=llm)
-        score = await metric.single_turn_ascore(sample)
-        scores.context_recall = float(score)
-    except Exception as e:
-        logger.exception("Context recall scoring failed")
-        scores.errors["context_recall"] = repr(e)
+    for metric_name, result in zip(tasks.keys(), results):
+        if isinstance(result, Exception):
+            logger.exception("%s scoring failed", metric_name, exc_info=result)
+            scores.errors[metric_name] = repr(result)
+        else:
+            setattr(scores, metric_name, float(result))
 
     return scores
 
@@ -122,12 +97,6 @@ def evaluate_one_sync(
     ground_truth: str | None,
     settings: Settings,
 ) -> RagasScores:
-    """Synchronous wrapper for fully-sync callers (scripts, tests).
-
-    WARNING: this calls asyncio.run() internally — do NOT use from inside
-    a FastAPI request handler or any other context where an event loop is
-    already running. Use `await evaluate_one(...)` there instead.
-    """
     return asyncio.run(
         evaluate_one(question, answer, contexts, ground_truth, settings)
     )

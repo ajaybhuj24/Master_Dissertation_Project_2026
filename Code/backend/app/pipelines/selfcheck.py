@@ -1,5 +1,3 @@
-
-
 from __future__ import annotations
 
 import math
@@ -25,10 +23,8 @@ class SelfCheckPipeline(Pipeline):
     stage = STAGE_POST
     namespace = "naive"
 
-  
     NUM_SAMPLES = 3
     SAMPLE_TEMPERATURE = 0.7
-   
     CONFIDENCE_THRESHOLD = 0.85
     LOW_CONFIDENCE_PREFIX = (
         "[Low confidence: stochastic resampling produced inconsistent answers "
@@ -36,7 +32,6 @@ class SelfCheckPipeline(Pipeline):
     )
 
     def run(self, question: str, ctx: PipelineCtx) -> PipelineResult:
-        # --- 1) Retrieval (same as naive) ---
         t0 = self._now_ms()
         contexts = self._retrieve(question, ctx)
         retrieval_ms = int(self._now_ms() - t0)
@@ -50,13 +45,11 @@ class SelfCheckPipeline(Pipeline):
                 debug={"short_circuit": "no_contexts_retrieved"},
             )
 
-      
         t1 = self._now_ms()
         main_answer = self._generate(question, contexts, ctx)
         samples = self._generate_samples_parallel(question, contexts, ctx)
         generation_ms = int(self._now_ms() - t1)
 
-      
         if main_answer == REFUSAL_STRING:
             return self._make_result(
                 answer=main_answer,
@@ -72,13 +65,11 @@ class SelfCheckPipeline(Pipeline):
                 },
             )
 
-       
         valid_samples = [s for s in samples if s and s.strip()]
         consistency_score, per_sample_sims = self._consistency(
             main_answer, valid_samples, ctx
         )
 
-       
         low_confidence = (
             consistency_score is not None
             and consistency_score < self.CONFIDENCE_THRESHOLD
@@ -116,18 +107,15 @@ class SelfCheckPipeline(Pipeline):
         contexts: list[RetrievedContext],
         ctx: PipelineCtx,
     ) -> list[str]:
-        """Generate NUM_SAMPLES stochastic answers in parallel. Same prompt
-        as the main answer, just at SAMPLE_TEMPERATURE."""
-     
         passages = [c.text for c in contexts]
         user_msg = RAG_USER_TEMPLATE.format(
             context=format_context(passages), question=question
         )
+        shared_llm = get_chat_llm(ctx.settings, temperature=self.SAMPLE_TEMPERATURE)
 
         def sample_once(_: int) -> str:
-            llm = get_chat_llm(ctx.settings, temperature=self.SAMPLE_TEMPERATURE)
             try:
-                response = llm.invoke([
+                response = shared_llm.invoke([
                     SystemMessage(content=RAG_SYSTEM_PROMPT),
                     HumanMessage(content=user_msg),
                 ])
@@ -138,7 +126,6 @@ class SelfCheckPipeline(Pipeline):
                 )
                 return content.strip()
             except Exception:
-                
                 return ""
 
         with ThreadPoolExecutor(max_workers=self.NUM_SAMPLES) as executor:
@@ -150,15 +137,9 @@ class SelfCheckPipeline(Pipeline):
         samples: list[str],
         ctx: PipelineCtx,
     ) -> tuple[float | None, list[float]]:
-        """Mean cosine similarity between main answer and each sample.
-
-        Returns (mean, per-sample list). Returns (None, []) if there are no
-        valid samples to compare against.
-        """
         if not samples:
             return None, []
         embeddings_client = get_embeddings(ctx.settings)
-       
         vectors = embeddings_client.embed_documents([main_answer, *samples])
         main_vec = vectors[0]
         sample_vecs = vectors[1:]
@@ -168,7 +149,6 @@ class SelfCheckPipeline(Pipeline):
 
     @staticmethod
     def _cosine(a: list[float], b: list[float]) -> float:
-        """Standard cosine similarity; zero on degenerate vectors."""
         dot = sum(x * y for x, y in zip(a, b))
         norm_a = math.sqrt(sum(x * x for x in a))
         norm_b = math.sqrt(sum(x * x for x in b))

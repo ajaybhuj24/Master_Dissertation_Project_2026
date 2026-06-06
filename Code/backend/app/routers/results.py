@@ -1,0 +1,80 @@
+from __future__ import annotations
+
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import FileResponse
+
+from ..evaluation.results_writer import MASTER_CSV, write_job_results
+from ..jobs.store import JOBS
+from ..paths import PROJECT_ROOT, RESULTS_DIR
+
+router = APIRouter(tags=["results"])
+
+
+@router.get("/results/master")
+def download_master_csv() -> FileResponse:
+    if not MASTER_CSV.exists():
+        raise HTTPException(
+            status_code=404,
+            detail="No master CSV yet. Run a batch via POST /batch first.",
+        )
+    return FileResponse(
+        MASTER_CSV,
+        media_type="text/csv",
+        filename="all_results.csv",
+    )
+
+
+@router.get("/results/files")
+def list_result_files() -> list[dict]:
+    if not RESULTS_DIR.exists():
+        return []
+    entries: list[dict] = []
+    for path in RESULTS_DIR.iterdir():
+        if not path.is_file():
+            continue
+        stat = path.stat()
+        entries.append({
+            "filename": path.name,
+            "size_bytes": stat.st_size,
+            "modified_at": datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat(),
+        })
+    entries.sort(key=lambda e: e["modified_at"], reverse=True)
+    return entries
+
+
+@router.get("/results/files/{filename}")
+def download_result_file(filename: str) -> FileResponse:
+    target = RESULTS_DIR / filename
+    try:
+        target.resolve().relative_to(RESULTS_DIR.resolve())
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid filename — path traversal blocked.",
+        ) from e
+    if not target.exists() or not target.is_file():
+        raise HTTPException(status_code=404, detail=f"File not found: {filename}")
+    media_type = "text/csv" if filename.lower().endswith(".csv") else "application/json"
+    return FileResponse(target, media_type=media_type, filename=filename)
+
+
+@router.post("/jobs/{job_id}/persist")
+def persist_job(job_id: str) -> dict:
+    job = JOBS.get(job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail=f"Unknown job_id={job_id!r}")
+    if job.status != "completed":
+        raise HTTPException(
+            status_code=409,
+            detail=f"Job is {job.status!r}, not 'completed'. Refusing to persist a partial run.",
+        )
+    paths = write_job_results(
+        rows=job.results,
+        paper_id=job.paper_id,
+        paper_title=job.paper_title,
+        job_id=job.job_id,
+        summary=job.summary,
+    )
+    return {"job_id": job_id, "written": paths}
