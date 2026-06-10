@@ -20,7 +20,7 @@ export function BatchPage() {
       <Card>
         <CardHeader>
           <CardTitle>Benchmark + progress</CardTitle>
-          <CardDescription>Benchmark uploader.</CardDescription>
+          <CardDescription>Benchmark uploader next.</CardDescription>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground">
           Each run appends per-question RAGAS scores to the master results CSV,

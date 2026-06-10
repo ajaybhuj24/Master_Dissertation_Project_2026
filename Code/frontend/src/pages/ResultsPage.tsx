@@ -26,7 +26,7 @@ export function ResultsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Metrics</CardTitle>
-          <CardDescription>Tables and grouped-bar charts.</CardDescription>
+          <CardDescription>Tables and grouped-bar charts .</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium">
           {metrics.map((m) => (
