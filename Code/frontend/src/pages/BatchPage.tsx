@@ -4,7 +4,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
 
 export function BatchPage() {
   return (
@@ -20,7 +20,10 @@ export function BatchPage() {
       <Card>
         <CardHeader>
           <CardTitle>Benchmark + progress</CardTitle>
-          <CardDescription>Benchmark uploader next.</CardDescription>
+          <CardDescription>
+            Benchmark uploader (F5) and the SSE progress tracker (F6) arrive
+            next.
+          </CardDescription>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground">
           Each run appends per-question RAGAS scores to the master results CSV,
@@ -28,5 +31,5 @@ export function BatchPage() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

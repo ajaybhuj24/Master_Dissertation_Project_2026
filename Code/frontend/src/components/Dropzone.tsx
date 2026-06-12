@@ -1,15 +1,15 @@
-import { useRef, useState } from "react";
-import type { ReactNode } from "react";
+import { useRef, useState } from "react"
+import type { ReactNode } from "react"
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
 type DropzoneProps = {
-  accept?: string;
-  disabled?: boolean;
-  onFile: (file: File) => void;
-  className?: string;
-  children?: ReactNode;
-};
+  accept?: string
+  disabled?: boolean
+  onFile: (file: File) => void
+  className?: string
+  children?: ReactNode
+}
 
 export function Dropzone({
   accept,
@@ -18,17 +18,17 @@ export function Dropzone({
   className,
   children,
 }: DropzoneProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const dragDepth = useRef(0);
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const dragDepth = useRef(0)
 
   const openPicker = () => {
-    if (!disabled) inputRef.current?.click();
-  };
+    if (!disabled) inputRef.current?.click()
+  }
 
   const handleFiles = (files: FileList | null) => {
-    if (files && files.length > 0) onFile(files[0]);
-  };
+    if (files && files.length > 0) onFile(files[0])
+  }
 
   return (
     <div
@@ -38,31 +38,31 @@ export function Dropzone({
       onClick={openPicker}
       onKeyDown={(e) => {
         if (!disabled && (e.key === "Enter" || e.key === " ")) {
-          e.preventDefault();
-          openPicker();
+          e.preventDefault()
+          openPicker()
         }
       }}
       onDragEnter={(e) => {
-        e.preventDefault();
-        if (disabled) return;
-        dragDepth.current += 1;
-        setIsDragging(true);
+        e.preventDefault()
+        if (disabled) return
+        dragDepth.current += 1
+        setIsDragging(true)
       }}
       onDragOver={(e) => e.preventDefault()}
       onDragLeave={(e) => {
-        e.preventDefault();
-        dragDepth.current -= 1;
+        e.preventDefault()
+        dragDepth.current -= 1
         if (dragDepth.current <= 0) {
-          dragDepth.current = 0;
-          setIsDragging(false);
+          dragDepth.current = 0
+          setIsDragging(false)
         }
       }}
       onDrop={(e) => {
-        e.preventDefault();
-        if (disabled) return;
-        dragDepth.current = 0;
-        setIsDragging(false);
-        handleFiles(e.dataTransfer.files);
+        e.preventDefault()
+        if (disabled) return
+        dragDepth.current = 0
+        setIsDragging(false)
+        handleFiles(e.dataTransfer.files)
       }}
       className={cn(
         "flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-6 py-12 text-center transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
@@ -70,7 +70,7 @@ export function Dropzone({
           ? "cursor-not-allowed opacity-60"
           : "cursor-pointer hover:border-primary/50 hover:bg-accent/50",
         isDragging && !disabled && "border-primary bg-accent",
-        className,
+        className
       )}
     >
       <input
@@ -80,11 +80,11 @@ export function Dropzone({
         disabled={disabled}
         className="hidden"
         onChange={(e) => {
-          handleFiles(e.target.files);
-          e.target.value = "";
+          handleFiles(e.target.files)
+          e.target.value = ""
         }}
       />
       {children}
     </div>
-  );
+  )
 }
