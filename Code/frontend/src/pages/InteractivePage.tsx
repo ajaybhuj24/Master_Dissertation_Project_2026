@@ -4,13 +4,7 @@ import { AlertCircle, FileText, Loader2, Send } from "lucide-react"
 
 import { ask, getCurrentPaper, getPipelines } from "@/api/client"
 import type { CurrentPaperResponse, PipelineInfo, PipelineResult } from "@/types"
-import {
-  DEFAULT_PIPELINES,
-  STAGE_ORDER,
-  stageIndex,
-  stageMeta,
-} from "@/lib/stages"
-import { cn } from "@/lib/utils"
+import { DEFAULT_PIPELINES, stageIndex } from "@/lib/stages"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -21,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { PipelineCard } from "@/components/PipelineCard"
+import { PipelineSelector } from "@/components/PipelineSelector"
 
 type Phase = "idle" | "running" | "done" | "error"
 
@@ -64,12 +59,6 @@ export function InteractivePage() {
     }
   }, [])
 
-  const grouped = useMemo(() => {
-    const g: Record<string, PipelineInfo[]> = {}
-    for (const p of pipelines) (g[p.stage] ??= []).push(p)
-    return g
-  }, [pipelines])
-
   const orderedSelectedIds = useMemo(
     () =>
       pipelines
@@ -85,27 +74,6 @@ export function InteractivePage() {
     orderedSelectedIds.length > 0 &&
     !running &&
     !noPaper
-
-  const toggleOne = (id: string) =>
-    setSelected((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-
-  const toggleStage = (stage: string) => {
-    const ids = (grouped[stage] ?? []).map((p) => p.pipeline_id)
-    const allOn = ids.every((id) => selected.has(id))
-    setSelected((prev) => {
-      const next = new Set(prev)
-      for (const id of ids) {
-        if (allOn) next.delete(id)
-        else next.add(id)
-      }
-      return next
-    })
-  }
 
   const run = async () => {
     if (!canRun) return
@@ -207,64 +175,14 @@ export function InteractivePage() {
             Choose which pipelines to run. They execute serially, so all 8 can
             take ~1–2 minutes.
           </CardDescription>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSelected(new Set(pipelines.map((p) => p.pipeline_id)))}
-              disabled={orderedSelectedIds.length === pipelines.length}
-            >
-              All
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSelected(new Set())}
-              disabled={orderedSelectedIds.length === 0}
-            >
-              None
-            </Button>
-          </div>
         </CardHeader>
-        <CardContent className="grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
-          {STAGE_ORDER.filter((s) => grouped[s]?.length).map((stage) => {
-            const meta = stageMeta(stage)
-            const items = grouped[stage] ?? []
-            const onCount = items.filter((p) => selected.has(p.pipeline_id)).length
-            return (
-              <div key={stage} className="space-y-2">
-                <button
-                  type="button"
-                  onClick={() => toggleStage(stage)}
-                  className="flex w-full items-center gap-2 text-left"
-                >
-                  <span className={cn("size-2.5 rounded-full", meta.dot)} />
-                  <span className={cn("text-sm font-medium", meta.text)}>
-                    {meta.label}
-                  </span>
-                  <span className="ml-auto text-xs tabular-nums text-muted-foreground">
-                    {onCount}/{items.length}
-                  </span>
-                </button>
-                <div className="space-y-1.5">
-                  {items.map((p) => (
-                    <label
-                      key={p.pipeline_id}
-                      className="flex cursor-pointer items-center gap-2 text-sm"
-                    >
-                      <input
-                        type="checkbox"
-                        className="size-4 accent-primary"
-                        checked={selected.has(p.pipeline_id)}
-                        onChange={() => toggleOne(p.pipeline_id)}
-                      />
-                      <span>{p.pipeline_name}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            )
-          })}
+        <CardContent>
+          <PipelineSelector
+            pipelines={pipelines}
+            value={selected}
+            onChange={setSelected}
+            disabled={running}
+          />
         </CardContent>
       </Card>
 

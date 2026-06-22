@@ -117,3 +117,74 @@ export interface PipelineMetrics {
   context_recall: number | null
   latency_ms: number | null
 }
+
+
+export type BenchmarkCategory = "factual" | "synthesis" | "out_of_scope"
+
+export interface BenchmarkQuestion {
+  id: string
+  category: BenchmarkCategory
+  question: string
+  ground_truth: string | null
+  expected_passages: string[]
+}
+
+export interface BenchmarkFile {
+  paper_id: string
+  paper_title: string
+  created_at: string
+  questions: BenchmarkQuestion[]
+}
+
+export interface BenchmarkSummary {
+  paper_id: string
+  paper_title: string
+  created_at: string | null
+  question_count: number
+  filename: string
+}
+
+export interface PaperMismatchWarning {
+  loaded_paper_id: string | null
+  benchmark_paper_id: string
+}
+
+export interface BenchmarkUploadResponse {
+  paper_id: string
+  paper_title: string
+  question_count: number
+  category_counts: Record<string, number>
+  saved_path: string
+  paper_mismatch_warning: PaperMismatchWarning | null
+}
+
+
+export type JobStatusLiteral =
+  | "pending"
+  | "running"
+  | "completed"
+  | "failed"
+  | "cancelled"
+
+export interface JobStatus {
+  job_id: string
+  status: JobStatusLiteral
+  paper_id: string
+  pipeline_ids: string[]
+  total_units: number
+  completed_units: number
+  current_question_id: string | null
+  current_pipeline_id: string | null
+  started_at: string | null
+  finished_at: string | null
+  error: string | null
+  summary: unknown | null
+}
+
+export interface JobProgressEvent {
+  status: JobStatusLiteral
+  completed: number
+  total: number
+  current_question: string | null
+  current_pipeline: string | null
+}

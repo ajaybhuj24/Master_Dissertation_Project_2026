@@ -1,9 +1,13 @@
 
 import type {
   AskResponse,
+  BenchmarkFile,
+  BenchmarkSummary,
+  BenchmarkUploadResponse,
   CurrentPaperResponse,
   DeletePaperResponse,
   FastApiError,
+  JobStatus,
   PipelineInfo,
   ResultFileEntry,
   ResultRunFile,
@@ -38,6 +42,13 @@ function messageFromDetail(body: unknown, fallback: string): string {
         return field ? `${field}: ${e.msg}` : e.msg
       })
       .join("; ")
+  }
+  const obj = detail as unknown
+  if (obj && typeof obj === "object" && !Array.isArray(obj)) {
+    const ve = (obj as { validation_errors?: unknown }).validation_errors
+    if (Array.isArray(ve)) {
+      return `${ve.length} validation error${ve.length === 1 ? "" : "s"} in the benchmark file.`
+    }
   }
   return fallback
 }
@@ -178,4 +189,102 @@ export async function getResultRun(filename: string): Promise<ResultRunFile> {
     throw new ApiError(0, NETWORK_HINT)
   }
   return handle<ResultRunFile>(res)
+}
+
+export async function listBenchmarks(): Promise<BenchmarkSummary[]> {
+  let res: Response
+  try {
+    res = await fetch(`${API_BASE}/benchmarks`)
+  } catch {
+    throw new ApiError(0, NETWORK_HINT)
+  }
+  return handle<BenchmarkSummary[]>(res)
+}
+
+export async function getBenchmark(paperId: string): Promise<BenchmarkFile> {
+  let res: Response
+  try {
+    res = await fetch(`${API_BASE}/benchmarks/${encodeURIComponent(paperId)}`)
+  } catch {
+    throw new ApiError(0, NETWORK_HINT)
+  }
+  return handle<BenchmarkFile>(res)
+}
+
+export async function uploadBenchmark(
+  file: File
+): Promise<BenchmarkUploadResponse> {
+  const form = new FormData()
+  form.append("file", file)
+  let res: Response
+  try {
+    res = await fetch(`${API_BASE}/benchmark`, { method: "POST", body: form })
+  } catch {
+    throw new ApiError(0, NETWORK_HINT)
+  }
+  return handle<BenchmarkUploadResponse>(res)
+}
+
+export async function deleteBenchmark(
+  paperId: string
+): Promise<{ deleted: boolean; paper_id: string }> {
+  let res: Response
+  try {
+    res = await fetch(`${API_BASE}/benchmarks/${encodeURIComponent(paperId)}`, {
+      method: "DELETE",
+    })
+  } catch {
+    throw new ApiError(0, NETWORK_HINT)
+  }
+  return handle<{ deleted: boolean; paper_id: string }>(res)
+}
+
+export async function startBatch(
+  paperId: string,
+  pipelineIds: string[] | null
+): Promise<JobStatus> {
+  let res: Response
+  try {
+    res = await fetch(`${API_BASE}/batch`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paper_id: paperId, pipeline_ids: pipelineIds }),
+    })
+  } catch {
+    throw new ApiError(0, NETWORK_HINT)
+  }
+  return handle<JobStatus>(res)
+}
+
+export async function cancelJob(
+  jobId: string
+): Promise<{ job_id: string; cancel_requested: boolean; status: string }> {
+  let res: Response
+  try {
+    res = await fetch(`${API_BASE}/jobs/${encodeURIComponent(jobId)}/cancel`, {
+      method: "POST",
+    })
+  } catch {
+    throw new ApiError(0, NETWORK_HINT)
+  }
+  return handle<{ job_id: string; cancel_requested: boolean; status: string }>(
+    res
+  )
+}
+
+export function benchmarkValidationErrors(
+  err: unknown
+): ValidationErrorItem[] | null {
+  if (!(err instanceof ApiError) || !err.detail || typeof err.detail !== "object")
+    return null
+  const detail = (err.detail as { detail?: unknown }).detail
+  if (
+    detail &&
+    typeof detail === "object" &&
+    Array.isArray((detail as { validation_errors?: unknown }).validation_errors)
+  ) {
+    return (detail as { validation_errors: ValidationErrorItem[] })
+      .validation_errors
+  }
+  return null
 }
