@@ -1,10 +1,15 @@
-import { useCallback, useEffect, useState } from "react"
+import { lazy, Suspense, useCallback, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { AlertCircle, BarChart3, Loader2, RefreshCw } from "lucide-react"
+import { AlertCircle, BarChart3, Download, Loader2, RefreshCw } from "lucide-react"
 
 import { getResultRun, listResultFiles } from "@/api/client"
-import type { PipelineMetrics, ResultRunFile } from "@/types"
-import { aggregateByPipeline } from "@/lib/metrics"
+import type {
+  PipelineMetrics,
+  ResultFileEntry,
+  ResultRunFile,
+  StageMetrics,
+} from "@/types"
+import { aggregateByPipeline, aggregateByStage } from "@/lib/metrics"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,18 +20,26 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { MetricsTable } from "@/components/MetricsTable"
-import { StageGroupedBars } from "@/components/StageGroupedBars"
+import { StageMeansTable } from "@/components/StageMeansTable"
 
+const StageGroupedBars = lazy(() =>
+  import("@/components/StageGroupedBars").then((m) => ({
+    default: m.StageGroupedBars,
+  }))
+)
+
+const API_BASE = "/api"
+
+type Loaded = {
+  run: ResultRunFile
+  byPipeline: PipelineMetrics[]
+  byStage: StageMetrics[]
+}
 type State =
   | { phase: "loading" }
   | { phase: "empty" }
   | { phase: "error"; message: string }
-  | {
-      phase: "loaded"
-      run: ResultRunFile
-      metrics: PipelineMetrics[]
-      filename: string
-    }
+  | { phase: "loaded"; data: Loaded }
 
 function formatDateTime(iso: string | null | undefined): string {
   if (!iso) return "—"
@@ -34,23 +47,31 @@ function formatDateTime(iso: string | null | undefined): string {
   return Number.isNaN(d.getTime()) ? iso : d.toLocaleString()
 }
 
+function prettyRunLabel(filename: string): string {
+  const stem = filename.replace(/\.json$/i, "")
+  const m = stem.match(/^(.*)_(\d{8})T(\d{6})Z$/)
+  if (!m) return filename
+  const [, paper, d, t] = m
+  return `${paper} · ${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)} ${t.slice(0, 2)}:${t.slice(2, 4)}`
+}
+
 export function ResultsPage() {
+  const [files, setFiles] = useState<ResultFileEntry[]>([])
+  const [selected, setSelected] = useState<string>("")
   const [state, setState] = useState<State>({ phase: "loading" })
 
-  const load = useCallback(async () => {
+  const loadRun = useCallback(async (filename: string) => {
     setState({ phase: "loading" })
     try {
-      const files = await listResultFiles()
-      const newestJson = files.find((f) =>
-        f.filename.toLowerCase().endsWith(".json")
-      )
-      if (!newestJson) {
-        setState({ phase: "empty" })
-        return
-      }
-      const run = await getResultRun(newestJson.filename)
-      const metrics = aggregateByPipeline(run.results)
-      setState({ phase: "loaded", run, metrics, filename: newestJson.filename })
+      const run = await getResultRun(filename)
+      setState({
+        phase: "loaded",
+        data: {
+          run,
+          byPipeline: aggregateByPipeline(run.results),
+          byStage: aggregateByStage(run.results),
+        },
+      })
     } catch (err) {
       setState({
         phase: "error",
@@ -59,31 +80,105 @@ export function ResultsPage() {
     }
   }, [])
 
+  const loadFileList = useCallback(
+    async (prefer?: string) => {
+      setState({ phase: "loading" })
+      try {
+        const all = await listResultFiles()
+        const jsons = all.filter((f) =>
+          f.filename.toLowerCase().endsWith(".json")
+        )
+        setFiles(jsons)
+        if (jsons.length === 0) {
+          setState({ phase: "empty" })
+          return
+        }
+        const target =
+          prefer && jsons.some((f) => f.filename === prefer)
+            ? prefer
+            : jsons[0].filename
+        setSelected(target)
+        await loadRun(target)
+      } catch (err) {
+        setFiles([])
+        setState({
+          phase: "error",
+          message:
+            err instanceof Error ? err.message : "Failed to load results.",
+        })
+      }
+    },
+    [loadRun]
+  )
+
   useEffect(() => {
-    void load()
-  }, [load])
+    void loadFileList()
+  }, [loadFileList])
+
+  const onSelect = (filename: string) => {
+    setSelected(filename)
+    void loadRun(filename)
+  }
+
+  const csvHref = selected
+    ? `${API_BASE}/results/files/${encodeURIComponent(selected.replace(/\.json$/i, ".csv"))}`
+    : "#"
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">Results</h1>
-          <p className="text-muted-foreground">
-            Per-pipeline RAGAS means from the most recent batch run.
-          </p>
-        </div>
-        {state.phase === "loaded" && (
-          <Button variant="outline" size="sm" onClick={() => void load()}>
-            <RefreshCw className="size-3.5" />
-            Refresh
-          </Button>
-        )}
+      <header className="space-y-1">
+        <h1 className="text-2xl font-semibold tracking-tight">Results</h1>
+        <p className="text-muted-foreground">
+          Per-pipeline and per-stage RAGAS means for a batch run.
+        </p>
       </header>
+
+      {files.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <label htmlFor="run-select" className="text-sm text-muted-foreground">
+            Run
+          </label>
+          <select
+            id="run-select"
+            value={selected}
+            onChange={(e) => onSelect(e.target.value)}
+            className="h-9 max-w-full rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          >
+            {files.map((f) => (
+              <option key={f.filename} value={f.filename}>
+                {prettyRunLabel(f.filename)}
+              </option>
+            ))}
+          </select>
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <Button asChild variant="outline" size="sm">
+              <a href={csvHref} download>
+                <Download className="size-3.5" />
+                This run (CSV)
+              </a>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <a href={`${API_BASE}/results/master`} download>
+                <Download className="size-3.5" />
+                Master CSV
+              </a>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => void loadFileList(selected)}
+            >
+              <RefreshCw className="size-3.5" />
+              Refresh
+            </Button>
+          </div>
+        </div>
+      )}
 
       {state.phase === "loading" && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="size-4 animate-spin" />
-          Loading the latest batch results…
+          Loading results…
         </div>
       )}
 
@@ -94,7 +189,11 @@ export function ResultsPage() {
             <p className="font-medium">Couldn’t load results</p>
             <p className="text-sm text-muted-foreground">{state.message}</p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => void load()}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void loadFileList(selected)}
+          >
             Retry
           </Button>
         </div>
@@ -120,25 +219,29 @@ export function ResultsPage() {
       {state.phase === "loaded" && (
         <div className="space-y-6">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">paper: {state.run.paper_id}</Badge>
-            <Badge variant="secondary">{state.run.results.length} units</Badge>
+            <Badge variant="secondary">paper: {state.data.run.paper_id}</Badge>
+            <Badge variant="secondary">
+              {state.data.run.results.length} units
+            </Badge>
             {(() => {
-              const errs = state.run.results.filter((r) => r.error).length
+              const errs = state.data.run.results.filter((r) => r.error).length
               return (
                 <Badge variant={errs ? "destructive" : "outline"}>
                   {errs} errors
                 </Badge>
               )
             })()}
+            <Badge variant="outline">
+              {state.data.byPipeline.length} pipelines
+            </Badge>
             <span className="text-sm text-muted-foreground">
-              {formatDateTime(state.run.exported_at)} ·{" "}
-              <code>{state.filename}</code>
+              {formatDateTime(state.data.run.exported_at)}
             </span>
           </div>
 
-          {state.run.paper_title && (
+          {state.data.run.paper_title && (
             <p className="text-sm text-muted-foreground">
-              {state.run.paper_title}
+              {state.data.run.paper_title}
             </p>
           )}
 
@@ -153,19 +256,37 @@ export function ResultsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <StageGroupedBars metrics={state.metrics} />
+              <Suspense
+                fallback={
+                  <div className="h-80 w-full animate-pulse rounded-lg bg-muted" />
+                }
+              >
+                <StageGroupedBars metrics={state.data.byPipeline} />
+              </Suspense>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Metric means</CardTitle>
+              <CardTitle className="text-base">Per-pipeline means</CardTitle>
               <CardDescription>
                 Best value in each column is emphasised.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <MetricsTable metrics={state.metrics} />
+              <MetricsTable metrics={state.data.byPipeline} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Per-stage means</CardTitle>
+              <CardDescription>
+                The same scores grouped by RAG taxonomy stage.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <StageMeansTable stages={state.data.byStage} />
             </CardContent>
           </Card>
         </div>

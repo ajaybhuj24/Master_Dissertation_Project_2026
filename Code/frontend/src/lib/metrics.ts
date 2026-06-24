@@ -1,4 +1,4 @@
-import type { BatchResultRow, PipelineMetrics } from "@/types"
+import type { BatchResultRow, PipelineMetrics, StageMetrics } from "@/types"
 import { stageIndex } from "@/lib/stages"
 
 export const METRICS = [
@@ -80,6 +80,58 @@ export function aggregateByPipeline(rows: BatchResultRow[]): PipelineMetrics[] {
       pipeline_id: id,
       pipeline_name: a.pipeline_name,
       stage: a.stage,
+      n_rows: a.n_rows,
+      n_errors: a.n_errors,
+      faithfulness: mean(a.faithfulness),
+      answer_relevancy: mean(a.answer_relevancy),
+      context_precision: mean(a.context_precision),
+      context_recall: mean(a.context_recall),
+      latency_ms: mean(a.latency_ms),
+    }))
+    .sort((x, y) => stageIndex(x.stage) - stageIndex(y.stage))
+}
+
+export function aggregateByStage(rows: BatchResultRow[]): StageMetrics[] {
+  type Acc = {
+    n_rows: number
+    n_errors: number
+    faithfulness: number[]
+    answer_relevancy: number[]
+    context_precision: number[]
+    context_recall: number[]
+    latency_ms: number[]
+  }
+  const map = new Map<string, Acc>()
+
+  for (const r of rows) {
+    let a = map.get(r.stage)
+    if (!a) {
+      a = {
+        n_rows: 0,
+        n_errors: 0,
+        faithfulness: [],
+        answer_relevancy: [],
+        context_precision: [],
+        context_recall: [],
+        latency_ms: [],
+      }
+      map.set(r.stage, a)
+    }
+    a.n_rows += 1
+    if (r.error) {
+      a.n_errors += 1
+      continue
+    }
+    if (r.faithfulness != null) a.faithfulness.push(r.faithfulness)
+    if (r.answer_relevancy != null) a.answer_relevancy.push(r.answer_relevancy)
+    if (r.context_precision != null) a.context_precision.push(r.context_precision)
+    if (r.context_recall != null) a.context_recall.push(r.context_recall)
+    if (typeof r.latency_ms === "number") a.latency_ms.push(r.latency_ms)
+  }
+
+  return [...map.entries()]
+    .map(([stage, a]) => ({
+      stage,
       n_rows: a.n_rows,
       n_errors: a.n_errors,
       faithfulness: mean(a.faithfulness),

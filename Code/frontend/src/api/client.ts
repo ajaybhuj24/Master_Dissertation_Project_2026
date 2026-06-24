@@ -78,6 +78,15 @@ async function handle<T>(res: Response): Promise<T> {
 const NETWORK_HINT =
   "Could not reach the backend. Is the API server running on http://localhost:8000?"
 
+export async function checkHealth(): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_BASE}/health`)
+    return res.ok
+  } catch {
+    return false
+  }
+}
+
 export async function getCurrentPaper(): Promise<CurrentPaperResponse> {
   let res: Response
   try {

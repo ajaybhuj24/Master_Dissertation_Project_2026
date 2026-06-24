@@ -118,6 +118,17 @@ export interface PipelineMetrics {
   latency_ms: number | null
 }
 
+export interface StageMetrics {
+  stage: string
+  n_rows: number
+  n_errors: number
+  faithfulness: number | null
+  answer_relevancy: number | null
+  context_precision: number | null
+  context_recall: number | null
+  latency_ms: number | null
+}
+
 
 export type BenchmarkCategory = "factual" | "synthesis" | "out_of_scope"
 

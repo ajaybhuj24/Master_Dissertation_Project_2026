@@ -21,11 +21,18 @@ export function StageGroupedBars({ metrics }: { metrics: PipelineMetrics[] }) {
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    const update = () => setWidth(el.clientWidth)
+    const update = () => {
+      const w = el.clientWidth
+      if (w > 0) setWidth(w)
+    }
     update()
+    const raf = requestAnimationFrame(update)
     const ro = new ResizeObserver(update)
     ro.observe(el)
-    return () => ro.disconnect()
+    return () => {
+      cancelAnimationFrame(raf)
+      ro.disconnect()
+    }
   }, [])
 
   const data = metrics.map((m) => ({
@@ -77,7 +84,21 @@ export function StageGroupedBars({ metrics }: { metrics: PipelineMetrics[] }) {
               typeof value === "number" ? value.toFixed(3) : String(value)
             }
           />
-          <Legend wrapperStyle={{ fontSize: 12 }} />
+          <Legend
+            content={() => (
+              <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1 pt-1 text-xs">
+                {METRICS.map((m) => (
+                  <li key={m.key} className="flex items-center gap-1.5">
+                    <span
+                      className="inline-block size-2.5 rounded-[2px]"
+                      style={{ background: m.color }}
+                    />
+                    <span className="text-muted-foreground">{m.label}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          />
           {METRICS.map((m) => (
             <Bar
               key={m.key}
