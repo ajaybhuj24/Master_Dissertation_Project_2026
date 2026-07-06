@@ -1,0 +1,142 @@
+{
+  "paper_id": "1904.09678",
+  "paper_title": "UniSent: Universal Adaptable Sentiment Lexica for 1000+ Languages",
+  "created_at": "2026-07-01T13:05:55.270129+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "synthesis",
+      "question": "how is quality measured?",
+      "ground_truth": "Accuracy and the macro-F1 (averaged F1 over positive and negative classes) are used as a measure of quality.",
+      "expected_passages": [
+        "FLOAT SELECTED: Table 1: Comparison of manually created lexicon performance with UniSent in Czech, German, French, Macedonians, and Spanish. We report accuracy and the macro-F1 (averaged F1 over positive and negative classes). The baseline is constantly considering the majority label. The last two columns indicate the performance of UniSent after drift weighting."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "out_of_scope",
+      "question": "how many languages exactly is the sentiment lexica for?",
+      "ground_truth": null,
+      "expected_passages": []
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "what sentiment sources do they compare with?",
+      "ground_truth": "manually created lexicon in Czech, German, French, Macedonian, and Spanish",
+      "expected_passages": [
+        "As the gold standard sentiment lexica, we chose manually created lexicon in Czech, German, French, Macedonian, and Spanish. These lexica contain general domain words (as opposed to Twitter or Bible). As gold standard for twitter domain we use emoticon dataset and perform emoticon sentiment prediction,."
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "What resources are needed to create UniSent for a new language?",
+      "ground_truth": "A sentiment lexicon in any one language (e.g. English) and a massively parallel corpus (which can be small and domain-specific)",
+      "expected_passages": [
+        "The only necessary resources to create UniSent are a sentiment lexicon in any language and a massively parallel corpus that can be small and domain specific."
+      ],
+      "id": "q4"
+    },
+    {
+      "category": "factual",
+      "question": "What parallel corpus is used for the projection step?",
+      "ground_truth": "A massively parallel Bible corpus",
+      "expected_passages": [
+        "We use the (manually created) English sentiment lexicon (WKWSCI) in as a resource to be projected over languages. For the projection step (Section SECREF1) we use the massively parallel Bible corpus in."
+      ],
+      "id": "q5"
+    },
+    {
+      "category": "factual",
+      "question": "Which English sentiment lexicon is projected across languages?",
+      "ground_truth": "WKWSCI",
+      "expected_passages": [
+        "We use the (manually created) English sentiment lexicon (WKWSCI) in as a resource to be projected over languages."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "For at most how many languages were sentiment resources previously available?",
+      "ground_truth": "At most 136 languages",
+      "expected_passages": [
+        "Such resources are available for at most 136 languages, preventing accurate sentiment classification in a low resource setup."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "To which corpus do the authors propagate the projected sentiment polarities, and why?",
+      "ground_truth": "The Wikipedia corpus, because its domain is closest to the manually annotated sentiment lexica used to evaluate UniSent",
+      "expected_passages": [
+        "We then propagate the projected sentiment polarities to all words in the Wikipedia corpus. We chose Wikipedia here because its domain is closest to the manually annotated sentiment lexica we use to evaluate UniSent."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "factual",
+      "question": "What three techniques does the Adapted Sentiment Pivot method combine?",
+      "ground_truth": "Annotation projection, vocabulary expansion, and unsupervised domain adaptation",
+      "expected_passages": [
+        "To create UniSent, we propose Adapted Sentiment Pivot, a novel method that combines annotation projection, vocabulary expansion, and unsupervised domain adaptation."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "factual",
+      "question": "What is the baseline used in the evaluation?",
+      "ground_truth": "Constantly predicting the majority label",
+      "expected_passages": [
+        "The baseline is constantly considering the majority label. The last two columns indicate the performance of UniSent after drift weighting."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is UniSent and what makes it notable?",
+      "ground_truth": "UniSent is a universal sentiment lexicon covering over 1000 languages (including many low-resource ones), created from an English sentiment lexicon and a massively parallel Bible corpus. It is, to the authors' knowledge, the largest sentiment resource to date in terms of number of covered languages, and its quality is close to manually created resources.",
+      "expected_passages": [
+        "In this paper, we introduce UniSent a universal sentiment lexica for 1000 languages created using an English sentiment lexicon and a massively parallel corpus in the Bible domain. To the best of our knowledge, UniSent is the largest sentiment resource to date in terms of number of covered languages, including many low resource languages.",
+        "We create and release Unisent, the first massively cross-lingual sentiment lexicon in more than 1000 languages."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does the Adapted Sentiment Pivot method create a lexicon for a new language?",
+      "ground_truth": "It projects an English sentiment lexicon across languages using a massively parallel corpus (annotation projection), then expands the vocabulary and applies unsupervised domain adaptation using embedding spaces - for example projecting via the Bible corpus and adapting to the Wikipedia domain by modelling the vocabulary shift between the two.",
+      "expected_passages": [
+        "Our method is inspired by with a novel combination of vocabulary expansion and domain adaptation using embedding spaces.",
+        "In the adaptation step, we compute the shift between the vocabularies in the Bible and Wikipedia corpora."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "How is UniSent evaluated?",
+      "ground_truth": "It is evaluated against manually created gold-standard sentiment lexica in Czech, German, French, Macedonian and Spanish (general domain), and against an emoticon dataset for the Twitter domain, by splitting the data into a UniSent-Lexicon, a Baseline-Lexicon and a held-out Evaluation-Lexicon.",
+      "expected_passages": [
+        "As the gold standard sentiment lexica, we chose manually created lexicon in Czech, German, French, Macedonian, and Spanish. These lexica contain general domain words (as opposed to Twitter or Bible). As gold standard for twitter domain we use emoticon dataset and perform emoticon sentiment prediction,.",
+        "To show that our adaptation method also works well on domains like Twitter, we propose a second evaluation in which we use Adapted Sentiment Pivot to predict the sentiment of emoticons in Twitter."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "synthesis",
+      "question": "What are the main results of the evaluation?",
+      "ground_truth": "UniSent clearly outperforms the baseline for all languages and its quality is close to manually annotated data. The domain-adaptation method brings only small improvements - for morphologically poor languages in the general domain, and for French and Spanish in the Twitter domain.",
+      "expected_passages": [
+        "The results show that (i) UniSent clearly outperforms the baseline for all languages (ii) the quality of UniSent is close to manually annotated data (iii) the domain adaptation method brings small improvements for morphologically poor languages.",
+        "The results show that (i) UniSent clearly outperforms the baseline and (ii) our domain adaptation technique brings small improvements for French and Spanish."
+      ],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What accuracy does UniSent achieve on Chinese sentiment classification?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

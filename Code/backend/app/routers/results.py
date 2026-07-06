@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -10,6 +11,8 @@ from ..jobs.store import JOBS
 from ..paths import PROJECT_ROOT, RESULTS_DIR
 
 router = APIRouter(tags=["results"])
+
+
 
 
 @router.get("/results/master")
@@ -58,6 +61,8 @@ def download_result_file(filename: str) -> FileResponse:
         raise HTTPException(status_code=404, detail=f"File not found: {filename}")
     media_type = "text/csv" if filename.lower().endswith(".csv") else "application/json"
     return FileResponse(target, media_type=media_type, filename=filename)
+
+
 
 
 @router.post("/jobs/{job_id}/persist")

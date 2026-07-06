@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -41,6 +42,7 @@ class JobState:
     def mark_cancelled(self) -> None:
         self.status = "cancelled"
         self.finished_at = datetime.now(timezone.utc)
+
 
 
 JOBS: dict[str, JobState] = {}

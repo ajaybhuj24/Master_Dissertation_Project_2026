@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 import time
@@ -33,6 +34,8 @@ class PipelineCtx:
     openai_client: OpenAI
     pinecone_client: Pinecone
     top_k: int
+    namespace_override: str | None = None
+    retrieval_filter: dict | None = None
     _vector_stores: dict[str, PineconeVectorStore] = field(default_factory=dict)
 
     def get_vector_store(self, namespace: str) -> PineconeVectorStore:
@@ -79,10 +82,16 @@ class Pipeline(ABC):
         namespace: str | None = None,
         k: int | None = None,
     ) -> list[RetrievedContext]:
-        ns = namespace if namespace is not None else self.namespace
+        ns = (
+            namespace
+            if namespace is not None
+            else (ctx.namespace_override or self.namespace)
+        )
         k = k if k is not None else ctx.top_k
         vector_store = ctx.get_vector_store(ns)
-        docs_with_scores = vector_store.similarity_search_with_score(query, k=k)
+        docs_with_scores = vector_store.similarity_search_with_score(
+            query, k=k, filter=ctx.retrieval_filter
+        )
         return [self._to_context(doc, score) for doc, score in docs_with_scores]
 
 

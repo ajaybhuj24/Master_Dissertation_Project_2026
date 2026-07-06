@@ -1,0 +1,150 @@
+{
+  "paper_id": "1809.08731",
+  "paper_title": "Sentence-Level Fluency Evaluation: References Help, But Can Be Spared!",
+  "created_at": "2026-07-01T13:05:55.267129+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "Is ROUGE their only baseline?",
+      "ground_truth": "No",
+      "expected_passages": [
+        "Our first baseline is ROUGE-L, since it is the most commonly used metric for compression tasks. ROUGE-L measures the similarity of two sentences based on their longest common subsequence. Generated and reference compressions are tokenized and lowercased. For multiple references, we only make use of the one with the highest score for each example.",
+        "We compare to the best n-gram-overlap metrics from toutanova2016dataset; combinations of linguistic units (bi-grams (LR2) and tri-grams (LR3)) and scoring measures (recall (R) and F-score (F)). With multiple references, we consider the union of the sets of n-grams. Again, generated and reference compressions are tokenized and lowercased.",
+        "We further compare to the negative LM cross-entropy, i.e., the log-probability which is only normalized by sentence length. The score of a sentence $S$ is calculated as",
+        "Our next baseline is perplexity, which corresponds to the exponentiated cross-entropy:",
+        "Due to its popularity, we also performed initial experiments with BLEU. Its correlation with human scores was so low that we do not consider it in our final experiments."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "factual",
+      "question": "what language models do they use?",
+      "ground_truth": "LSTM LMs",
+      "expected_passages": [
+        "We calculate the probability of a sentence with a long-short term memory (LSTM, hochreiter1997long) LM, i.e., a special type of RNN LM, which has been trained on a large corpus. More details on LSTM LMs can be found, e.g., in sundermeyer2012lstm. The unigram probabilities for SLOR are estimated using the same corpus.",
+        "We train our LSTM LMs on the English Gigaword corpus, which consists of news data."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "out_of_scope",
+      "question": "what questions do they ask human judges?",
+      "ground_truth": null,
+      "expected_passages": []
+    },
+    {
+      "category": "factual",
+      "question": "On what corpus are the LSTM language models trained?",
+      "ground_truth": "The English Gigaword corpus (news data)",
+      "expected_passages": [
+        "We train our LSTM LMs on the English Gigaword corpus, which consists of news data."
+      ],
+      "id": "q4"
+    },
+    {
+      "category": "factual",
+      "question": "What are the architecture and training details of the LSTM language models?",
+      "ground_truth": "Two layers with 512 hidden units each, trained for 2,000,000 steps with a minibatch size of 128, using ADAM",
+      "expected_passages": [
+        "Our best networks consist of two layers with 512 hidden units each, and are trained for 2,000,000 steps with a minibatch size of 128. For optimization, we employ ADAM."
+      ],
+      "id": "q5"
+    },
+    {
+      "category": "factual",
+      "question": "What dataset and task are used to evaluate the fluency metrics?",
+      "ground_truth": "The sentence-compression dataset of Toutanova et al. (2016), built from the Open American National Corpus across 4 genres; the authors evaluate on 2,955 test system outputs whose fluency is rated on a 1-3 scale",
+      "expected_passages": [
+        "We experiment on the compression dataset by toutanova2016dataset. It contains single sentences and two-sentence paragraphs from the Open American National Corpus (OANC), which belong to 4 genres: newswire, letters, journal, and non-fiction.",
+        "We are interested in the latter, which is rated on an ordinal scale from 1 (disfluent) through 3 (fluent). We experiment on the 2955 system outputs for the test split."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "Which four compression systems' outputs are evaluated?",
+      "ground_truth": "ILP (extractive), NAMAS (abstractive), SEQ2SEQ (extractive), and T3 (abstractive)",
+      "expected_passages": [
+        "the outputs of 4 compression systems (ILP (extractive), NAMAS (abstractive), SEQ2SEQ (extractive), and T3 (abstractive); cf. toutanova2016dataset for details) for the test data are provided."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "What are the vocabulary sizes of the WordPiece-based and word-based language models?",
+      "ground_truth": "16,000 tokens for the WordPiece-based LM versus 128,000 for the word-based LM",
+      "expected_passages": [
+        "However, WPSLOR uses a more compact LM and, hence, has a shorter training time, since the vocabulary is smaller ( 16,000 vs. 128,000 tokens)."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "factual",
+      "question": "Which measures are used to evaluate how well each metric correlates with human judgments?",
+      "ground_truth": "Pearson correlation and mean squared error (MSE)",
+      "expected_passages": [
+        "Following earlier work, we evaluate our metrics using Pearson correlation with human judgments.",
+        "Thus, we additionally evaluate using mean squared error (MSE), which is defined as the squares of residuals after a linear transformation, divided by the sample size"
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is SLOR and what is the intuition behind its two normalization terms?",
+      "ground_truth": "SLOR (syntactic log-odds ratio) scores a sentence as its log-probability under a language model minus its unigram log-probability, divided by the sentence length. Subtracting the unigram log-probability prevents words that are simply rare on their own from lowering the sentence's score, and dividing by length prevents the metric from preferring shorter sentences over equally fluent longer ones.",
+      "expected_passages": [
+        "they found SLOR —sentence log-probability which is normalized by unigram log-probability and sentence length—to correlate well with acceptability judgments at the sentence level.",
+        "The intuition behind subtracting unigram log-probabilities is that a token which is rare on its own (in contrast to being rare at a given position in the sentence) should not bring down the sentence's rating. The normalization by sentence length is necessary in order to not prefer shorter sentences over equally fluent longer ones."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is WPSLOR and what advantages does it have over the word-based SLOR?",
+      "ground_truth": "WPSLOR is a version of SLOR whose language model is trained on WordPiece-segmented text. This gives a much smaller vocabulary (16,000 vs 128,000 tokens) and fewer parameters, so the LM is far faster to train (around 12 hours versus roughly 5 days) - with no significant loss in correlation with human judgments.",
+      "expected_passages": [
+        "This leads to a smaller vocabulary, resulting in a LM with less parameters, which is faster to train (around 12h compared to roughly 5 days for the word-based version in our experiments). We will refer to the word-based SLOR as WordSLOR and to our newly proposed WordPiece-based version as WPSLOR.",
+        "Comparing WordSLOR and WPSLOR, we find no significant differences: 0.017 for Pearson and 0.006 for MSE. However, WPSLOR uses a more compact LM and, hence, has a shorter training time, since the vocabulary is smaller ( 16,000 vs. 128,000 tokens)."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is the paper's main finding when comparing the referenceless metrics to reference-based word-overlap metrics?",
+      "ground_truth": "The referenceless WordSLOR and WPSLOR correlate better with human fluency judgments than traditional word-overlap metrics such as ROUGE-L, even though those word-overlap metrics rely on human reference compressions while the SLOR metrics do not.",
+      "expected_passages": [
+        "Our experiments show that both approaches correlate better with human judgments than traditional word-overlap metrics, even though the latter do rely on reference compressions.",
+        "WordSLOR and WPSLOR correlate best with human judgments: WordSLOR (respectively WPSLOR) has a 0.025 (respectively 0.008) higher Pearson correlation than the best word-overlap metric ROUGE-L-mult, even though the latter requires multiple reference compressions."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is ROUGE-LM and why do the authors propose it?",
+      "ground_truth": "ROUGE-LM is a reference-based metric that combines WPSLOR and ROUGE (normalizing both scores by mean and variance and adding them). It is proposed because ROUGE captures content information that is complementary to SLOR's fluency signal; ROUGE-LM has the same requirements as ordinary word-overlap metrics yet correlates significantly better with human fluency judgments than either ROUGE-L or WPSLOR alone.",
+      "expected_passages": [
+        "We, thus, hypothesize that ROUGE should contain information about fluency which is complementary to SLOR, and want to make use of references for fluency evaluation, if available.",
+        "Since ROUGE-LM—an uninformed combination—performs significantly better than both ROUGE-L-mult and WPSLOR on their own, it should be the metric of choice for evaluating fluency with given references."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "synthesis",
+      "question": "How well do the SLOR-based metrics generalize across domains and to abstractive systems, given their LM is trained on news?",
+      "ground_truth": "Even though the language model is trained on out-of-domain Gigaword news text, WordSLOR and WPSLOR still correlate best with human judgments across almost all domains (all except letters), and they work even for abstractive systems - for example outperforming the baselines on the abstractive T3 system and on SEQ2SEQ.",
+      "expected_passages": [
+        "Comparing the evaluation performance for individual metrics, we observe that, except for letters, WordSLOR and WPSLOR perform best across all domains: they outperform the best word-overlap metric by at least 0.019 and at most 0.051 Pearson correlation",
+        "Since T3 is an abstractive system, we can conclude that WordSLOR and WPSLOR are applicable even for systems that are not limited to make use of a fixed repertoire of words."
+      ],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What accuracy does SLOR achieve at detecting factual errors in the compressed sentences?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

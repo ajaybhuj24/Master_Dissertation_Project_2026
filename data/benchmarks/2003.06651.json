@@ -1,0 +1,144 @@
+{
+  "paper_id": "2003.06651",
+  "paper_title": "Word Sense Disambiguation for 158 Languages using Word Embeddings Only",
+  "created_at": "2026-07-01T13:05:55.300408+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "Is the method described in this work a clustering-based method?",
+      "ground_truth": "Yes",
+      "expected_passages": [
+        "The task of Word Sense Induction (WSI) can be seen as an unsupervised version of WSD. WSI aims at clustering word senses and does not require to map each cluster to a predefined sense. Instead of that, word sense inventories are induced automatically from the clusters, treating each cluster as a single sense of a word. WSI approaches fall into three main groups: context clustering, word ego-network clustering and synonyms (or substitute) clustering.",
+        "We suggest a more advanced procedure of graph construction that uses the interpretability of vector addition and subtraction operations in word embedding space while the previous algorithm only relies on the list of nearest neighbours in word embedding space. The key innovation of our algorithm is the use of vector subtraction to find pairs of most dissimilar graph nodes and construct the graph only from the nodes included in such “anti-edges”. Thus, our algorithm is based on graph-based word sense induction, but it also relies on vector-based operations between word embeddings to perform filtering of graph nodes. Analogously to the work of Pelevina:16, we construct a semantic relatedness graph from a list of nearest neighbours, but we filter this list using the following procedure:"
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "factual",
+      "question": "How are the different senses annotated/labeled?",
+      "ground_truth": "The contexts are manually labelled with WordNet senses of the target words",
+      "expected_passages": [
+        "The dataset consists of a set of polysemous words: 20 nouns, 20 verbs, and 10 adjectives and specifies 20 to 100 contexts per word, with the total of 4,664 contexts, drawn from the Open American National Corpus. Given a set of contexts of a polysemous word, the participants of the competition had to divide them into clusters by sense of the word. The contexts are manually labelled with WordNet senses of the target words, the gold standard clustering is generated from this labelling.",
+        "The task allows two setups: graded WSI where participants can submit multiple senses per word and provide the probability of each sense in a particular context, and non-graded WSI where a model determines a single sense for a word in context. In our experiments we performed non-graded WSI. We considered the most suitable sense as the one with the highest cosine similarity with embeddings of the context, as described in Section SECREF9."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "Was any extrinsic evaluation carried out?",
+      "ground_truth": "Yes",
+      "expected_passages": [
+        "We first evaluate our converted embedding models on multi-language lexical similarity and relatedness tasks, as a sanity check, to make sure the word sense induction process did not hurt the general performance of the embeddings. Then, we test the sense embeddings on WSD task."
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "What is the name of the novel word sense induction algorithm the authors present?",
+      "ground_truth": "egvi (Ego-Graph Vector Induction)",
+      "expected_passages": [
+        "We present egvi (Ego-Graph Vector Induction), a new algorithm of unsupervised word sense induction, which creates sense inventories based on pre-trained word vectors."
+      ],
+      "id": "q4"
+    },
+    {
+      "category": "factual",
+      "question": "What graph clustering algorithm is used to partition the semantic graph into senses?",
+      "ground_truth": "The Chinese Whispers algorithm, a bottom-up clustering procedure that does not require pre-defining the number of clusters",
+      "expected_passages": [
+        "After the graph construction, the clustering is performed using the Chinese Whispers algorithm. This is a bottom-up clustering procedure that does not require to pre-define the number of clusters, so it can correctly process polysemous words with varying numbers of senses as well as unambiguous words."
+      ],
+      "id": "q5"
+    },
+    {
+      "category": "factual",
+      "question": "On what pre-trained word embeddings are the induced sense inventories based?",
+      "ground_truth": "The original pre-trained fastText word embeddings by Grave et al. (2018)",
+      "expected_passages": [
+        "We use this method to induce a collection of sense inventories for 158 languages on the basis of the original pre-trained fastText word embeddings by Grave et al. (2018), enabling WSD in these languages."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "For how many languages does the system provide word sense disambiguation?",
+      "ground_truth": "158 languages",
+      "expected_passages": [
+        "The system works for 158 languages, for which pre-trained fastText embeddings available.",
+        "We release a system for on-the-fly WSD for 158 languages."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "What library is used to accelerate the search for similar vectors when building the sense inventories?",
+      "ground_truth": "The Faiss library, using GPU-accelerated routines",
+      "expected_passages": [
+        "To build word sense inventories (sense vectors) for 158 languages, we utilised GPU-accelerated routines for search of similar vectors implemented in Faiss library."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is the key innovation of the egvi algorithm compared to prior graph-based methods?",
+      "ground_truth": "Instead of relying only on the list of nearest neighbours, egvi uses vector subtraction to find pairs of most dissimilar graph nodes (called anti-edges) and constructs the semantic graph only from the nodes included in such anti-edges, which filters out noise and helps discriminate between senses.",
+      "expected_passages": [
+        "We suggest a more advanced procedure of graph construction that uses the interpretability of vector addition and subtraction operations in word embedding space while the previous algorithm only relies on the list of nearest neighbours in word embedding space. The key innovation of our algorithm is the use of vector subtraction to find pairs of most dissimilar graph nodes and construct the graph only from the nodes included in such “anti-edges”."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does the method disambiguate a polysemous word in a given context?",
+      "ground_truth": "It represents the context of the target word as the average of the word vectors in the sentence, and then selects the sense whose representation has the highest cosine similarity to that context embedding (a single sense per word, i.e. non-graded WSI).",
+      "expected_passages": [
+        "Given a sentence $\\lbrace w_1, w_2,..., w_{j}, w, w_{j+1},..., w_n\\rbrace $ represented as a matrix of word vectors, we define the context of the target word $w$ as $\\textbf {c}_w = \\dfrac{\\sum _{j=1}^{n} w_j}{n}$. Then, we define the most appropriate sense $\\hat{s}$ as the sense with the highest cosine similarity to the embedding of the word's context:",
+        "In our experiments we performed non-graded WSI. We considered the most suitable sense as the one with the highest cosine similarity with embeddings of the context, as described in Section SECREF9."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "How are the induced sense clusters labelled so that they are interpretable to humans?",
+      "ground_truth": "Rather than using hypernyms (which are not available for all 158 languages), the authors select a keyword for each cluster, defined as the word belonging to the largest number of anti-edges among the words in that cluster.",
+      "expected_passages": [
+        "Therefore, we use a simpler method to select a keyword which would help to interpret each cluster.",
+        "For each cluster $V_i$ we define a keyword $w^{key}_i$ as the word with the largest number of anti-edges $count(\\cdot)$ among words in this cluster."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is the main limitation the authors identify with their sense induction method?",
+      "ground_truth": "The method systematically over-generates senses: the number of senses it extracts is consistently higher than the real number of senses (always above 2 on average, versus lower numbers in WordNet), so it needs a method for merging spurious senses.",
+      "expected_passages": [
+        "We can see that the number of senses extracted by our method is consistently higher than the real number of senses.",
+        "Notably, there are no languages with an average number of senses less than 2, while numbers on English and Russian WordNets are considerably lower. This confirms that our method systematically over-generates senses."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does egvi perform on the SemEval-2013 WSD task relative to other models?",
+      "ground_truth": "Its performance is similar to state-of-the-art word sense disambiguation and induction models, and it outperforms the SenseGram baseline on the majority of metrics, though the authors note the SenseGram comparison is not fully rigorous because SenseGram uses word2vec rather than fastText vectors.",
+      "expected_passages": [
+        "The table shows that the performance of egvi is similar to state-of-the-art word sense disambiguation and word sense induction models. In particular, we can see that it outperforms SenseGram on the majority of metrics. We should note that this comparison is not fully rigorous, because SenseGram induces sense inventories from word2vec as opposed to fastText vectors used in our work."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "How does egvi's disambiguation accuracy compare against the supervised GlossBERT model?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What is the average time to disambiguate a single word at inference in the deployed system?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

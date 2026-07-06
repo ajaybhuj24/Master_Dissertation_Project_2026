@@ -1,0 +1,145 @@
+{
+  "paper_id": "1908.06606",
+  "paper_title": "Question Answering based Clinical Text Structuring Using Pre-trained Language Model",
+  "created_at": "2026-07-01T13:05:55.276687+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "What data is the language model pretrained on?",
+      "ground_truth": "Chinese general corpus",
+      "expected_passages": [
+        "To implement deep neural network models, we utilize the Keras library with TensorFlow backend. Each model is run on a single NVIDIA GeForce GTX 1080 Ti GPU. The models are trained by Adam optimization algorithm whose parameters are the same as the default settings except for learning rate set to $5\\times 10^{-5}$. Batch size is set to 3 or 4 due to the lack of graphical memory. We select BERT-base as the pre-trained language model in this paper. Due to the high cost of pre-training BERT language model, we directly adopt parameters pre-trained by Google in Chinese general corpus. The named entity recognition is applied on both pathology report texts and query texts."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "factual",
+      "question": "What baselines is the proposed model compared against?",
+      "ground_truth": "BERT-Base | QANet",
+      "expected_passages": [
+        "Experimental Studies::: Comparison with State-of-the-art Methods",
+        "Since BERT has already achieved the state-of-the-art performance of question-answering, in this section we compare our proposed model with state-of-the-art question answering models (i.e. QANet) and BERT-Base. As BERT has two versions: BERT-Base and BERT-Large, due to the lack of computational resource, we can only compare with BERT-Base model instead of BERT-Large. Prediction layer is attached at the end of the original BERT-Base model and we fine tune it on our dataset. In this section, the named entity integration method is chosen to pure concatenation (Concatenate the named entity information on pathology report text and query text first and then concatenate contextualized representation and concatenated named entity information). Comparative results are summarized in Table TABREF23."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "How is the clinical text structuring task defined?",
+      "ground_truth": "Clinical text structuring (CTS) is a critical task for fetching medical research data from electronic health records (EHRs), where structural patient medical data, such as whether the patient has specific symptoms, diseases, or what the tumor size is, how far from the tumor is cut at during the surgery, or what the specific laboratory test result is, are obtained. | Unlike the traditional CTS task, our QA-CTS task aims to discover the most related text from original paragraph text.",
+      "expected_passages": [
+        "FLOAT SELECTED: Fig. 1. An illustrative example of QA-CTS task.",
+        "Clinical text structuring (CTS) is a critical task for fetching medical research data from electronic health records (EHRs), where structural patient medical data, such as whether the patient has specific symptoms, diseases, or what the tumor size is, how far from the tumor is cut at during the surgery, or what the specific laboratory test result is, are obtained. It is important to extract structured data from clinical text because bio-medical systems or bio-medical researches greatly rely on structured data but they cannot obtain them directly. In addition, clinical text often contains abundant healthcare information. CTS is able to provide large-scale extracted structured data for enormous down-stream clinical researches.",
+        "To reduce the pipeline depth and break the barrier of non-uniform output formats, we present a question answering based clinical text structuring (QA-CTS) task (see Fig. FIGREF1). Unlike the traditional CTS task, our QA-CTS task aims to discover the most related text from original paragraph text. For some cases, it is already the final answer in deed (e.g., extracting sub-string). While for other cases, it needs several steps to obtain the final answer, such as entity names conversion and negative words recognition. Our presented QA-CTS task unifies the output format of the traditional CTS task and make the training data shareable, thus enriching the training data. The main contributions of this work can be summarized as follows."
+      ]
+    },
+    {
+      "id": "q4",
+      "category": "factual",
+      "question": "What are the specific tasks being unified?",
+      "ground_truth": "three types of questions, namely tumor size, proximal resection margin and distal resection margin",
+      "expected_passages": [
+        "To reduce the pipeline depth and break the barrier of non-uniform output formats, we present a question answering based clinical text structuring (QA-CTS) task (see Fig. FIGREF1). Unlike the traditional CTS task, our QA-CTS task aims to discover the most related text from original paragraph text. For some cases, it is already the final answer in deed (e.g., extracting sub-string). While for other cases, it needs several steps to obtain the final answer, such as entity names conversion and negative words recognition. Our presented QA-CTS task unifies the output format of the traditional CTS task and make the training data shareable, thus enriching the training data. The main contributions of this work can be summarized as follows.",
+        "Our dataset is annotated based on Chinese pathology reports provided by the Department of Gastrointestinal Surgery, Ruijin Hospital. It contains 17,833 sentences, 826,987 characters and 2,714 question-answer pairs. All question-answer pairs are annotated and reviewed by four clinicians with three types of questions, namely tumor size, proximal resection margin and distal resection margin. These annotated instances have been partitioned into 1,899 training instances (12,412 sentences) and 815 test instances (5,421 sentences). Each instance has one or several sentences. Detailed statistics of different types of entities are listed in Table TABREF20.",
+        "In this paper, we present a question answering based clinical text structuring (QA-CTS) task, which unifies different clinical text structuring tasks and utilize different datasets. A novel model is also proposed to integrate named entity information into a pre-trained language model and adapt it to QA-CTS task. Initially, sequential results of named entity recognition on both paragraph and query texts are integrated together. Contextualized representation on both paragraph and query texts are transformed by a pre-trained language model. Then, the integrated named entity information and contextualized representation are integrated together and fed into a feed forward network for final prediction. Experimental results on real-world dataset demonstrate that our proposed model competes favorably with strong baseline models in all three specific tasks. The shared task and shared model introduced by QA-CTS task has also been proved to be useful for improving the performance on most of the task-specific datasets. In conclusion, the best way to achieve the best performance for a specific dataset is to pre-train the model in multiple datasets and then fine tune it on the specific dataset."
+      ]
+    },
+    {
+      "id": "q5",
+      "category": "synthesis",
+      "question": "Is all text in this dataset a question, or are there unrelated sentences in between questions?",
+      "ground_truth": "the dataset consists of pathology reports including sentences and questions and answers about tumor size and resection margins so it does include additional sentences",
+      "expected_passages": [
+        "Our dataset is annotated based on Chinese pathology reports provided by the Department of Gastrointestinal Surgery, Ruijin Hospital. It contains 17,833 sentences, 826,987 characters and 2,714 question-answer pairs. All question-answer pairs are annotated and reviewed by four clinicians with three types of questions, namely tumor size, proximal resection margin and distal resection margin. These annotated instances have been partitioned into 1,899 training instances (12,412 sentences) and 815 test instances (5,421 sentences). Each instance has one or several sentences. Detailed statistics of different types of entities are listed in Table TABREF20."
+      ]
+    },
+    {
+      "id": "q6",
+      "category": "synthesis",
+      "question": "How many questions are in the dataset?",
+      "ground_truth": "2,714",
+      "expected_passages": [
+        "Our dataset is annotated based on Chinese pathology reports provided by the Department of Gastrointestinal Surgery, Ruijin Hospital. It contains 17,833 sentences, 826,987 characters and 2,714 question-answer pairs. All question-answer pairs are annotated and reviewed by four clinicians with three types of questions, namely tumor size, proximal resection margin and distal resection margin. These annotated instances have been partitioned into 1,899 training instances (12,412 sentences) and 815 test instances (5,421 sentences). Each instance has one or several sentences. Detailed statistics of different types of entities are listed in Table TABREF20."
+      ]
+    },
+    {
+      "id": "q7",
+      "category": "out_of_scope",
+      "question": "Are there privacy concerns with clinical data?",
+      "ground_truth": null,
+      "expected_passages": []
+    },
+    {
+      "id": "q8",
+      "category": "factual",
+      "question": "How they introduce domain-specific features into pre-trained language model?",
+      "ground_truth": "integrate clinical named entity information into pre-trained language model",
+      "expected_passages": [
+        "We first present a question answering based clinical text structuring (QA-CTS) task, which unifies different specific tasks and make dataset shareable. We also propose an effective model to integrate clinical named entity information into pre-trained language model.",
+        "In this section, we present an effective model for the question answering based clinical text structuring (QA-CTS). As shown in Fig. FIGREF8, paragraph text $X$ is first passed to a clinical named entity recognition (CNER) model to capture named entity information and obtain one-hot CNER output tagging sequence for query text $I_{nq}$ and paragraph text $I_{nt}$ with BIEOS (Begin, Inside, End, Outside, Single) tag scheme. $I_{nq}$ and $I_{nt}$ are then integrated together into $I_n$. Meanwhile, the paragraph text $X$ and query text $Q$ are organized and passed to contextualized representation model which is pre-trained language model BERT here to obtain the contextualized representation vector $V_s$ of both text and query. Afterwards, $V_s$ and $I_n$ are integrated together and fed into a feed forward network to calculate the start and end index of answer-related text. Here we define this calculation problem as a classification for each word to be the start or end word."
+      ]
+    },
+    {
+      "id": "q9",
+      "category": "factual",
+      "question": "How big is QA-CTS task dataset?",
+      "ground_truth": "17,833 sentences, 826,987 characters and 2,714 question-answer pairs",
+      "expected_passages": [
+        "Our dataset is annotated based on Chinese pathology reports provided by the Department of Gastrointestinal Surgery, Ruijin Hospital. It contains 17,833 sentences, 826,987 characters and 2,714 question-answer pairs. All question-answer pairs are annotated and reviewed by four clinicians with three types of questions, namely tumor size, proximal resection margin and distal resection margin. These annotated instances have been partitioned into 1,899 training instances (12,412 sentences) and 815 test instances (5,421 sentences). Each instance has one or several sentences. Detailed statistics of different types of entities are listed in Table TABREF20."
+      ]
+    },
+    {
+      "id": "q10",
+      "category": "factual",
+      "question": "How big is dataset of pathology reports collected from Ruijing Hospital?",
+      "ground_truth": "17,833 sentences, 826,987 characters and 2,714 question-answer pairs",
+      "expected_passages": [
+        "Our dataset is annotated based on Chinese pathology reports provided by the Department of Gastrointestinal Surgery, Ruijin Hospital. It contains 17,833 sentences, 826,987 characters and 2,714 question-answer pairs. All question-answer pairs are annotated and reviewed by four clinicians with three types of questions, namely tumor size, proximal resection margin and distal resection margin. These annotated instances have been partitioned into 1,899 training instances (12,412 sentences) and 815 test instances (5,421 sentences). Each instance has one or several sentences. Detailed statistics of different types of entities are listed in Table TABREF20."
+      ]
+    },
+    {
+      "id": "q11",
+      "category": "factual",
+      "question": "What are strong baseline models in specific tasks?",
+      "ground_truth": "state-of-the-art question answering models (i.e. QANet) and BERT-Base",
+      "expected_passages": [
+        "Since BERT has already achieved the state-of-the-art performance of question-answering, in this section we compare our proposed model with state-of-the-art question answering models (i.e. QANet) and BERT-Base. As BERT has two versions: BERT-Base and BERT-Large, due to the lack of computational resource, we can only compare with BERT-Base model instead of BERT-Large. Prediction layer is attached at the end of the original BERT-Base model and we fine tune it on our dataset. In this section, the named entity integration method is chosen to pure concatenation (Concatenate the named entity information on pathology report text and query text first and then concatenate contextualized representation and concatenated named entity information). Comparative results are summarized in Table TABREF23."
+      ]
+    },
+    {
+      "category": "synthesis",
+      "question": "How does the proposed QA-CTS model work end to end?",
+      "ground_truth": "The paragraph text is first passed through a clinical named entity recognition (CNER) model to produce one-hot named-entity tag sequences (BIEOS scheme) for the query and paragraph, which are combined into I_n. In parallel, the paragraph and query are passed through BERT-base to obtain a contextualized representation V_s. V_s and I_n are then integrated and fed into a feed-forward network that classifies each word as the start or end of the answer-related text.",
+      "expected_passages": [
+        "As shown in Fig. FIGREF8, paragraph text $X$ is first passed to a clinical named entity recognition (CNER) model to capture named entity information and obtain one-hot CNER output tagging sequence for query text $I_{nq}$ and paragraph text $I_{nt}$ with BIEOS (Begin, Inside, End, Outside, Single) tag scheme. $I_{nq}$ and $I_{nt}$ are then integrated together into $I_n$. Meanwhile, the paragraph text $X$ and query text $Q$ are organized and passed to contextualized representation model which is pre-trained language model BERT here to obtain the contextualized representation vector $V_s$ of both text and query. Afterwards, $V_s$ and $I_n$ are integrated together and fed into a feed forward network to calculate the start and end index of answer-related text."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is the two-stage training mechanism, and why is it used?",
+      "ground_truth": "The BERT model is first fine-tuned together with a new prediction layer to obtain a good contextualized representation; then those fine-tuned BERT weights are loaded, the named-entity-information layers are attached, and the whole model is retrained. Inspired by two-stage training of bilinear models in fine-grained visual recognition, it is used to speed up training given BERT's very large parameter count, and it improves QA-CTS performance.",
+      "expected_passages": [
+        "Inspired by this and due to the large amount of parameters in BERT model, to speed up the training process, we fine tune the BERT model with new prediction layer first to achieve a better contextualized representation performance. Then we deploy the proposed model and load the fine tuned BERT weights, attach named entity information layers and retrain the model."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "synthesis",
+      "question": "What does the data-integration analysis conclude about sharing data and models across the tasks?",
+      "ground_truth": "Sharing data across the three tasks and using a shared model helps: a model trained on mixed data does well on most tasks, and the best strategy is to pre-train the model on multiple datasets and then fine-tune it on the specific dataset. This works because there is commonality between the different tasks that the unified QA-CTS formulation makes learnable.",
+      "expected_passages": [
+        "Comparing Table TABREF32 with Table TABREF31, using mixed-data pre-trained parameters can significantly improve the model performance than task-specific data trained model.",
+        "This proves that there is commonality between different tasks and our proposed QA-CTS task make this learnable. In conclusion, to achieve the best performance for a specific dataset, pre-training the model in multiple datasets and then fine tuning the model on the specific dataset is the best way."
+      ],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What accuracy does the model achieve on English clinical notes?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

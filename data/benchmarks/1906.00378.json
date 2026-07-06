@@ -1,0 +1,146 @@
+{
+  "paper_id": "1906.00378",
+  "paper_title": "Unsupervised Bilingual Lexicon Induction from Mono-lingual Multimodal Data",
+  "created_at": "2026-07-01T13:05:55.271635+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "Which vision-based approaches does this approach outperform?",
+      "ground_truth": "CNN-mean | CNN-avgmax",
+      "expected_passages": [
+        "We compare our approach with two baseline vision-based methods proposed in,, which measure the similarity of two sets of global visual features for bilingual lexicon induction:",
+        "CNN-mean: taking the similarity score of the averaged feature of the two image sets.",
+        "CNN-avgmax: taking the average of the maximum similarity scores of two image sets."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "factual",
+      "question": "What baseline is used for the experimental setup?",
+      "ground_truth": "CNN-mean | CNN-avgmax",
+      "expected_passages": [
+        "We compare our approach with two baseline vision-based methods proposed in,, which measure the similarity of two sets of global visual features for bilingual lexicon induction:",
+        "CNN-mean: taking the similarity score of the averaged feature of the two image sets.",
+        "CNN-avgmax: taking the average of the maximum similarity scores of two image sets."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "Which languages are used in the multi-lingual caption model?",
+      "ground_truth": "German-English, French-English, and Japanese-English",
+      "expected_passages": [
+        "We carry out experiments on multiple language pairs including German-English, French-English, and Japanese-English. The experimental results show that the proposed multi-lingual caption model not only achieves better caption performance than independent mono-lingual models for data-scarce languages, but also can induce the two types of features, linguistic and visual features, for different languages in joint spaces. Our proposed method consistently outperforms previous state-of-the-art vision-based bilingual word induction approaches on different languages. The contributions of this paper are as follows:"
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "What CNN is used as the image encoder in the caption model?",
+      "ground_truth": "ResNet152",
+      "expected_passages": [
+        "We apply the Resnet152 as our encoder INLINEFORM0, which produces INLINEFORM1 vectors corresponding to different spatial locations in the image"
+      ],
+      "id": "q4"
+    },
+    {
+      "category": "factual",
+      "question": "Which datasets are used for image captioning?",
+      "ground_truth": "multi30k, COCO, and STAIR",
+      "expected_passages": [
+        "For image captioning, we utilize the multi30k, COCO and STAIR datasets. The multi30k dataset contains 30k images and annotations under two tasks."
+      ],
+      "id": "q5"
+    },
+    {
+      "category": "factual",
+      "question": "Which two visual datasets are used to evaluate bilingual lexicon induction, and how large are they?",
+      "ground_truth": "BERGSMA (500 German-English noun pairs) and MMID (9,808 German-English pairs and 9,887 French-English pairs)",
+      "expected_passages": [
+        "For bilingual lexicon induction, we use two visual datasets: BERGSMA and MMID. The BERGSMA dataset consists of 500 German-English word translation pairs. Each word is associated with no more than 20 images. The words in BERGSMA dataset are all nouns. The MMID dataset covers a larger variety of words and languages, including 9,808 German-English pairs and 9,887 French-English pairs."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "What metrics are used to evaluate word translation performance?",
+      "ground_truth": "MRR (mean reciprocal rank) and precision at K (P@K), with K set to 1, 5, 10 and 20",
+      "expected_passages": [
+        "We evaluate the word translation performance using MRR (mean-reciprocal rank) as follows: DISPLAYFORM0",
+        "We also measure the precision at K (P@K) score, which is the proportion of source words whose groundtruth translations rank in the top K words. We set K as 1, 5, 10 and 20."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "What are the training hyperparameters of the multi-lingual caption model?",
+      "ground_truth": "Word-embedding and LSTM hidden size of 512, Adam optimizer with learning rate 0.0001 and batch size 128, trained up to 100 epochs",
+      "expected_passages": [
+        "For the multi-lingual caption model, we set the word embedding size and the hidden size of LSTM as 512. Adam algorithm is applied to optimize the model with learning rate of 0.0001 and batch size of 128. The caption model is trained up to 100 epochs and the best model is selected according to caption performance on the validation set."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "synthesis",
+      "question": "What two limitations of previous vision-based methods does the paper address?",
+      "ground_truth": "(1) Prior methods only translate concrete, visual-relevant words such as nouns and adjectives, and produce poor translations for words without good visual groundings; and (2) they extract features from the whole image, requiring object-centered images, so global features become noisy when a word is grounded to only part of the image. The paper addresses both by learning from images together with their captions (sentence plus visual context).",
+      "expected_passages": [
+        "Firstly, the accurate translation performance is confined to concrete visual-relevant words such as nouns and adjectives as shown in Figure SECREF2. For words without high-quality visual groundings, previous methods would generate poor translations. Secondly, previous works extract visual features from the whole image to represent words and thus require object-centered images in order to obtain reliable visual groundings.",
+        "In this paper, we address the two limitations via learning from mono-lingual multimodal data with both sentence and visual context (e.g., image and caption data) to induce bilingual lexicon."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "synthesis",
+      "question": "What two types of word representation are induced, and why are they complementary?",
+      "ground_truth": "A linguistic feature, learned from the sentence context with visual-semantic constraints, which helps translate words that are less visual-relevant; and a localized visual feature, which attends to the image region for the word and is more salient than global visual features, helping with concrete words. Because each helps a different kind of word, they are complementary and are combined for better word translation.",
+      "expected_passages": [
+        "The first is the linguistic feature learned from the sentence context with visual semantic constraints, so that it is able to generate more accurate translations for words that are less visual-relevant. The second is the localized visual feature which attends to the local region of the object or scene in the image for the corresponding word, so that the visual representation of words will be more salient than previous global visual features. The two representations are complementary and can be combined to induce better bilingual word translation."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does the multi-lingual caption model map words of different languages into a joint space?",
+      "ground_truth": "It shares the image encoder (one common visual space) and the language decoder parameters across languages. Because captions of similar images are pulled close in the shared visual space and the shared decoder must produce similar sentence features, the word embeddings of the different languages are forced into the same semantic space, allowing direct cross-lingual similarity comparison.",
+      "expected_passages": [
+        "In our multi-lingual caption model, since images in INLINEFORM2 and INLINEFORM3 share the same visual space, the features of sentence INLINEFORM4 and INLINEFORM5 belonging to similar images are bound to be close in the same space with the visual constraints. Meanwhile, the language decoder is also shared, which enforces the word embeddings across languages into the same semantic space in order to generate similar sentence features.",
+        "By sharing the same parameters across different languages in the encoder and decoder, both the visual features and the learned word embeddings for different languages are enforced to project in a joint semantic space."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "How are the localized visual features for each word generated?",
+      "ground_truth": "By an occlusion-style procedure: different parts of the image are fed to the caption model and the change in the probability of generating each word is observed (inspired by occluding image regions to observe classification-probability changes). This visual grounding is learned unsupervised from the caption data, so each word ends up represented by a set of grounded visual features.",
+      "expected_passages": [
+        "inspired by, where they occlude over regions of the image to observe the change of classification probabilities, we feed different parts of the image to the caption model and investigate the probability changes for each word in the sentence. Algorithm SECREF16 presents the procedure of word localization and the grounded visual feature generation. Please note that such visual-grounding is learned unsupervisedly from the image caption data."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "What are the main results compared with previous vision-based methods?",
+      "ground_truth": "Fusing the localized visual and linguistic features substantially outperforms the state-of-the-art CNN-avgmax baseline, with 11.6% and 6.7% absolute P@1 gains on the BERGSMA and MMID datasets respectively, and it improves translation for all part-of-speech classes (not just nouns) across German, French and Japanese.",
+      "expected_passages": [
+        "The combination of visual and linguistic features also significantly improves the state-of-the-art visual-based CNN-avgmax method with 11.6% and 6.7% absolute gains on P@1 on the BERGSMA and MMID dataset respectively.",
+        "Our approach, however, substantially improves the translation performance for all part-of-speech classes."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What BLEU score does the model achieve on full-sentence machine translation?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What is the model's word-translation accuracy for the Chinese-English language pair?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

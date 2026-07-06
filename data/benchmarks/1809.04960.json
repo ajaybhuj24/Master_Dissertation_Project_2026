@@ -1,0 +1,148 @@
+{
+  "paper_id": "1809.04960",
+  "paper_title": "Unsupervised Machine Commenting with Neural Variational Topic Model",
+  "created_at": "2026-07-01T13:05:55.266130+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "Which paired corpora did they use in the other experiment?",
+      "ground_truth": "dataset that contains article-comment parallel contents INLINEFORM0, and an unpaired dataset that contains the documents (articles or comments) INLINEFORM1",
+      "expected_passages": [
+        "In addition to the unsupervised training, we explore a semi-supervised training framework to combine the proposed unsupervised model and the supervised model. In this scenario we have a paired dataset that contains article-comment parallel contents INLINEFORM0, and an unpaired dataset that contains the documents (articles or comments) INLINEFORM1. The supervised model is trained on INLINEFORM2 so that we can learn the matching or mapping between articles and comments. By sharing the encoder of the supervised model and the unsupervised model, we can jointly train both the models with a joint objective function: DISPLAYFORM0"
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "synthesis",
+      "question": "By how much does their system outperform the lexicon-based models?",
+      "ground_truth": "Under the retrieval evaluation setting, their proposed model + IR2 had better MRR than NVDM by 0.3769, better MR by 4.6, and better Recall@10 by 20. Under the generative evaluation setting the proposed model + IR2 had better BLEU by 0.044, better CIDEr by 0.033, better ROUGE by 0.032, and better METEOR by 0.029",
+      "expected_passages": [
+        "NVDM (Lexical, Neural) is a VAE-based approach for document modeling. We compare our model with this baseline to demonstrate the effect of modeling topic.",
+        "Table TABREF31 shows the performance of our models and the baselines in retrieval evaluation. We first compare our proposed model with other popular unsupervised methods, including TF-IDF, LDA, and NVDM. TF-IDF retrieves the comments by similarity of words rather than the semantic meaning, so it achieves low scores on all the retrieval metrics. The neural variational document model is based on the neural VAE framework. It can capture the semantic information, so it has better performance than the TF-IDF model. LDA models the topic information, and captures the deeper relationship between the article and comments, so it achieves improvement in all relevance metrics. Finally, our proposed model outperforms all these unsupervised methods, mainly because the proposed model learns both the semantics and the topic information.",
+        "FLOAT SELECTED: Table 2: The performance of the unsupervised models and supervised models under the retrieval evaluation settings. (Recall@k, MRR: higher is better; MR: lower is better.)",
+        "Table TABREF32 shows the performance for our models and the baselines in generative evaluation. Similar to the retrieval evaluation, our proposed model outperforms the other unsupervised methods, which are TF-IDF, NVDM, and LDA, in generative evaluation. Still, the supervised IR achieves better scores than the seq2seq model. With the help of our proposed model, both IR and S2S achieve an improvement under the semi-supervised scenarios.",
+        "FLOAT SELECTED: Table 3: The performance of the unsupervised models and supervised models under the generative evaluation settings. (METEOR, ROUGE, CIDEr, BLEU: higher is better.)"
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "Which lexicon-based models did they compare with?",
+      "ground_truth": "TF-IDF | NVDM",
+      "expected_passages": [
+        "TF-IDF (Lexical, Non-Neural) is an important unsupervised baseline. We use the concatenation of the title and the body as the query to retrieve the candidate comment set by means of the similarity of the tf-idf value. The model is trained on unpaired articles and comments, which is the same as our proposed model.",
+        "NVDM (Lexical, Neural) is a VAE-based approach for document modeling. We compare our model with this baseline to demonstrate the effect of modeling topic."
+      ]
+    },
+    {
+      "id": "q4",
+      "category": "factual",
+      "question": "How many comments were used?",
+      "ground_truth": "from 50K to 4.8M",
+      "expected_passages": [
+        "We analyze the performance of the proposed method under the semi-supervised setting. We train the supervised IR model with different numbers of paired data. Figure FIGREF39 shows the curve (blue) of the recall1 score. As expected, the performance grows as the paired dataset becomes larger. We further combine the supervised IR with our unsupervised model, which is trained with full unpaired data (4.8M) and different number of paired data (from 50K to 4.8M). It shows that IR+Proposed can outperform the supervised IR model given the same paired dataset. It concludes that the proposed model can exploit the unpaired data to further improve the performance of the supervised model."
+      ]
+    },
+    {
+      "id": "q5",
+      "category": "factual",
+      "question": "How many articles did they have?",
+      "ground_truth": "198,112",
+      "expected_passages": [
+        "We select a large-scale Chinese dataset with millions of real comments and a human-annotated test set to evaluate our model. The dataset is collected from Tencent News, which is one of the most popular Chinese websites for news and opinion articles. The dataset consists of 198,112 news articles. Each piece of news contains a title, the content of the article, and a list of the users' comments. Following the previous work, we tokenize all text with the popular python package Jieba, and filter out short articles with less than 30 words in content and those with less than 20 comments. The dataset is split into training/validation/test sets, and they contain 191,502/5,000/1,610 pieces of news, respectively. The whole dataset has a vocabulary size of 1,858,452. The average lengths of the article titles and content are 15 and 554 Chinese words. The average comment length is 17 words."
+      ]
+    },
+    {
+      "id": "q6",
+      "category": "factual",
+      "question": "What news comment dataset was used?",
+      "ground_truth": "Chinese dataset",
+      "expected_passages": [
+        "We select a large-scale Chinese dataset with millions of real comments and a human-annotated test set to evaluate our model. The dataset is collected from Tencent News, which is one of the most popular Chinese websites for news and opinion articles. The dataset consists of 198,112 news articles. Each piece of news contains a title, the content of the article, and a list of the users' comments. Following the previous work, we tokenize all text with the popular python package Jieba, and filter out short articles with less than 30 words in content and those with less than 20 comments. The dataset is split into training/validation/test sets, and they contain 191,502/5,000/1,610 pieces of news, respectively. The whole dataset has a vocabulary size of 1,858,452. The average lengths of the article titles and content are 15 and 554 Chinese words. The average comment length is 17 words."
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "How many candidate comments are in the retrieval pool?",
+      "ground_truth": "4.5 million human comments",
+      "expected_passages": [
+        "In this work, we have 4.5 million human comments in the candidate set, and the comments are various, covering different topics from pets to sports."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "What is the number of topics and the main hyperparameters used to train the model?",
+      "ground_truth": "100 topics, a hidden size of 512, a batch size of 64, a vocabulary pruned to the 30,000 most frequent words, trained for 20 epochs with Adam",
+      "expected_passages": [
+        "The hidden size of the model is 512, and the batch size is 64. The number of topics INLINEFORM0 is 100. The weight INLINEFORM1 in Eq. EQREF26 is 1.0 under the semi-supervised setting. We prune the vocabulary, and only leave 30,000 most frequent words in the vocabulary. We train the model for 20 epochs with the Adam optimizing algorithms."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "factual",
+      "question": "What operation is used to compute the matching score between an article and a comment?",
+      "ground_truth": "The dot-product operation (framed as Maximum Inner Product Search, MIPS)",
+      "expected_passages": [
+        "To address both problems, we select the “dot-product” operation to compute matching scores.",
+        "The problem of finding datapoints with the largest dot-product values is called Maximum Inner Product Search (MIPS), and there are lots of solutions to improve the efficiency of solving this problem."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "synthesis",
+      "question": "What two main problems of machine commenting does the paper address, and how?",
+      "ground_truth": "(1) The need for large parallel article-comment data - addressed by a fully unsupervised approach that relies only on unpaired articles and comments; and (2) the semantic gap between articles and comments - addressed by bridging them through their shared topics, represented with an unsupervised neural variational topic model.",
+      "expected_passages": [
+        "Another issue is that there is a semantic gap between articles and comments. In machine translation and text summarization, the target output mainly shares the same points with the source input. However, in article commenting, the comment does not always tell the same thing as the corresponding article.",
+        "For the first problem, we completely remove the need of parallel data and propose a novel unsupervised approach to train a machine commenting system, relying on nothing but unpaired articles and comments. For the second issue, we bridge the articles and comments with their topics."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does the neural variational topic model represent articles and comments?",
+      "ground_truth": "It is a VAE-based model trained unsupervised. Each document (the title concatenated with the body, or a comment) is turned into a bag-of-words; an encoder compresses the bag-of-words into a topic representation and a decoder reconstructs the words. To capture topics it uses a Dirichlet prior, approximated by a logistic-normal distribution via the Laplace approximation, rather than the standard Gaussian prior.",
+      "expected_passages": [
+        "The neural variational topic model is based on the variational autoencoder framework, so it can be trained in an unsupervised manner. The model encodes the source text into a representation, from which it reconstructs the text.",
+        "In order to model the topic information, we use a Dirichlet prior rather than the standard Gaussian prior. However, it is difficult to develop an effective reparameterization function for the Dirichlet prior to train VAE. Therefore, following, we use the Laplace approximation to Dirichlet prior"
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "Why do the authors prefer a retrieval-based commenting model over a generative sequence-to-sequence model?",
+      "ground_truth": "The retrieval model is less likely to suffer the mode-collapse problem, its comments are more predictable and controllable by changing the candidate set, and it can be combined with a generative model. The seq2seq generative model suffers from mode collapse - producing very similar, generic outputs - because comments are only weakly related to the articles and the paired data is limited.",
+      "expected_passages": [
+        "Compared with the generative model, the retrieval model can achieve more promising performance. First, the retrieval model is less likely to suffer from the mode collapse problem. Second, the generated comments are more predictable and controllable (by changing the candidate set). Third, the retrieval model can be combined with the generative model to produce new comments (by adding the outputs of generative models to the candidate set).",
+        "However, we find that the mode collapse problem is severed with the sequence-to-sequence model. Despite the input articles being various, the outputs of the model are very similar."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "What does the error analysis reveal about the failure modes of the TF-IDF, S2S, and IR baselines?",
+      "ground_truth": "TF-IDF tends to rank 'plausible' comments (lexically similar to the article) as top-1; the S2S model tends to rank 'popular', short generic comments as top-1 because of mode collapse; and IR still confuses plausible and correct comments because it does not explicitly model topics. The proposed topic model discriminates correct comments from plausible ones better.",
+      "expected_passages": [
+        "It shows that TF-IDF prefers to rank the plausible comments as the top-1 comments, mainly because it matches articles with the comments based on the similarity of the lexicon.",
+        "IR achieves better performance than TF-IDF and S2S. However, it still suffers from the discrimination between the plausible comments and correct comments. This is mainly because IR does not explicitly model the underlying topics."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What BLEU score does the model achieve when generating comments in English?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "How many crowd-workers were hired to write new comments for training the model?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

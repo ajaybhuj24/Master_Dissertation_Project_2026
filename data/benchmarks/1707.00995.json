@@ -1,0 +1,148 @@
+{
+  "paper_id": "1707.00995",
+  "paper_title": "An empirical study on the effectiveness of images in Multimodal Neural Machine Translation",
+  "created_at": "2026-07-01T13:05:55.261018+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "What misbehavior is identified?",
+      "ground_truth": "if the attention loose track of the objects in the picture and \"gets lost\", the model still takes it into account and somehow overrides the information brought by the text-based annotations",
+      "expected_passages": [
+        "It is also worth to mention that we use a ResNet trained on 1.28 million images for a classification tasks. The features used by the attention mechanism are strongly object-oriented and the machine could miss important information for a multimodal translation task. We believe that the robust architecture of both encoders INLINEFORM0 combined with a GRU layer and word-embeddings took care of the right translation for relationships between objects and time-dependencies. Yet, we noticed a common misbehavior for all our multimodal models: if the attention loose track of the objects in the picture and \"gets lost\", the model still takes it into account and somehow overrides the information brought by the text-based annotations. The translation is then totally mislead. We illustrate with an example:"
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "out_of_scope",
+      "question": "What is the baseline used?",
+      "ground_truth": null,
+      "expected_passages": []
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "Which attention mechanisms do they compare?",
+      "ground_truth": "Soft attention | Hard Stochastic attention | Local Attention",
+      "expected_passages": [
+        "We evaluate three models of the image attention mechanism INLINEFORM0 of equation EQREF11. They have in common the fact that at each time step INLINEFORM1 of the decoding phase, all approaches first take as input the annotation sequence INLINEFORM2 to derive a time-dependent context vector that contain relevant information in the image to help predict the current target word INLINEFORM3. Even though these models differ in how the time-dependent context vector is derived, they share the same subsequent steps. For each mechanism, we propose two hand-picked illustrations showing where the attention is placed in an image.",
+        "Soft attention",
+        "Hard Stochastic attention",
+        "Local Attention"
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "Which dataset is used for the multimodal machine translation experiments?",
+      "ground_truth": "The Multi30K dataset, an extended version of Flickr30K Entities",
+      "expected_passages": [
+        "For this experiments on Multimodal Machine Translation, we used the Multi30K dataset which is an extended version of the Flickr30K Entities. For each image, one of the English descriptions was selected and manually translated into German by a professional translator."
+      ],
+      "id": "q4"
+    },
+    {
+      "category": "factual",
+      "question": "What are the sizes of the training, development, and test sets?",
+      "ground_truth": "29,000 training triples, 1,014 development triples, and a test set of 1,000",
+      "expected_passages": [
+        "As training and development data, 29,000 and 1,014 triples are used respectively. A test set of size 1000 is used for metrics evaluation."
+      ],
+      "id": "q5"
+    },
+    {
+      "category": "factual",
+      "question": "What convolutional network is used to extract image features, and from which layer are they taken?",
+      "ground_truth": "A ResNet-50 pre-trained on ImageNet, with features extracted at its res4f layer",
+      "expected_passages": [
+        "To create the image annotations used by our decoder, we used a ResNet-50 pre-trained on ImageNet and extracted the features of size INLINEFORM0 at its res4f layer. In our experiments, our decoder operates on the flattened 196 INLINEFORM1 1024 (i.e INLINEFORM2)."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "Which evaluation metrics are used to assess the quality of the translations?",
+      "ground_truth": "BLEU4, METEOR, and TER",
+      "expected_passages": [
+        "We use the metrics BLEU4, METEOR and TER to evaluate the quality of our models' translations."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "What is the translation direction (language pair) studied in this paper?",
+      "ground_truth": "English (with an accompanying image) to German",
+      "expected_passages": [
+        "In this paper, we compare several attention mechanism on the multimodal translation task (English, image to German) and evaluate the ability of the model to make use of images to improve translation."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "factual",
+      "question": "What subword encoding is applied, and what vocabulary sizes result for English and German?",
+      "ground_truth": "Byte pair encoding (BPE), which reduces the vocabulary to 9,226 words for English and 14,957 for German",
+      "expected_passages": [
+        "We use the byte pair encoding algorithm on the train set to convert space-separated tokens into subwords, reducing our vocabulary size to 9226 and 14957 words for English and German respectively."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "synthesis",
+      "question": "Which attention mechanism performs best overall, and how do the precision-oriented and recall-oriented metrics respond?",
+      "ground_truth": "The hard stochastic attention performs best overall, giving the largest gains on the precision-oriented metrics (+1.51 BLEU and -2.2 TER over the multimodal baseline). The recall-oriented METEOR scores stay roughly the same across mechanisms because they all share the same subsequent step, though hard stochastic still yields a small +0.4 METEOR improvement.",
+      "expected_passages": [
+        "We notice a nice overall progress over CalixtoLC17b multimodal baseline, especially when using the stochastic attention. With improvements of +1.51 BLEU and -2.2 TER on both precision-oriented metrics, the model shows a strong similarity of the n-grams of our candidate translations with respect to the references. The more recall-oriented metrics METEOR scores are roughly the same across our models which is expected because all attention mechanisms share the same subsequent step at every time-step INLINEFORM0",
+        "Again, the largest improvement is given by the hard stochastic attention mechanism (+0.4 METEOR): because it is modeled as a decision process according to the previous choices, this may reinforce the idea of recall."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "How do the soft, hard stochastic, and local attention mechanisms differ in how they attend to the image?",
+      "ground_truth": "Soft attention considers all image annotations and computes the context vector as a weighted sum over all of them. Hard stochastic attention makes a hard, sampling-based choice to attend to only one annotation (a single spatial location) at each step. Local attention is a trade-off between the two: it picks one location and focuses on a small window of annotations around it, and unlike hard attention it is differentiable.",
+      "expected_passages": [
+        "The idea of the soft attentional model is to consider all the annotations when deriving the context vector INLINEFORM0.",
+        "This model is a stochastic and sampling-based process where, at every timestep INLINEFORM0, we are making a hard choice to attend only one annotation. This corresponds to one spatial location in the image.",
+        "This model can be seen as a trade-off between the soft and hard attentional models. The model picks one patch in the annotation sequence (one spatial location) and selectively focuses on a small window of context around it."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "What three optimizations do the authors add to the image attention mechanism?",
+      "ground_truth": "(1) A gating scalar computed from the previous decoder state that scales the image context vector; (2) doubling the output size of the trainable attention parameters to better cover the image objects; and (3) a grounding attention that merges each spatial location with the initial decoder state (followed by L2 normalization and convolutional layers) to remove image information not relevant to the source sentence.",
+      "expected_passages": [
+        "Three optimizations can be added to the attention mechanism regarding the image modality. All lead to a better use of the image by the model and improved the translation scores overall.",
+        "At every decoding step INLINEFORM0, we compute a gating scalar INLINEFORM1 according to the previous decoder state INLINEFORM2",
+        "We also double the output size of trainable parameters INLINEFORM0, INLINEFORM1 and INLINEFORM2 in equation EQREF18 when it comes to compute the expected annotations over the image annotation sequence."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "What evidence indicates the stochastic-attention model largely ignores the image, and how do the authors explain it?",
+      "ground_truth": "In the stochastic-attention model the gating scalar is very low - a significant number of sentences have a summed gating scalar below 0.10 - so the model largely discards the image during translation. The authors suggest this is because the ResNet features are strongly object-oriented (the network was trained on a 1.28M-image classification task), so the model may miss information needed for translation and relies mainly on the text.",
+      "expected_passages": [
+        "Surprisingly, the gating scalar happens to be really low in the stochastic attention mechanism: a significant amount of sentences don't have a summed gating scalar INLINEFORM1 0.10. The model totally discards the image in the translation process.",
+        "It is also worth to mention that we use a ResNet trained on 1.28 million images for a classification tasks. The features used by the attention mechanism are strongly object-oriented and the machine could miss important information for a multimodal translation task."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does the conditional GRU (cGRU) in the decoder combine its recurrent cells with attention?",
+      "ground_truth": "The conditional GRU stacks two GRU cells (REC1 and REC2) with an attention mechanism in between. REC1 first computes a hidden-state proposal from the previous hidden state and the previously emitted word; the attention mechanism then computes a context vector over the source annotations using that proposal; finally REC2 computes the new hidden state from the proposal and the context vector.",
+      "expected_passages": [
+        "The conditional GRU consists of two stacked GRU activations called INLINEFORM0 and INLINEFORM1 and an attention mechanism INLINEFORM2 in between (called ATT in the footnote paper). At each time-step INLINEFORM3, REC1 firstly computes a hidden state proposal INLINEFORM4 based on the previous hidden state INLINEFORM5 and the previously emitted word INLINEFORM6",
+        "Finally, the second recurrent cell INLINEFORM0, computes the hidden state INLINEFORM1 of the INLINEFORM2 by looking at the intermediate representation INLINEFORM3 and context vector INLINEFORM4"
+      ],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What BLEU score does the model achieve when translating from English into French?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

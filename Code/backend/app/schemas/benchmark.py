@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -47,12 +48,18 @@ class BenchmarkQuestion(BaseModel):
         return self
 
 
+MIN_QUESTIONS = 3
+MAX_QUESTIONS = 50
+
+
 class BenchmarkFile(BaseModel):
 
     paper_id: str = Field(..., min_length=1)
     paper_title: str = Field(..., min_length=1)
     created_at: datetime
-    questions: list[BenchmarkQuestion] = Field(..., min_length=15, max_length=15)
+    questions: list[BenchmarkQuestion] = Field(
+        ..., min_length=MIN_QUESTIONS, max_length=MAX_QUESTIONS
+    )
 
     @model_validator(mode="after")
     def _validate_unique_ids(self) -> "BenchmarkFile":
@@ -72,6 +79,8 @@ class BenchmarkFile(BaseModel):
         for q in self.questions:
             counts[q.category.value] += 1
         return counts
+
+
 
 
 class BenchmarkSummary(BaseModel):

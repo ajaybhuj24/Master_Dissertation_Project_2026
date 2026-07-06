@@ -1,0 +1,143 @@
+{
+  "paper_id": "1811.00942",
+  "paper_title": "Progress and Tradeoffs in Neural Language Models",
+  "created_at": "2026-07-01T13:05:55.270129+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "synthesis",
+      "question": "What aspects have been compared between various language models?",
+      "ground_truth": "Quality measures using perplexity and recall, and performance measured using latency and energy usage.",
+      "expected_passages": [
+        "For each model, we examined word-level perplexity, R@3 in next-word prediction, latency (ms/q), and energy usage (mJ/q). To explore the perplexity–recall relationship, we collected individual perplexity and recall statistics for each sentence in the test set."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "factual",
+      "question": "what classic language models are mentioned in the paper?",
+      "ground_truth": "Kneser–Ney smoothing",
+      "expected_passages": [
+        "In this paper, we examine the quality–performance tradeoff in the shift from non-neural to neural language models. In particular, we compare Kneser–Ney smoothing, widely accepted as the state of the art prior to NLMs, to the best NLMs today. The decrease in perplexity on standard datasets has been well documented, but to our knowledge no one has examined the performances tradeoffs. With deployment on a mobile device in mind, we evaluate energy usage and inference latency on a Raspberry Pi (which shares the same ARM architecture as nearly all smartphones today). We find that a 2.5 $\\times $ reduction in perplexity on PTB comes at a staggering cost in terms of performance: inference with NLMs takes 49 $\\times $ longer and requires 32 $\\times $ more energy. Furthermore, we find that impressive reductions in perplexity translate into at best modest improvements in next-word prediction, which is arguable a better metric for evaluating software keyboards on a smartphone. The contribution of this paper is the first known elucidation of this quality–performance tradeoff. Note that we refrain from prescriptive recommendations: whether or not a tradeoff is worthwhile depends on the application. Nevertheless, NLP engineers should arguably keep these tradeoffs in mind when selecting a particular operating point."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "What is a commonly used evaluation metric for language models?",
+      "ground_truth": "perplexity",
+      "expected_passages": [
+        "Deep learning has unquestionably advanced the state of the art in many natural language processing tasks, from syntactic dependency parsing to named-entity recognition to machine translation. The same certainly applies to language modeling, where recent advances in neural language models (NLMs) have led to dramatically better approaches as measured using standard metrics such as perplexity,."
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "Which language-model architectures does the paper compare?",
+      "ground_truth": "Two neural models - a four-layer QRNN and AWD-LSTM - against a non-neural five-gram model with modified Kneser-Ney smoothing (KN-5)",
+      "expected_passages": [
+        "For the neural language model, we used a four-layer QRNN, which achieves state-of-the-art results on a variety of datasets, such as WT103 and PTB. To compare against more common LSTM architectures, we also evaluated AWD-LSTM on PTB. For the non-neural approach, we used a standard five-gram model with modified Kneser-Ney smoothing, as explored in on PTB."
+      ],
+      "id": "q4"
+    },
+    {
+      "category": "factual",
+      "question": "Which two benchmark datasets are used in the experiments?",
+      "ground_truth": "Penn Treebank (PTB) and WikiText-103 (WT103)",
+      "expected_passages": [
+        "We conducted our experiments on Penn Treebank (PTB;) and WikiText-103 (WT103;)."
+      ],
+      "id": "q5"
+    },
+    {
+      "category": "factual",
+      "question": "What are the training-set and vocabulary sizes of PTB and WT103?",
+      "ground_truth": "PTB has 887K training tokens (70K validation, 78K test) with a 10,000-word vocabulary; WT103 has 103 million training tokens (217K validation, 245K test) with a 267K vocabulary",
+      "expected_passages": [
+        "Preprocessed by, PTB contains 887K tokens for training, 70K for validation, and 78K for test, with a vocabulary size of 10,000. On the other hand, WT103 comprises 103 million tokens for training, 217K for validation, and 245K for test, spanning a vocabulary of 267K unique tokens."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "On what hardware are energy and latency measured?",
+      "ground_truth": "A Raspberry Pi 3 Model B (Cortex-A7, a surrogate for mobile phones) and a desktop with an i7-4790k CPU and Titan V GPU; power is measured with a Watts Up Pro meter",
+      "expected_passages": [
+        "To evaluate the models under a resource-constrained environment, we deployed them on a Raspberry Pi 3 (Model B) running Raspbian Stretch (4.9.41-v7+). The Raspberry Pi (RPi) is not only a standard platform, but also a close surrogate to mobile phones, using the same Cortex-A7 in many phones.",
+        "we further evaluated all the models under a desktop environment, using an i7-4790k CPU and Titan V GPU."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "By what factors does neural inference increase latency and energy versus KN-5 for a 2.5x perplexity reduction on PTB?",
+      "ground_truth": "About 49 times longer latency and 32 times more energy",
+      "expected_passages": [
+        "We find that a 2.5× reduction in perplexity on PTB comes at a staggering cost in terms of performance: inference with NLMs takes 49× longer and requires 32× more energy."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "factual",
+      "question": "What toolkit is used to train the KN-5 model?",
+      "ground_truth": "The SRILM toolkit",
+      "expected_passages": [
+        "For the KN-5 model, we trained an off-the-shelf five-gram model using the popular SRILM toolkit. We did not specify any special hyperparameters."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is the central quality-performance tradeoff the paper examines?",
+      "ground_truth": "Language models sit in a quality-performance tradeoff space: as quality rises (lower perplexity), performance in energy and latency falls. Neural LMs sharply reduce perplexity but at a large cost in inference latency and energy, which matters for mobile deployment - and this paper is the first to elucidate that tradeoff.",
+      "expected_passages": [
+        "In truth, language models exist in a quality–performance tradeoff space. As model quality increases (e.g., lower perplexity), performance as measured in terms of energy consumption, query latency, etc. tends to decrease.",
+        "The contribution of this paper is the first known elucidation of this quality–performance tradeoff."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "How do the neural-versus-non-neural results differ between the Raspberry Pi and the desktop?",
+      "ground_truth": "On the Raspberry Pi the neural models are about 49x slower and 32x more energy-hungry than KN-5 (and wt103-qrnn is unusable on phones at over 1.2 s per prediction). On a desktop, however, the absolute latency is tiny (about 8 ms/query), so the QRNN is humanly indistinguishable from KN-5, even without a GPU.",
+      "expected_passages": [
+        "Nevertheless, the models are still 49× slower and 32× more power-hungry than KN-5. The wt103-qrnn model is completely unusable on phones, taking over 1.2 seconds per next-word prediction.",
+        "the neural models on PTB (rows 2–3) are 9× slower than KN-5, but the absolute latency is only 8 ms/q, which is still much faster than what humans perceive as instantaneous."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "What relationship do the authors find between (log) perplexity and recall (R@3)?",
+      "ground_truth": "Word-level perplexity is not strictly monotonic with recall-at-k, but log perplexity (cross entropy) has a moderate-to-strong linear relationship with R@3 error (correlations around 0.85 to 0.94), making log perplexity a more human-understandable indicator of R@3 than perplexity itself.",
+      "expected_passages": [
+        "Word-level perplexity does not have a strictly monotonic relationship with recall-at- k, the fraction of top k predictions that contain the correct word.",
+        "log perplexity appears to have a moderate linear relationship with R@3 error on PTB ( r=0.85), and an even stronger relationship on WT103 ( r=0.94)."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "Do the large perplexity gains of neural models translate into proportionally large next-word-prediction gains?",
+      "ground_truth": "No. Neural models achieve perplexity drops of 60-80% but only 22-34% increases in R@3 next-word prediction, so impressive perplexity reductions translate into at best modest improvements in next-word prediction.",
+      "expected_passages": [
+        "Neural models achieve perplexity drops of 60–80% and R@3 increases of 22–34%, but these improvements come at a much higher cost in latency and energy usage.",
+        "we find that impressive reductions in perplexity translate into at best modest improvements in next-word prediction, which is arguable a better metric for evaluating software keyboards on a smartphone."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What BLEU score do the neural language models achieve on machine translation?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "How much does model inference cost on a cloud TPU?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

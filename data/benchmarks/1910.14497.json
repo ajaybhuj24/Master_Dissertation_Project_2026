@@ -1,0 +1,148 @@
+{
+  "paper_id": "1910.14497",
+  "paper_title": "Probabilistic Bias Mitigation in Word Embeddings",
+  "created_at": "2026-07-01T13:05:55.288338+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "How is embedding quality assessed?",
+      "ground_truth": "We compare this method of bias mitigation with the no bias mitigation (\"Orig\"), geometric bias mitigation (\"Geo\"), the two pieces of our method alone (\"Prob\" and \"KNN\") and the composite method (\"KNN+Prob\"). We note that the composite method performs reasonably well according the the RIPA metric, and much better than traditional geometric bias mitigation according to the neighborhood metric, without significant performance loss according to the accepted benchmarks. To our knowledge this is the first bias mitigation method to perform reasonably both on both metrics.",
+      "expected_passages": [
+        "We evaluate our framework on fastText embeddings trained on Wikipedia (2017), UMBC webbase corpus and statmt.org news dataset (16B tokens). For simplicity, only the first 22000 words are used in all embeddings, though preliminary results indicate the findings extend to the full corpus. For our novel methods of mitigating bias, a shallow neural network is used to adjust the embedding. The single layer of the model is an embedding layer with weights initialized to those of the original embedding. For the composite method, these weights are initialized to those of the embedding after probabilistic bias mitigation. A batch of word indices is fed into the model, which are then embedded and for which a loss value is calculated, allowing back-propagation to adjust the embeddings. For each of the models, a fixed number of iterations is used to prevent overfitting, which can eventually hurt performance on the embedding benchmarks (See Figure FIGREF12). We evaluated the embedding after 1000 iterations, and stopped training if performance on a benchmark decreased significantly.",
+        "We construct a list of candidate words to debias, taken from the words used in the WEAT gender bias statistics. Words in this list should be gender neutral, and are related to the topics of career, arts, science, math, family and professions (see appendix). We note that this list can easily be expanded to include a greater proportion of words in the corpus. For example, suggested a method for identifying inappropriately gendered words using unsupervised learning.",
+        "We compare this method of bias mitigation with the no bias mitigation (\"Orig\"), geometric bias mitigation (\"Geo\"), the two pieces of our method alone (\"Prob\" and \"KNN\") and the composite method (\"KNN+Prob\"). We note that the composite method performs reasonably well according the the RIPA metric, and much better than traditional geometric bias mitigation according to the neighborhood metric, without significant performance loss according to the accepted benchmarks. To our knowledge this is the first bias mitigation method to perform reasonably both on both metrics."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "synthesis",
+      "question": "What are the three measures of bias which are reduced in experiments?",
+      "ground_truth": "RIPA, Neighborhood Metric, WEAT",
+      "expected_passages": [
+        "Geometric bias mitigation uses the cosine distances between words to both measure and remove gender bias. This method implicitly defines bias as a geometric asymmetry between words when projected onto a subspace, such as the gender subspace constructed from a set of gender pairs such as $\\mathcal {P} = \\lbrace (he,she),(man,woman),(king,queen)...\\rbrace $. The projection of a vector $v$ onto $B$ (the subspace) is defined by $v_B = \\sum _{j=1}^{k} (v \\cdot b_j) b_j$ where a subspace $B$ is defined by k orthogonal unit vectors $B = {b_1,...,b_k}$.",
+        "The WEAT statistic demonstrates the presence of biases in word embeddings with an effect size defined as the mean test statistic across the two word sets:",
+        "Where $s$, the test statistic, is defined as: $s(w,A,B) = mean_{a \\in A} cos(w,a) - mean_{b \\in B} cos(w,a)$, and $X$,$Y$,$A$, and $B$ are groups of words for which the association is measured. Possible values range from $-2$ to 2 depending on the association of the words groups, and a value of zero indicates $X$ and $Y$ are equally associated with $A$ and $B$. See for further details on WEAT.",
+        "The RIPA (relational inner product association) metric was developed as an alternative to WEAT, with the critique that WEAT is likely to overestimate the bias of a target attribute. The RIPA metric formalizes the measure of bias used in geometric bias mitigation as the inner product association of a word vector $v$ with respect to a relation vector $b$. The relation vector is constructed from the first principal component of the differences between gender word pairs. We report the absolute value of the RIPA metric as the value can be positive or negative according to the direction of the bias. A value of zero indicates a lack of bias, and the value is bound by $[-||w||,||w||]$.",
+        "The neighborhood bias metric proposed by quantifies bias as the proportion of male socially-biased words among the $k$ nearest socially-biased male and female neighboring words, whereby biased words are obtained by projecting neutral words onto a gender relation vector. As we only examine the target word among the 1000 most socially-biased words in the vocabulary (500 male and 500 female), a word’s bias is measured as the ratio of its neighborhood of socially-biased male and socially-biased female words, so that a value of 0.5 in this metric would indicate a perfectly unbiased word, and values closer to 0 and 1 indicate stronger bias.",
+        "FLOAT SELECTED: Table 1: Remaining Bias (as measured by RIPA and Neighborhood metrics) in fastText embeddings for baseline (top two rows) and our (bottom three) methods. Figure 2: Remaining Bias (WEAT score)"
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "out_of_scope",
+      "question": "What are the probabilistic observations which contribute to the more robust algorithm?",
+      "ground_truth": null,
+      "expected_passages": []
+    },
+    {
+      "category": "factual",
+      "question": "Which word-embedding method does the paper focus on for mitigating bias?",
+      "ground_truth": "Skip-Gram with Negative Sampling (SGNS)",
+      "expected_passages": [
+        "For fair comparison, we focus on mitigating a binary gender bias in pre-trained word embeddings using SGNS (skip-gram with negative-sampling), though we note that this framework and methods could be extended to other types of bias and word embedding algorithms."
+      ],
+      "id": "q4"
+    },
+    {
+      "category": "factual",
+      "question": "What embeddings and training corpora are used in the experiments?",
+      "ground_truth": "fastText embeddings trained on Wikipedia (2017), the UMBC webbase corpus, and the statmt.org news dataset (16B tokens)",
+      "expected_passages": [
+        "We evaluate our framework on fastText embeddings trained on Wikipedia (2017), UMBC webbase corpus and statmt.org news dataset (16B tokens)."
+      ],
+      "id": "q5"
+    },
+    {
+      "category": "factual",
+      "question": "How many words are used in the embeddings for the experiments?",
+      "ground_truth": "Only the first 22,000 words",
+      "expected_passages": [
+        "For simplicity, only the first 22000 words are used in all embeddings, though preliminary results indicate the findings extend to the full corpus."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "What quantity does the WEAT statistic compare to measure bias?",
+      "ground_truth": "The cosine similarities between groups of words",
+      "expected_passages": [
+        "On the other hand, the most popular metric for measuring bias is the WEAT statistic, which compares the cosine similarities between groups of words. However, WEAT has been recently shown to overestimate bias as a result of implicitly relying on similar frequencies for the target words"
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "How is the RIPA metric's relation vector constructed?",
+      "ground_truth": "From the first principal component of the differences between gender word pairs",
+      "expected_passages": [
+        "The RIPA metric formalizes the measure of bias used in geometric bias mitigation as the inner product association of a word vector $v$ with respect to a relation vector $b$. The relation vector is constructed from the first principal component of the differences between gender word pairs."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "factual",
+      "question": "In the neighborhood metric, what value indicates a perfectly unbiased word?",
+      "ground_truth": "0.5 (values closer to 0 or 1 indicate stronger bias)",
+      "expected_passages": [
+        "a word’s bias is measured as the ratio of its neighborhood of socially-biased male and socially-biased female words, so that a value of 0.5 in this metric would indicate a perfectly unbiased word, and values closer to 0 and 1 indicate stronger bias."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "factual",
+      "question": "What five methods are compared in the experiments?",
+      "ground_truth": "No bias mitigation (Orig), geometric bias mitigation (Geo), the two components alone (Prob and KNN), and the composite method (KNN+Prob)",
+      "expected_passages": [
+        "We compare this method of bias mitigation with the no bias mitigation (\"Orig\"), geometric bias mitigation (\"Geo\"), the two pieces of our method alone (\"Prob\" and \"KNN\") and the composite method (\"KNN+Prob\")."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is the core motivation for taking a probabilistic view of word-embedding bias?",
+      "ground_truth": "Most popular word-embedding algorithms are probabilistic at their core - trained to minimize some form of word co-occurrence probabilities - so a framework for measuring and treating bias should consider their probabilistic nature, not just their geometry. Borrowing the fairness notion of demographic parity, an unbiased embedding should have conditional probabilities like p(doctor|man) approximately equal to p(doctor|woman).",
+      "expected_passages": [
+        "First, most popular word embedding algorithms are probabilistic at their core – i.e., they are trained (explicitly or implicitly) to minimize some form of word co-occurrence probabilities. Thus, we argue that a framework for measuring and treating bias in these embeddings should take into account, in addition to their geometric aspect, their probabilistic nature too.",
+        "Similarly, when considering a probabilistic definition of unbiased in word embeddings, we can consider the conditional probabilities of word pairs, ensuring for example that p(doctor|man) is approximately equal to p(doctor|woman), and can extend this probabilistic framework to include the neighborhood of a target word"
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "What are the two steps of the proposed bias-mitigation method?",
+      "ground_truth": "(1) Probabilistic bias mitigation: a loss that penalizes the discrepancy between the conditional probabilities of a target word conditioned on the two protected-attribute words (e.g. man versus woman). (2) Nearest-neighbor bias mitigation: extend this to the neighborhood by comparing the conditional probabilities of the target word given its k/2 nearest male socially-biased words versus its k/2 nearest female socially-biased words.",
+      "expected_passages": [
+        "We can formalize this intuitive goal through a loss function that penalizes the discrepancy between the conditional probabilities of a target word (i.e., one that should not be affected by the protected attribute) conditioned on two words describing the protected attribute (e.g., man and woman in the case of gender).",
+        "Specifically, we examine the conditional probabilities of a target word given the k/2 nearest neighbors from the male socially-biased words as well as given the k/2 female socially-biased words (in sorted order, from smallest to largest)."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "Why do the authors argue geometric bias mitigation is insufficient?",
+      "ground_truth": "Because it hides but fails to truly remove bias: evidence of bias can still be recovered after geometric mitigation by examining a target word's neighborhood among socially-biased words (the neighborhood metric). Additionally, the popular WEAT metric tends to overestimate bias.",
+      "expected_passages": [
+        "recent work has demonstrated that these methods hide but fail to truly remove the biases, which can still be observed in word nearest-neighbor statistics.",
+        "Bolukbasi et al proposed a method for eliminating this kind of indirect bias through geometric bias mitigation, but it is shown to be ineffective by the neighborhood metric."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is the main result of the composite (KNN+Prob) method?",
+      "ground_truth": "The composite method performs reasonably well according to the RIPA metric and much better than traditional geometric bias mitigation according to the neighborhood metric, without significant performance loss on accepted embedding benchmarks - the first bias-mitigation method to perform reasonably on both kinds of metric.",
+      "expected_passages": [
+        "We note that the composite method performs reasonably well according the the RIPA metric, and much better than traditional geometric bias mitigation according to the neighborhood metric, without significant performance loss according to the accepted benchmarks. To our knowledge this is the first bias mitigation method to perform reasonably both on both metrics."
+      ],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What accuracy does the method achieve at removing racial bias from the embeddings?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

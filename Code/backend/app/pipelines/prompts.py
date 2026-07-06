@@ -1,3 +1,4 @@
+
 REFUSAL_STRING = "I don't have enough information in the provided context to answer this question."
 
 
@@ -27,6 +28,7 @@ def format_context(passages: list[str]) -> str:
     return "\n\n".join(f"[Passage {i + 1}]\n{p}" for i, p in enumerate(passages))
 
 
+
 MULTI_QUERY_SYSTEM_PROMPT = """\
 You are an expert at reformulating search queries. Given a question, you produce \
 alternative phrasings that express the same information need with different \
@@ -44,6 +46,7 @@ Rules:
 - Output ONLY the {n} phrasings, one per line. No numbering, no bullets, no extra text.
 
 Question: {question}"""
+
 
 
 CRAG_GRADER_SYSTEM_PROMPT = """\
@@ -88,6 +91,7 @@ Rules:
 - Use DIFFERENT keywords from the original question where possible.
 - Stay specific — do not broaden the question into something more general.
 - Output ONLY the refined query, no preamble, no quotes, no explanation."""
+
 
 
 COMPRESSION_NONE_SENTINEL = "NONE"

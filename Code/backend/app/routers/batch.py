@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 import asyncio
@@ -23,6 +24,8 @@ from ..schemas.batch import (
 router = APIRouter(tags=["batch"])
 
 _SSE_POLL_SECONDS = 0.5
+
+
 
 
 def _to_status(job: JobState) -> JobStatus:
@@ -52,6 +55,8 @@ def _to_summary(job: JobState) -> JobSummary:
         started_at=job.started_at,
         finished_at=job.finished_at,
     )
+
+
 
 
 @router.post("/batch", response_model=JobStatus, status_code=202)

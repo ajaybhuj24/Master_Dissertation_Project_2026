@@ -1,0 +1,145 @@
+{
+  "paper_id": "1805.02400",
+  "paper_title": "Stay On-Topic: Generating Context-specific Fake Restaurant Reviews",
+  "created_at": "2026-07-01T13:05:55.264128+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "Which dataset do they use a starting point in generating fake reviews?",
+      "ground_truth": "the Yelp Challenge dataset",
+      "expected_passages": [
+        "We use the Yelp Challenge dataset for our fake review generation. The dataset (Aug 2017) contains 2.9 million 1 –5 star restaurant reviews. We treat all reviews as genuine human-written reviews for the purpose of this work, since wide-scale deployment of machine-generated review attacks are not yet reported (Sep 2017). As preprocessing, we remove non-printable (non-ASCII) characters and excessive white-space. We separate punctuation from words. We reserve 15,000 reviews for validation and 3,000 for testing, and the rest we use for training. NMT models require a parallel corpus of source and target sentences, i.e. a large set of (source, target)-pairs. We set up a parallel corpus by constructing (context, review)-pairs from the dataset. Next, we describe how we created our input context."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "out_of_scope",
+      "question": "How does using NMT ensure generated reviews stay on topic?",
+      "ground_truth": null,
+      "expected_passages": []
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "What kind of model do they use for detection?",
+      "ground_truth": "AdaBoost-based classifier",
+      "expected_passages": [
+        "We developed an AdaBoost-based classifier to detect our new fake reviews, consisting of 200 shallow decision trees (depth 2). The features we used are recorded in Table~\\ref{table:features_adaboost} (Appendix)."
+      ]
+    },
+    {
+      "id": "q4",
+      "category": "factual",
+      "question": "Does their detection tool work better than human detection?",
+      "ground_truth": "Yes",
+      "expected_passages": [
+        "We noticed some variation in the detection of different fake review categories. The respondents in our MTurk survey had most difficulties recognizing reviews of category $(b=0.3, \\lambda=-5)$, where true positive rate was $40.4\\%$, while the true negative rate of the real class was $62.7\\%$. The precision were $16\\%$ and $86\\%$, respectively. The class-averaged F-score is $47.6\\%$, which is close to random. Detailed classification reports are shown in Table~\\ref{table:MTurk_sub} in Appendix. Our MTurk-study shows that \\emph{our NMT-Fake reviews pose a significant threat to review systems}, since \\emph{ordinary native English-speakers have very big difficulties in separating real reviews from fake reviews}. We use the review category $(b=0.3, \\lambda=-5)$ for future user tests in this paper, since MTurk participants had most difficulties detecting these reviews. We refer to this category as NMT-Fake* in this paper.",
+        "Figure~\\ref{fig:adaboost_matrix_b_lambda} shows our AdaBoost classifier's class-averaged F-score at detecting different kind of fake reviews. The classifier is very effective in detecting reviews that humans have difficulties detecting. For example, the fake reviews MTurk users had most difficulty detecting ($b=0.3, \\lambda=-5$) are detected with an excellent 97\\% F-score."
+      ]
+    },
+    {
+      "id": "q5",
+      "category": "factual",
+      "question": "How many reviews in total (both generated and true) do they evaluate on Amazon Mechanical Turk?",
+      "ground_truth": "1,006 fake reviews and 994 real reviews",
+      "expected_passages": [
+        "We first investigated overall detection of any NMT-Fake reviews (1,006 fake reviews and 994 real reviews). We found that the participants had big difficulties in detecting our fake reviews. In average, the reviews were detected with class-averaged \\emph{F-score of only 56\\%}, with 53\\% F-score for fake review detection and 59\\% F-score for real review detection. The results are very close to \\emph{random detection}, where precision, recall and F-score would each be 50\\%. Results are recorded in Table~\\ref{table:MTurk_super}. Overall, the fake review generation is very successful, since human detection rate across categories is close to random."
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "What information is encoded as the input context for each generated review?",
+      "ground_truth": "A clear-text sequence of the review rating, restaurant name, city, state, and food tags (e.g. Japanese, Italian)",
+      "expected_passages": [
+        "Our context is a clear-text sequence of: the review rating, restaurant name, city, state and food tags (e.g. Japanese, Italian). We show that our technique generates review that stay on topic."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "What is the state-of-the-art model the authors compare against?",
+      "ground_truth": "A two-layer character-based LSTM (char-LSTM) model by Yao et al.",
+      "expected_passages": [
+        "Yao et al. presented the current state-of-the-art generative model for fake reviews. The model is trained over the Yelp Challenge dataset using a two-layer character-based LSTM model."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "What perplexity does the NMT model achieve compared to the char-LSTM model?",
+      "ground_truth": "Approximately 25, compared to approximately 90 for the char-LSTM model",
+      "expected_passages": [
+        "Our NMT model had a perplexity of approximately 25, while the model of Yao et al. had a perplexity of approximately 90."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "factual",
+      "question": "What framework and key training settings are used to train the NMT model?",
+      "ground_truth": "The openNMT-py framework, with the adam optimizer, a learning rate of 0.001, a maximum input/output sentence length of 50 tokens, trained for 8 epochs",
+      "expected_passages": [
+        "We use the training settings: adam optimizer with the suggested learning rate 0.001. For most parts, parameters are at their default values. Notably, the maximum sentence length of input and output is 50 tokens by default.",
+        "The model is trained for 8 epochs, i.e. over night. We leverage the framework openNMT-py to teach the our NMT model."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does the NMT approach stay on-topic where the char-LSTM approach fails?",
+      "ground_truth": "The char-LSTM generates reviews character-by-character with no target context, so it can stray off-topic (for example inserting references to an Italian restaurant in Baltimore into a review for a Japanese restaurant in Las Vegas). The NMT model instead encodes an explicit clear-text context (rating, restaurant name, city, state, food tags) that narrows the possible word choices and keeps the review on topic - which also gives it a much lower perplexity (about 25 vs 90).",
+      "expected_passages": [
+        "Due to the generation methodology, it cannot be easily targeted for a specific context (meaningful side information). Consequently, the review generation process may stray off-topic. For instance, when generating a review for a Japanese restaurant in Las Vegas, the review generation process may include references to an Italian restaurant in Baltimore.",
+        "First, NMT models allow the encoding of a relevant context for each review, which narrows down the possible choices of words that the model has to choose from."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "What techniques do the authors use to make greedy NMT output more diverse and less repetitive?",
+      "ground_truth": "They augment the decoder language model with three penalties: Bernoulli penalties that randomly penalize a random subset of vocabulary words (controlled by a probability b and a penalty lambda) to 'forget' words and force less typical sentences; a start penalty that decreases monotonically per token to avoid generic sentence starts; and a memory penalty added to words already generated to avoid excessive word reuse.",
+      "expected_passages": [
+        "We tried several forms of added randomness, and found that adding constant penalties to a random subset of the target words resulted in the most natural sentence flow. We call these penalties Bernoulli penalties, since the random variables are chosen as either 1 or 0 (on or off).",
+        "To avoid excessive reuse of words, we included a memory penalty for previously used words in each translation. Concretely, we add the penalty to each word that has been generated by the greedy search."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "How do the authors restore coherence and add human-like errors after diversifying the output?",
+      "ground_truth": "After the random penalties made sentences diverse but incoherent, they add grammar-based rules - applying only half penalties to common pronouns, conjunctions and punctuation - to restore fluency. They then add an obfuscation step that randomly reintroduces human-like typos and spelling mistakes (80 spelling rules scraped from the Oxford dictionary, plus edit-distance-based typos) so the text looks human-written.",
+      "expected_passages": [
+        "We built a list of common pronouns (e.g. I, them, our), conjunctions (e.g. and, thus, if), punctuation, and apply only half memory penalties for these words. We found that this change made the reviews more coherent.",
+        "We scraped a list of common English language spelling mistakes from Oxford dictionary and created 80 rules for randomly re-introducing spelling mistakes."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "What did the comparative user study with experienced participants find about detecting the two kinds of fake reviews?",
+      "ground_truth": "The experienced participants detected NMT-Fake* reviews far less often than char-LSTM reviews: average detection recall was 20% for NMT-Fake* versus 61% for LSTM (mean number detected 0.8 out of 4 versus 2.5 out of 4). The difference is statistically significant at the 99% level, and detection of NMT-Fake* was not statistically different from random guessing.",
+      "expected_passages": [
+        "NMT-Fake* reviews are significantly more difficult to detect for our experienced participants. In average, detection rate (recall) is 20% for NMT-Fake* reviews, compared to 61% for LSTM-based reviews.",
+        "We compared the detection rate of NMT-Fake* reviews to a random detector, and find that our participants detection rate of NMT-Fake* reviews is not statistically different from random predictions with 95% confidence level."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "synthesis",
+      "question": "Despite humans being fooled, what do the authors show about automatic detection of the fake reviews?",
+      "ground_truth": "Automatic detection remains feasible: an AdaBoost classifier of 200 depth-2 decision trees using word unigrams, part-of-speech and dependency n-grams, and readability features detects the very category humans found hardest (b=0.3, lambda=-5) with a 97% F-score.",
+      "expected_passages": [
+        "The classifier is very effective in detecting reviews that humans have difficulties detecting. For example, the fake reviews MTurk users had most difficulty detecting (b=0.3, lambda=-5) are detected with an excellent 97% F-score.",
+        "We thus conclude that while NMT-Fake reviews are difficult to detect for humans, they can be well detected with the right tools."
+      ],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What F-score do the generated fake hotel reviews achieve against human detectors?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "paper_id": "2003.07433",
+  "paper_title": "LAXARY: A Trustworthy Explainable Twitter Analysis Model for Post-Traumatic Stress Disorder Assessment",
+  "created_at": "2026-07-01T13:05:55.303517+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "out_of_scope",
+      "question": "Do they evaluate only on English datasets?",
+      "ground_truth": null,
+      "expected_passages": []
+    },
+    {
+      "id": "q2",
+      "category": "synthesis",
+      "question": "How is the intensity of the PTSD established?",
+      "ground_truth": "Given we have four intensity, No PTSD, Low Risk PTSD, Moderate Risk PTSD and High Risk PTSD with a score of 0, 1, 2 and 3 respectively, the estimated intensity is established as mean squared error.",
+      "expected_passages": [
+        "To provide an initial results, we take 50% of users' last week's (the week they responded of having PTSD) data to develop PTSD Linguistic dictionary and apply LAXARY framework to fill up surveys on rest of 50% dataset. The distribution of this training-test dataset segmentation followed a 50% distribution of PTSD and No PTSD from the original dataset. Our final survey based classification results showed an accuracy of 96% in detecting PTSD and mean squared error of 1.2 in estimating its intensity given we have four intensity, No PTSD, Low Risk PTSD, Moderate Risk PTSD and High Risk PTSD with a score of 0, 1, 2 and 3 respectively. Table TABREF29 shows the classification details of our experiment which provide the very good accuracy of our classification. To compare the outperformance of our method, we also implemented Coppersmith et. al. proposed method and achieved an 86% overall accuracy of detecting PTSD users following the same training-test dataset distribution. Fig FIGREF28 illustrates the comparisons between LAXARY and Coppersmith et. al. proposed method. Here we can see, the outperformance of our proposed method as well as the importance of $s-score$ estimation. We also illustrates the importance of $\\alpha -score$ and $S-score$ in Fig FIGREF30. Fig FIGREF30 illustrates that if we change the number of training samples (%), LAXARY models outperforms Coppersmith et. al. proposed model under any condition. In terms of intensity, Coppersmith et. al. totally fails to provide any idea however LAXARY provides extremely accurate measures of intensity estimation for PTSD sufferers (as shown in Fig FIGREF31) which can be explained simply providing LAXARY model filled out survey details. Table TABREF29 shows the details of accuracies of both PTSD detection and intensity estimation. Fig FIGREF32 shows the classification accuracy changes over the training sample sizes for each survey which shows that DOSPERT scale outperform other surveys. Fig FIGREF33 shows that if we take previous weeks (instead of only the week diagnosis of PTSD was taken), there are no significant patterns of PTSD detection."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "How is LIWC incorporated into this system?",
+      "ground_truth": "For each user, we calculate the proportion of tweets scored positively by each LIWC category.",
+      "expected_passages": [
+        "A threshold of 1 for $s-score$ divides scores into positive and negative classes. In a multi-class setting, the algorithm minimizes the cross entropy, selecting the model with the highest probability. For each user, we calculate the proportion of tweets scored positively by each LIWC category. These proportions are used as a feature vector in a loglinear regression model. Prior to training, we preprocess the text of each tweet: we replace all usernames with a single token (USER), lowercase all text, and remove extraneous whitespace. We also exclude any tweet that contained a URL, as these often pertain to events external to the user."
+      ]
+    },
+    {
+      "id": "q4",
+      "category": "factual",
+      "question": "How many twitter users are surveyed using the clinically validated survey?",
+      "ground_truth": "210",
+      "expected_passages": [
+        "We download 210 users' all twitter posts who are war veterans and clinically diagnosed with PTSD sufferers as well which resulted a total 12,385 tweets. Fig FIGREF16 shows each of the 210 veteran twitter users' monthly average tweets. We categorize these Tweets into two groups: Tweets related to work and Tweets not related to work. That is, only the Tweets that use a form of the word “work*” (e.g. work,worked, working, worker, etc.) or “job*” (e.g. job, jobs, jobless, etc.) are identified as work-related Tweets, with the remaining categorized as non-work-related Tweets. This categorization method increases the likelihood that most Tweets in the work group are indeed talking about work or job; for instance, “Back to work. Projects are firing back up and moving ahead now that baseball is done.” This categorization results in 456 work-related Tweets, about 5.4% of all Tweets written in English (and 75 unique Twitter users). To conduct weekly-level analysis, we consider three categorizations of Tweets (i.e. overall Tweets, work-related Tweets, and non work-related Tweets) on a daily basis, and create a text file for each week for each group."
+      ]
+    },
+    {
+      "id": "q5",
+      "category": "factual",
+      "question": "Which clinically validated survey tools are used?",
+      "ground_truth": "DOSPERT, BSSS and VIAS",
+      "expected_passages": [
+        "We use an automated regular expression based searching to find potential veterans with PTSD in twitter, and then refine the list manually. First, we select different keywords to search twitter users of different categories. For example, to search self-claimed diagnosed PTSD sufferers, we select keywords related to PTSD for example, post trauma, post traumatic disorder, PTSD etc. We use a regular expression to search for statements where the user self-identifies as being diagnosed with PTSD. For example, Table TABREF27 shows a self-identified tweet posts. To search veterans, we mostly visit to different twitter accounts of veterans organizations such as \"MA Women Veterans @WomenVeterans\", \"Illinois Veterans @ILVetsAffairs\", \"Veterans Benefits @VAVetBenefits\" etc. We define an inclusion criteria as follows: one twitter user will be part of this study if he/she describes himself/herself as a veteran in the introduction and have at least 25 tweets in last week. After choosing the initial twitter users, we search for self-identified PTSD sufferers who claim to be diagnosed with PTSD in their twitter posts. We find 685 matching tweets which are manually reviewed to determine if they indicate a genuine statement of a diagnosis for PTSD. Next, we select the username that authored each of these tweets and retrieve last week's tweets via the Twitter API. We then filtered out users with less than 25 tweets and those whose tweets were not at least 75% in English (measured using an automated language ID system.) This filtering left us with 305 users as positive examples. We repeated this process for a group of randomly selected users. We randomly selected 3,000 twitter users who are veterans as per their introduction and have at least 25 tweets in last one week. After filtering (as above) in total 2,423 users remain, whose tweets are used as negative examples developing a 2,728 user's entire weeks' twitter posts where 305 users are self-claimed PTSD sufferers. We distributed Dryhootch chosen surveys among 1,200 users (305 users are self claimed PTSD sufferers and rest of them are randomly chosen from previous 2,423 users) and received 210 successful responses. Among these responses, 92 users were diagnosed as PTSD by any of the three surveys and rest of the 118 users are diagnosed with NO PTSD. Among the clinically diagnosed PTSD sufferers, 17 of them were not self-identified before. However, 7 of the self-identified PTSD sufferers are assessed with no PTSD by PTSD assessment tools. The response rates of PTSD and NO PTSD users are 27% and 12%. In summary, we have collected one week of tweets from 2,728 veterans where 305 users claimed to have diagnosed with PTSD. After distributing Dryhootch surveys, we have a dataset of 210 veteran twitter users among them 92 users are assessed with PTSD and 118 users are diagnosed with no PTSD using clinically validated surveys. The severity of the PTSD are estimated as Non-existent, light, moderate and high PTSD based on how many surveys support the existence of PTSD among the participants according to dryhootch manual,.",
+        "There are many clinically validated PTSD assessment tools that are being used both to detect the prevalence of PTSD and its intensity among sufferers. Among all of the tools, the most popular and well accepted one is Domain-Specific Risk-Taking (DOSPERT) Scale. This is a psychometric scale that assesses risk taking in five content domains: financial decisions (separately for investing versus gambling), health/safety, recreational, ethical, and social decisions. Respondents rate the likelihood that they would engage in domain-specific risky activities (Part I). An optional Part II assesses respondents' perceptions of the magnitude of the risks and expected benefits of the activities judged in Part I. There are more scales that are used in risky behavior analysis of individual's daily activities such as, The Berlin Social Support Scales (BSSS) and Values In Action Scale (VIAS). Dryhootch America,, a veteran peer support community organization, chooses 5, 6 and 5 questions respectively from the above mentioned survey systems to assess the PTSD among war veterans and consider rest of them as irrelevant to PTSD. The details of dryhootch chosen survey scale are stated in Table TABREF13. Table!TABREF14 shows a sample DOSPERT scale demographic chosen by dryhootch. The threshold (in Table TABREF13) is used to calculate the risky behavior limits. For example, if one individual's weekly DOSPERT score goes over 28, he is in critical situation in terms of risk taking symptoms of PTSD. Dryhootch defines the intensity of PTSD into four categories based on the weekly survey results of all three clinical survey tools (DOSPERT, BSSS and VIAS)"
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "What does the acronym LAXARY stand for?",
+      "ground_truth": "Linguistic Analysis-based Exaplainable Inquiry",
+      "expected_passages": [
+        "we propose, LAXARY (Linguistic Analysis-based Exaplainable Inquiry) model, a novel Explainable Artificial Intelligent (XAI) model to detect and represent PTSD assessment of twitter users using a modified Linguistic Inquiry and Word Count (LIWC) analysis."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "What accuracy does LAXARY achieve in detecting PTSD, and what mean squared error in estimating its intensity?",
+      "ground_truth": "Approximately 96% accuracy in identifying PTSD and about 1.2 mean squared error in estimating its intensity",
+      "expected_passages": [
+        "Our results show that, given normal weekly messages posted in twitter, LAXARY can provide very high accuracy in filling up surveys towards identifying PTSD ($\\approx 96\\%$) and its intensity ($\\approx 1.2$ mean squared error)."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "What overall PTSD-detection accuracy does the baseline Coppersmith et al. method achieve?",
+      "ground_truth": "86% overall accuracy (compared with LAXARY's 96%)",
+      "expected_passages": [
+        "To compare the outperformance of our method, we also implemented Coppersmith et. al. proposed method and achieved an 86% overall accuracy of detecting PTSD users following the same training-test dataset distribution."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "factual",
+      "question": "How many total tweets were collected from the 210 clinically diagnosed users?",
+      "ground_truth": "12,385 tweets",
+      "expected_passages": [
+        "We download 210 users' all twitter posts who are war veterans and clinically diagnosed with PTSD sufferers as well which resulted a total 12,385 tweets."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "factual",
+      "question": "Which three classifiers make up the baseline (Coppersmith) PTSD detection model?",
+      "ground_truth": "A unigram language model (ULM), a character n-gram language model (CLM), and a LIWC-based categorical model",
+      "expected_passages": [
+        "We utilize our positive and negative PTSD data (+92,-118) to train three classifiers: (i) unigram language model (ULM) examining individual whole words, (ii) character n-gram language model (CLM), and (iii) LIWC based categorical models above all of the prior ones."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "What central research question does the paper set out to answer?",
+      "ground_truth": "Whether twitter posts can provide enough information to fill up the clinical PTSD assessment surveys that clinicians have traditionally trusted - i.e. whether social media analysis can be used to complete clinically validated PTSD surveys for war veterans.",
+      "expected_passages": [
+        "we explore the big question, can twitter posts provide enough information to fill up clinical PTSD assessment surveys that have been traditionally trusted by clinicians?",
+        "Given clinicians have trust on clinically validated PTSD assessment surveys, can we fill out PTSD assessment surveys using twitter posts analysis of war-veterans?"
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "Why do existing twitter-based PTSD methods fail to gain clinicians' trust, and how does LAXARY address this?",
+      "ground_truth": "Prior methods rely on blackbox machine learning or language-model sentiment extraction, which clinicians cannot trust because they lack explainability. LAXARY instead builds category sets from clinically validated survey tools and fills out those trusted surveys, producing a clinically interpretable and trustworthy result.",
+      "expected_passages": [
+        "However, all of the proposed methods relied on either blackbox machine learning methods or language models based sentiments extraction of posted texts which failed to obtain acceptability and trust of clinicians due to the lack of their explainability.",
+        "In this paper, we develop LAXARY model where first we start investigating clinically validated survey tools which are trustworthy methods of PTSD assessment among clinicians, build our category sets based on the survey questions and use these as dictionary words in terms of first person singular number pronouns aspect for next level LIWC algorithm."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does the model define the different intensity levels of PTSD?",
+      "ground_truth": "Intensity is defined by how many of the three clinical survey tools (DOSPERT, BSSS, VIAS) a veteran's weekly scores exceed: above threshold for all three is High risk, above threshold for any two is Moderate risk, above threshold for any one is Low risk, and below threshold for all three is No PTSD.",
+      "expected_passages": [
+        "High risk PTSD: If one individual veteran's weekly PTSD assessment scores go above the threshold for all three PTSD assessment tools i.e. DOSPERT, BSSS and VIAS, then he/she is in high risk situation which needs immediate mental support to avoid catastrophic effect of individual's health or surrounding people's life.",
+        "No PTSD: If one individual veteran's weekly PTSD assessment scores go below the threshold for all three PTSD assessment tools, then he/she has no PTSD."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "synthesis",
+      "question": "How is the reliability of the PTSD Linguistic Dictionary evaluated, and what were the results?",
+      "ground_truth": "Reliability is evaluated using Cronbach's alpha (internal consistency). Running the dictionary over the 210 users' tweets produced a 23,562 response matrix, which yielded a reliability of .89 with the uncorrected (percentage) method and .96 with the binary (present-or-not) method, confirming high reliability.",
+      "expected_passages": [
+        "In psychometrics, reliability is most commonly evaluated by Cronbach's alpha, which assesses internal consistency based on inter-correlations and the number of measured items.",
+        "We assess reliability based on our selected 210 users' Tweets which further generated a 23,562 response matrix after running the PTSD Linguistic Dictionary for each user. The response matrix yields reliability of.89 based on the uncorrected method, and.96 based on the binary method, which confirm the high reliability of our PTSD Dictionary created PTSD survey based categories."
+      ],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What accuracy does LAXARY achieve when detecting depression or bipolar disorder?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

@@ -199,3 +199,71 @@ export interface JobProgressEvent {
   current_question: string | null
   current_pipeline: string | null
 }
+
+
+export interface CorpusPaper {
+  paper_id: string
+  filename: string
+  word_count: number
+  char_count: number
+  pages: number
+  n_chunks: number
+  added_at: string
+}
+
+export interface CorpusListResponse {
+  papers: CorpusPaper[]
+  total_papers: number
+  total_word_count: number
+}
+
+export interface SweepPipelineMeans {
+  n_rows: number
+  n_errors: number
+  faithfulness_mean: number | null
+  answer_relevancy_mean: number | null
+  context_precision_mean: number | null
+  context_recall_mean: number | null
+  latency_ms_mean: number | null
+}
+
+export interface SweepPoint {
+  n_distractors: number
+  n_papers: number
+  paper_ids: string[]
+  cumulative_word_count: number
+  by_pipeline: Record<string, SweepPipelineMeans>
+}
+
+export interface SweepResult {
+  sweep_id: string
+  target_paper_id: string
+  target_paper_title: string
+  pipeline_ids: string[]
+  created_at: string
+  distractor_counts: number[]
+  n_questions: number
+  total_units: number
+  total_errors: number
+  points: SweepPoint[]
+}
+
+export interface SweepSummary {
+  sweep_id: string
+  target_paper_id: string
+  target_paper_title: string
+  pipeline_ids: string[]
+  created_at: string
+  n_questions: number
+  n_points: number
+  total_units: number
+  total_errors: number
+  filename: string
+}
+
+export interface SweepRequest {
+  target_paper_id: string
+  pipeline_ids?: string[] | null
+  distractor_counts?: number[] | null
+  n_points?: number
+}

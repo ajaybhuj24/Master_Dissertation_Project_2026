@@ -1,0 +1,143 @@
+{
+  "paper_id": "1705.09665",
+  "paper_title": "Community Identity and User Engagement in a Multi-Community Landscape",
+  "created_at": "2026-07-01T13:05:55.260021+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "Do they report results only on English data?",
+      "ground_truth": "No",
+      "expected_passages": [
+        "Our full dataset consists of all subreddits on Reddit from January 2013 to December 2014, for which there are at least 500 words in the vocabulary used to estimate our measures, in at least 4 months of the subreddit's history. We compute our measures over the comments written by users in a community in time windows of months, for each sufficiently active month, and manually remove communities where the bulk of the contributions are in a foreign language. This results in 283 communities ( INLINEFORM0), for a total of 4,872 community-months ( INLINEFORM1)."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "synthesis",
+      "question": "How do the various social phenomena examined manifest in different types of communities?",
+      "ground_truth": "Dynamic communities have substantially higher rates of monthly user retention than more stable communities. More distinctive communities exhibit moderately higher monthly retention rates than more generic communities. There is also a strong positive relationship between a community's dynamicity and the average number of months that a user will stay in that community - a short-term trend observed for monthly retention translates into longer-term engagement and suggests that long-term user retention might be strongly driven by the extent to which a community continually provides novel content.",
+      "expected_passages": [
+        "We find that dynamic communities, such as Seahawks or starcraft, have substantially higher rates of monthly user retention than more stable communities (Spearman's INLINEFORM0 = 0.70, INLINEFORM1 0.001, computed with community points averaged over months; Figure FIGREF11.A, left). Similarly, more distinctive communities, like Cooking and Naruto, exhibit moderately higher monthly retention rates than more generic communities (Spearman's INLINEFORM2 = 0.33, INLINEFORM3 0.001; Figure FIGREF11.A, right).",
+        "As with monthly retention, we find a strong positive relationship between a community's dynamicity and the average number of months that a user will stay in that community (Spearman's INLINEFORM0 = 0.41, INLINEFORM1 0.001, computed over all community points; Figure FIGREF11.B, left). This verifies that the short-term trend observed for monthly retention translates into longer-term engagement and suggests that long-term user retention might be strongly driven by the extent to which a community continually provides novel content. Interestingly, there is no significant relationship between distinctiveness and long-term engagement (Spearman's INLINEFORM2 = 0.03, INLINEFORM3 0.77; Figure FIGREF11.B, right). Thus, while highly distinctive communities like RandomActsOfMakeup may generate focused commitment from users over a short period of time, such communities are unlikely to retain long-term users unless they also have sufficiently dynamic content."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "What patterns do they observe about how user engagement varies with the characteristics of a community?",
+      "ground_truth": "communities that are characterized by specialized, constantly-updating content have higher user retention rates, but also exhibit larger linguistic gaps that separate newcomers from established members | within distinctive communities, established users have an increased propensity to engage with the community's specialized content, compared to newcomers",
+      "expected_passages": [
+        "Engagement and community identity. We apply our framework to understand how two important aspects of user engagement in a community—the community's propensity to retain its users (Section SECREF3), and its permeability to new members (Section SECREF4)—vary according to the type of collective identity it fosters. We find that communities that are characterized by specialized, constantly-updating content have higher user retention rates, but also exhibit larger linguistic gaps that separate newcomers from established members.",
+        "More closely examining factors that could contribute to this linguistic gap, we find that especially within distinctive communities, established users have an increased propensity to engage with the community's specialized content, compared to newcomers (Section SECREF5). Interestingly, while established members of distinctive communities more avidly respond to temporal updates than newcomers, in more generic communities it is the outsiders who engage more with volatile content, perhaps suggesting that such content may serve as an entry-point to the community (but not necessarily a reason to stay). Such insights into the relation between collective identity and user engagement can be informative to community maintainers seeking to better understand growth patterns within their online communities."
+      ]
+    },
+    {
+      "id": "q4",
+      "category": "synthesis",
+      "question": "How did the select the 300 Reddit communities for comparison?",
+      "ground_truth": "They selected all the subreddits from January 2013 to December 2014 with at least 500 words in the vocabulary and at least 4 months of the subreddit's history. They also removed communities with the bulk of the contributions are in foreign language.",
+      "expected_passages": [
+        "Our full dataset consists of all subreddits on Reddit from January 2013 to December 2014, for which there are at least 500 words in the vocabulary used to estimate our measures, in at least 4 months of the subreddit's history. We compute our measures over the comments written by users in a community in time windows of months, for each sufficiently active month, and manually remove communities where the bulk of the contributions are in a foreign language. This results in 283 communities ( INLINEFORM0), for a total of 4,872 community-months ( INLINEFORM1)."
+      ]
+    },
+    {
+      "id": "q5",
+      "category": "factual",
+      "question": "How do the authors measure how temporally dynamic a community is?",
+      "ground_truth": "the average volatility of all utterances",
+      "expected_passages": [
+        "Dynamicity. A highly dynamic community constantly shifts interests from one time window to another, and these temporal variations are reflected in its use of volatile language. Formally, we define the dynamicity of a community INLINEFORM0 as the average volatility of all utterances in INLINEFORM1. We refer to a community whose language is relatively consistent throughout time as being stable."
+      ]
+    },
+    {
+      "id": "q6",
+      "category": "factual",
+      "question": "How do the authors measure how distinctive a community is?",
+      "ground_truth": "the average specificity of all utterances",
+      "expected_passages": [
+        "Distinctiveness. A community with a very distinctive identity will tend to have distinctive interests, expressed through specialized language. Formally, we define the distinctiveness of a community INLINEFORM0 as the average specificity of all utterances in INLINEFORM1. We refer to a community with a less distinctive identity as being generic."
+      ]
+    },
+    {
+      "id": "q7",
+      "category": "factual",
+      "question": "How many communities make up the final dataset used in the study?",
+      "ground_truth": "283 communities (4,872 community-months)",
+      "expected_passages": [
+        "This results in 283 communities ( INLINEFORM0), for a total of 4,872 community-months ( INLINEFORM1)."
+      ]
+    },
+    {
+      "id": "q8",
+      "category": "factual",
+      "question": "What information-theoretic measure underlies the word-level specificity and volatility measures?",
+      "ground_truth": "Pointwise mutual information (PMI)",
+      "expected_passages": [
+        "Our particular framework makes this comparison by way of pointwise mutual information (PMI)."
+      ]
+    },
+    {
+      "id": "q9",
+      "category": "factual",
+      "question": "Which part of speech do the authors restrict their linguistic measures to when applying the typology to Reddit?",
+      "ground_truth": "Nouns",
+      "expected_passages": [
+        "In our subsequent analyses, we will only look at these measures computed over the nouns used in comments. In principle, our framework can be applied to any choice of vocabulary."
+      ]
+    },
+    {
+      "id": "q10",
+      "category": "factual",
+      "question": "How do the authors prevent a few highly active users from dominating the word-frequency estimates?",
+      "ground_truth": "They count each unique word once per user, ignoring successive uses of the same word by the same user",
+      "expected_passages": [
+        "Next, in order to prevent a few highly active users from dominating our frequency estimates, we count each unique word once per user, ignoring successive uses of the same word by the same user. This ensures that our word-level characterizations are not skewed by a small subset of highly active contributors."
+      ]
+    },
+    {
+      "id": "q11",
+      "category": "synthesis",
+      "question": "How does the size of the acculturation gap vary with a community's distinctiveness and dynamicity?",
+      "ground_truth": "Highly distinctive communities have far higher acculturation gaps. Dynamicity has a non-linear relationship - both relatively stable and very dynamic communities have a higher linguistic entry barrier - so the gap is largest in stable, distinctive communities (e.g. Cooking) and also large in extremely dynamic ones (e.g. Seahawks), whereas generic, moderately dynamic communities (e.g. IAmA) give outsiders little disadvantage.",
+      "expected_passages": [
+        "Highly distinctive communities have far higher acculturation gaps, while dynamicity exhibits a non-linear relationship: relatively stable communities have a higher linguistic `entry barrier', as do very dynamic ones.",
+        "In contrast, the acculturation gap is large in stable, distinctive communities like Cooking that have consistent community-specific language. The gap is also large in extremely dynamic communities like Seahawks, which perhaps require more attention or interest on the part of active users to keep up-to-date with recent trends in content."
+      ]
+    },
+    {
+      "id": "q12",
+      "category": "synthesis",
+      "question": "What is the acculturation gap and how do the authors measure it?",
+      "ground_truth": "The acculturation gap compares the extent to which engaged (active) versus non-engaged (outsider) users employ community-specific language. It is measured by building 'snapshot language models' (SLMs) for each community and computing the cross-entropy of an utterance relative to the SLM, then taking the relative difference between the cross-entropy of active users' comments and that of outsiders' singleton comments.",
+      "expected_passages": [
+        "We measure this phenomenon using what we call the acculturation gap, which compares the extent to which engaged vs. non-engaged users employ community-specific language.",
+        "build “snapshot language models” (SLMs) for each community, which capture the linguistic state of a community at one point of time. Using these language models we can capture how linguistically close a particular utterance is to the community by measuring the cross-entropy of this utterance relative to the SLM"
+      ]
+    },
+    {
+      "id": "q13",
+      "category": "synthesis",
+      "question": "Does the identity-based typology add predictive value for user retention beyond standard community-size and activity features?",
+      "ground_truth": "Yes. On its own the identity-based typology (distinctiveness and dynamicity) predicts monthly retention about as well as a baseline using community size and activity level - the difference between the two is not statistically significant - but combining features from both models yields a large and statistically significant improvement over each model alone, so the typology carries predictive information beyond standard activity-based features.",
+      "expected_passages": [
+        "Importantly, we find that in the task of predicting community-level user retention our identity-based typology holds additional predictive value on top of strong baseline features based on community-size (# contributing users) and activity levels (mean # contributions per user), which are commonly used for churn prediction.",
+        "However, combining features from both models results in a large and statistically significant improvement over each independent model ( INLINEFORM7, INLINEFORM8, INLINEFORM9 Bonferroni-corrected pairwise Wilcoxon tests). These results indicate that our typology can explain variance in community-level retention rates, and provides information beyond what is present in standard activity-based features."
+      ]
+    },
+    {
+      "id": "q14",
+      "category": "out_of_scope",
+      "question": "What deep neural network architecture do the authors train to classify a community's identity?",
+      "ground_truth": null,
+      "expected_passages": []
+    },
+    {
+      "id": "q15",
+      "category": "out_of_scope",
+      "question": "What are the age and gender demographics of the Reddit users analysed in the study?",
+      "ground_truth": null,
+      "expected_passages": []
+    }
+  ]
+}

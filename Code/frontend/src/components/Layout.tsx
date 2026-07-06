@@ -11,6 +11,7 @@ const navItems = [
   { to: "/interactive", label: "Interactive" },
   { to: "/batch", label: "Batch" },
   { to: "/results", label: "Results" },
+  { to: "/corpus", label: "Corpus" },
 ]
 
 function BackendBanner() {

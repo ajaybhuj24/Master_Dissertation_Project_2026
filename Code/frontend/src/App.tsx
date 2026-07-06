@@ -5,6 +5,7 @@ import { UploadPage } from "@/pages/UploadPage"
 import { InteractivePage } from "@/pages/InteractivePage"
 import { BatchPage } from "@/pages/BatchPage"
 import { ResultsPage } from "@/pages/ResultsPage"
+import { CorpusPage } from "@/pages/CorpusPage"
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="/interactive" element={<InteractivePage />} />
         <Route path="/batch" element={<BatchPage />} />
         <Route path="/results" element={<ResultsPage />} />
+        <Route path="/corpus" element={<CorpusPage />} />
         <Route path="*" element={<Navigate to="/interactive" replace />} />
       </Route>
     </Routes>

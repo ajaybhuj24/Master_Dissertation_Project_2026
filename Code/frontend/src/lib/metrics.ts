@@ -29,6 +29,29 @@ export function shortPipelineName(id: string, fallback: string): string {
   return SHORT_PIPELINE_NAME[id] ?? fallback
 }
 
+export const PIPELINE_COLORS: Record<string, string> = {
+  naive: "#0072b2",
+  mmr: "#009e73",
+  rerank: "#e69f00",
+  crag: "#cc79a7",
+  semantic_chunking: "#56b4e9",
+  multi_query: "#9467bd",
+  compression: "#d55e00",
+  selfcheck: "#8c564b",
+}
+
+const FALLBACK_PIPELINE_COLORS = [
+  "#0072b2", "#009e73", "#e69f00", "#cc79a7",
+  "#56b4e9", "#9467bd", "#d55e00", "#8c564b",
+]
+
+export function pipelineColor(id: string, index = 0): string {
+  return (
+    PIPELINE_COLORS[id] ??
+    FALLBACK_PIPELINE_COLORS[index % FALLBACK_PIPELINE_COLORS.length]
+  )
+}
+
 function mean(xs: number[]): number | null {
   return xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : null
 }

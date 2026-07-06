@@ -1,0 +1,142 @@
+{
+  "paper_id": "1909.08402",
+  "paper_title": "Enriching BERT with Knowledge Graph Embeddings for Document Classification",
+  "created_at": "2026-07-01T13:05:55.282292+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "By how much do they outperform standard BERT?",
+      "ground_truth": "up to four percentage points in accuracy",
+      "expected_passages": [
+        "In this paper we presented a way of enriching BERT with knowledge graph embeddings and additional metadata. Exploiting the linked knowledge that underlies Wikidata improves performance for our task of document classification. With this approach we improve the standard BERT models by up to four percentage points in accuracy. Furthermore, our results reveal that with task-specific information such as author names and publication metadata improves the classification task essentially compared a text-only approach. Especially, when metadata feature engineering is less trivial, adding additional task-specific information from an external knowledge source such as Wikidata can help significantly. The source code of our experiments and the trained models are publicly available."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "factual",
+      "question": "What dataset do they use?",
+      "ground_truth": "2019 GermEval shared task on hierarchical text classification",
+      "expected_passages": [
+        "In this paper, we work with the dataset of the 2019 GermEval shared task on hierarchical text classification and use the predefined set of labels to evaluate our approach to this classification task."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "How do they combine text representations with the knowledge graph embeddings?",
+      "ground_truth": "all three representations are concatenated and passed into a MLP",
+      "expected_passages": [
+        "The BERT architecture uses 12 hidden layers, each layer consists of 768 units. To derive contextualized representations from textual features, the book title and blurb are concatenated and then fed through BERT. To minimize the GPU memory consumption, we limit the input length to 300 tokens (which is shorter than BERT's hard-coded limit of 512 tokens). Only 0.25% of blurbs in the training set consist of more than 300 words, so this cut-off can be expected to have minor impact.",
+        "The non-text features are generated in a separate preprocessing step. The metadata features are represented as a ten-dimensional vector (two dimensions for gender, see Section SECREF10). Author embedding vectors have a length of 200 (see Section SECREF22). In the next step, all three representations are concatenated and passed into a MLP with two layers, 1024 units each and ReLu activation function. During training, the MLP is supposed to learn a non-linear combination of its input representations. Finally, the output layer does the actual classification. In the SoftMax output layer each unit corresponds to a class label. For sub-task A the output dimension is eight. We treat sub-task B as a standard multi-label classification problem, i. e., we neglect any hierarchical information. Accordingly, the output layer for sub-task B has 343 units. When the value of an output unit is above a given threshold the corresponding label is predicted, whereby thresholds are defined separately for each class. The optimum was found by varying the threshold in steps of $0.1$ in the interval from 0 to 1."
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "How many books are in the dataset, and in what language?",
+      "ground_truth": "20,784 German books",
+      "expected_passages": [
+        "Our experiments are modelled on the GermEval 2019 shared task and deal with the classification of books. The dataset contains 20,784 German books."
+      ],
+      "id": "q4"
+    },
+    {
+      "category": "factual",
+      "question": "What F1-scores does the best setup achieve on sub-task A and sub-task B?",
+      "ground_truth": "F1-score of 87.20 on sub-task A and 64.70 on sub-task B",
+      "expected_passages": [
+        "With an F1-score of 87.20 for task A and 64.70 for task B, the setup using BERT-German with metadata features and author embeddings (1) outperforms all other setups."
+      ],
+      "id": "q5"
+    },
+    {
+      "category": "factual",
+      "question": "How many labels are there in sub-task A versus sub-task B?",
+      "ground_truth": "Eight top-level labels for sub-task A; 343 labels (second and third level) for sub-task B",
+      "expected_passages": [
+        "Sub-task A is to classify a book, using the information provided as explained above, according to the top-level of the taxonomy, selecting one or more of the eight labels. Sub-task B is to classify a book according to the detailed taxonomy, specifying labels on the second and third level of the taxonomy as well (in total 343 labels)."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "What knowledge graph and embedding method are used for the author embeddings?",
+      "ground_truth": "Embeddings based on PyTorch BigGraph, trained on the full Wikidata graph",
+      "expected_passages": [
+        "We rely on pre-trained embeddings based on PyTorch BigGraph. The graph model is trained on the full Wikidata graph, using a translation operator to represent relations."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "What training hyperparameters are used?",
+      "ground_truth": "Batch size 16, dropout probability 0.1, learning rate 2e-5 (Adam), and 5 training epochs",
+      "expected_passages": [
+        "Training is performed with batch size 16, dropout probability 0.1, learning rate 2e-5 (Adam optimizer) and 5 training epochs. These hyperparameters are the ones proposed by for BERT fine-tuning."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is the main contribution of the paper?",
+      "ground_truth": "To enrich BERT with knowledge-graph embeddings (encoding author information from Wikidata) plus additional book metadata for document (book) classification. Being a transfer-learning approach, it brings in external knowledge for a setting with relatively little training data, and it achieves considerably better results than standard BERT.",
+      "expected_passages": [
+        "More precisely, we enrich BERT, as our pre-trained text representation model, with knowledge graph embeddings that are based on Wikidata, add metadata provided by the shared task organisers (title, author(s), publishing date, etc.) and collect additional information on authors for this particular document classification task."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "synthesis",
+      "question": "How is the model architecture structured to combine text and non-text features?",
+      "ground_truth": "The book title and blurb are concatenated and passed through BERT (12 layers, 768 units) to get a contextualized text representation. The metadata features form a 10-dimensional vector and the author embedding is 200-dimensional. All three representations are concatenated and passed into a multilayer perceptron (two layers of 1024 units with ReLU), whose softmax output layer has 8 units for sub-task A and 343 units for sub-task B.",
+      "expected_passages": [
+        "The BERT architecture uses 12 hidden layers, each layer consists of 768 units. To derive contextualized representations from textual features, the book title and blurb are concatenated and then fed through BERT.",
+        "The metadata features are represented as a ten-dimensional vector (two dimensions for gender, see Section SECREF10). Author embedding vectors have a length of 200 (see Section SECREF22). In the next step, all three representations are concatenated and passed into a MLP with two layers, 1024 units each and ReLu activation function."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "How are the author embeddings obtained, and why are they expected to help classification?",
+      "ground_truth": "They are graph embeddings from the Wikidata knowledge graph (via PyTorch BigGraph): each author name is matched to a Wikipedia article and its Wikidata item, and the distance between author embeddings reflects topical similarity between authors (embeddings were retrieved for 72% of books). They should help because authors tend to keep a specific style of writing and specialize in a particular genre.",
+      "expected_passages": [
+        "Authors often adhere to their specific style of writing and are likely to specialize in a specific genre.",
+        "Graph embedding methods create dense vector representations for each node such that distances between these vectors predict the occurrence of edges in the graph. The node distance can be interpreted as topical similarity between the corresponding authors."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "What are the main results and findings of the experiments?",
+      "ground_truth": "The best setup - BERT-German with metadata features and author embeddings - outperforms all others (F1 87.20 on sub-task A and 64.70 on sub-task B). Deep transformer models like BERT considerably outperform the TF-IDF Logistic-Regression baseline, and the German-only BERT outperforms multilingual BERT; adding metadata and author embeddings improves both sub-tasks.",
+      "expected_passages": [
+        "We are able to demonstrate that incorporating metadata features and author embeddings leads to better results for both sub-tasks. With an F1-score of 87.20 for task A and 64.70 for task B, the setup using BERT-German with metadata features and author embeddings (1) outperforms all other setups.",
+        "our evaluation shows that deep transformer models like BERT considerably outperform the classical TF-IDF approach, also when the input is the same (using the title and blurb only)."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "Why is precision much higher than recall on sub-task B?",
+      "ground_truth": "Because many of the 343 sub-task-B labels have very few training instances: when the classifier does predict a label it is usually correct (high precision), but many low-frequency labels are never predicted at all (low recall).",
+      "expected_passages": [
+        "In all setups, precision is considerably higher than recall. We expect this to be down to the fact that for some of the 343 labels in sub-task B, there are very few instances. This means that if the classifier predicts a certain label, it is likely to be correct (i. e., high precision), but for many instances having low-frequency labels, this low-frequency label is never predicted (i. e., low recall)."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What accuracy does the model achieve on English book classification?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What is the model's F1-score when using the full book text instead of the blurb?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

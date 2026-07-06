@@ -1,0 +1,142 @@
+{
+  "paper_id": "1810.04528",
+  "paper_title": "Is there Gender bias and stereotype in Portuguese Word Embeddings?",
+  "created_at": "2026-07-01T13:05:55.268129+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "out_of_scope",
+      "question": "Does this paper target European or Brazilian Portuguese?",
+      "ground_truth": null,
+      "expected_passages": []
+    },
+    {
+      "id": "q2",
+      "category": "factual",
+      "question": "What were the word embeddings trained on?",
+      "ground_truth": "large Portuguese corpus",
+      "expected_passages": [
+        "In, several word embedding models trained in a large Portuguese corpus are evaluated. Within the Word2Vec model, two training strategies were used. In the first, namely Skip-Gram, the model is given the word and attempts to predict its neighboring words. The second, Continuous Bag-of-Words (CBOW), the model is given the sequence of words without the middle one and attempts to predict this omitted word. The latter was chosen for application in the present proposal.",
+        "Using the word2vec model available in a public repository, the proposal involves the analysis of the most similar analogies generated before and after the application of the. The work is focused on the analysis of gender bias associated with professions in word embeddings. So therefore into the evaluation of the accuracy of the associations generated, aiming at achieving results as good as possible without prejudicing the evaluation metrics."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "Which word embeddings are analysed?",
+      "ground_truth": "Continuous Bag-of-Words (CBOW)",
+      "expected_passages": [
+        "In, several word embedding models trained in a large Portuguese corpus are evaluated. Within the Word2Vec model, two training strategies were used. In the first, namely Skip-Gram, the model is given the word and attempts to predict its neighboring words. The second, Continuous Bag-of-Words (CBOW), the model is given the sequence of words without the middle one and attempts to predict this omitted word. The latter was chosen for application in the present proposal."
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "How many words does the word2vec model contain, and what is its vector dimension?",
+      "ground_truth": "934,966 words, with a vector dimension of 300",
+      "expected_passages": [
+        "For these experiments, we use a model containing 934966 words of dimension 300 per vector representation."
+      ],
+      "id": "q4"
+    },
+    {
+      "category": "factual",
+      "question": "How many profession labels are used as the similarity-comparison parameter?",
+      "ground_truth": "Fifty (50) profession labels for female and male",
+      "expected_passages": [
+        "To realize the experiments, a list containing fifty professions labels for female and male was used as the parameter of similarity comparison."
+      ],
+      "id": "q5"
+    },
+    {
+      "category": "factual",
+      "question": "What Python library is used to evaluate the analogies?",
+      "ground_truth": "gensim",
+      "expected_passages": [
+        "Using the python library gensim, we evaluate the extreme analogies generated when comparing vectors like: INLINEFORM0, where INLINEFORM1 represents the item from professions list and INLINEFORM2 the expected association."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "What are the two Word2Vec training strategies described, and which one does this work use?",
+      "ground_truth": "Skip-Gram and Continuous Bag-of-Words (CBOW); CBOW is used",
+      "expected_passages": [
+        "Within the Word2Vec model, two training strategies were used. In the first, namely Skip-Gram, the model is given the word and attempts to predict its neighboring words. The second, Continuous Bag-of-Words (CBOW), the model is given the sequence of words without the middle one and attempts to predict this omitted word. The latter was chosen for application in the present proposal."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "Which prior English-language study is this Portuguese analysis analogous to?",
+      "ground_truth": "A method that reduces gender bias in English word embeddings collected from Google News, using a geometric analysis of the gender direction of the bias",
+      "expected_passages": [
+        "In, the authors propose a method to hardly reduce bias in English word embeddings collected from Google News. Using word2vec, they performed a geometric analysis of gender direction of the bias contained in the data. Using this property with the generation of gender-neutral analogies, a methodology was provided for modifying an embedding to remove gender stereotypes."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "factual",
+      "question": "What fairness-aware ML tool is discussed in the related work, and what two methods does it rely on?",
+      "ground_truth": "themis-ml, which relies on Reject Option Classification and Discrimination-Aware Ensemble Classification to post-process predictions",
+      "expected_passages": [
+        "Themis-ml implements two methods for training fairness-aware models. The tool relies on two methods to make agnostic model type predictions: Reject Option Classification and Discrimination-Aware Ensemble Classification, these procedures being used to post-process predictions in a way that reduces potentially discriminatory predictions."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is the objective of this paper?",
+      "ground_truth": "To analyze the presence of gender bias associated with professions in Portuguese word embeddings - quantifying the bias in a public pre-trained word2vec model and studying the effect of applying a de-biasing algorithm to reduce sexist analogies.",
+      "expected_passages": [
+        "In this work, we propose an analysis of the presence of gender bias associated with professions in Portuguese word embeddings. The objective of this work is to study gender implications related to stereotyped professions for women and men in the context of the Portuguese language.",
+        "we propose to employ a public word2vec model pre-trained to analyze gender bias in the Portuguese language, quantifying biases present in the model so that it is possible to reduce the spreading of sexism of such models."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "How is gender bias in the embeddings evaluated?",
+      "ground_truth": "Using a list of 50 female/male profession labels, the authors use the model's most-similar analogy function (cosine similarity) to generate profession associations and measure their accuracy, then apply a de-bias algorithm and compare the accuracy before and after.",
+      "expected_passages": [
+        "First, using a list of professions relating the identification of female and male who perform it as a parameter, we evaluate the accuracy of similarity generated by the embeddings. Then, getting the biased results, we apply the De-bias algorithm aiming to reduce sexist analogies previous generated. Thus, all the results are analyzed by comparing the accuracies.",
+        "The most similarity function finds the top-N most similar entities, computing cosine similarity between a simple mean of the projection weight vectors of the given docs."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "What was the main experimental finding about the effect of de-biasing on the model's accuracy?",
+      "ground_truth": "At a 99% confidence level, the model with bias predicts profession associations significantly better than the de-biased model - so removing bias hurt the model's quality (consistent with other authors) - although even the biased model's accuracy at predicting related terms is still low.",
+      "expected_passages": [
+        "Using a confidence factor of 99%, when comparing the correctness levels of the model with and without the reduction of bias, the prediction of the model with bias is significantly better. Different authors show that the removal of bias in models produces a negative impact on the quality of the model. On the other hand, it is observed that even with a better hit rate the correctness rate in the prediction of related terms is still low."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "What example illustrates the gender bias in the embeddings, and what does it show?",
+      "ground_truth": "The analogy of 'garçonete' (waitress) to 'stripper': for the female model, terms with a sexual connotation are closer to females than professions are, whereas the male model stays within the professional environment even in non-compliant cases.",
+      "expected_passages": [
+        "In cases like the analogy of `garçonete' to `stripper' (Figure FIGREF4, line 8), it is possible to observe that the relationship stipulated between terms with sexual connotation and females is closer than between females and professions. While in the male model, even in cases of non-compliance, the closest analogy remains in the professional environment."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "synthesis",
+      "question": "Why is gender especially encoded in Portuguese profession terms?",
+      "ground_truth": "In Portuguese the female gender is treated as a particularization of the masculine, and word terminations (for example advogada versus advogado) indicate to whom the term refers, so profession words carry gender - which introduces bias when dealing with professions.",
+      "expected_passages": [
+        "Some linguists point out that the female gender is, in Portuguese, a particularization of the masculine. In this way the only gender mark is the feminine, the others being considered without gender (including names considered masculine).",
+        "Since most of the termination of words (e.g., advogada and advogado) are used to indicate to whom the expression refers, stereotypes can be explained through communication. This implies the presence of biases when dealing with terms such as those referring to professions."
+      ],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What accuracy does the model achieve at detecting racial bias in the Portuguese embeddings?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

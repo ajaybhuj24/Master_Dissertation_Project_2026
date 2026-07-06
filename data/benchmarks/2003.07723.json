@@ -1,0 +1,144 @@
+{
+  "paper_id": "2003.07723",
+  "paper_title": "PO-EMO: Conceptualization, Annotation, and Modeling of Aesthetic Emotions in German and English Poetry",
+  "created_at": "2026-07-01T13:05:55.305521+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "Does the paper report macro F1?",
+      "ground_truth": "Yes",
+      "expected_passages": [
+        "FLOAT SELECTED: Table 7: Recall and precision scores of the best model (dbmdz) for each emotion on the test set. ‘Support’ signifies the number of labels."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "factual",
+      "question": "How is the annotation experiment evaluated?",
+      "ground_truth": "confusion matrices of labels between annotators",
+      "expected_passages": [
+        "We find that Cohen $\\kappa $ agreement ranges from.84 for Uneasiness in the English data,.81 for Humor and Nostalgia, down to German Suspense (.65), Awe/Sublime (.61) and Vitality for both languages (.50 English,.63 German). Both annotators have a similar emotion frequency profile, where the ranking is almost identical, especially for German. However, for English, Annotator 2 annotates more Vitality than Uneasiness. Figure FIGREF18 shows the confusion matrices of labels between annotators as heatmaps. Notably, Beauty/Joy and Sadness are confused across annotators more often than other labels. This is topical for poetry, and therefore not surprising: One might argue that the beauty of beings and situations is only beautiful because it is not enduring and therefore not to divorce from the sadness of the vanishing of beauty. We also find considerable confusion of Sadness with Awe/Sublime and Vitality, while the latter is also regularly confused with Beauty/Joy."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "What are the aesthetic emotions formalized?",
+      "ground_truth": "feelings of suspense experienced in narratives not only respond to the trajectory of the plot's content, but are also directly predictive of aesthetic liking (or disliking) | Emotions that exhibit this dual capacity have been defined as “aesthetic emotions”",
+      "expected_passages": [
+        "To emotionally move readers is considered a prime goal of literature since Latin antiquity,,. Deeply moved readers shed tears or get chills and goosebumps even in lab settings. In cases like these, the emotional response actually implies an aesthetic evaluation: narratives that have the capacity to move readers are evaluated as good and powerful texts for this very reason. Similarly, feelings of suspense experienced in narratives not only respond to the trajectory of the plot's content, but are also directly predictive of aesthetic liking (or disliking). Emotions that exhibit this dual capacity have been defined as “aesthetic emotions”. Contrary to the negativity bias of classical emotion catalogues, emotion terms used for aesthetic evaluation purposes include far more positive than negative emotions. At the same time, many overall positive aesthetic emotions encompass negative or mixed emotional ingredients, e.g., feelings of suspense include both hopeful and fearful anticipations."
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "What are the nine emotion classes in the final label set?",
+      "ground_truth": "Beauty/Joy, Sadness, Uneasiness, Vitality, Suspense, Awe/Sublime, Humor, Annoyance, and Nostalgia",
+      "expected_passages": [
+        "Our final set consists of nine classes, i.e., (in order of frequency) Beauty/Joy, Sadness, Uneasiness, Vitality, Suspense, Awe/Sublime, Humor, Annoyance, and Nostalgia."
+      ],
+      "id": "q4"
+    },
+    {
+      "category": "factual",
+      "question": "What inter-annotator agreement did the expert annotation achieve?",
+      "ground_truth": "An acceptable agreement of kappa = .70",
+      "expected_passages": [
+        "Our annotation with experts leads to an acceptable agreement of kappa=.70, resulting in a consistent dataset for future large scale analysis."
+      ],
+      "id": "q5"
+    },
+    {
+      "category": "factual",
+      "question": "How many poems are in the German and English corpora?",
+      "ground_truth": "158 German poems (731 stanzas) and 64 English poems",
+      "expected_passages": [
+        "The 158 poems we consider (731 stanzas) are dispersed over 51 authors and the New High German timeline (1575–1936 A.D.).",
+        "The English corpus contains 64 poems of popular English writers."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "Which BERT model performed best, and what F1-micro score did it reach?",
+      "ground_truth": "The german-dbmdz-uncased model (DBMDZ), with an F1-micro of .520",
+      "expected_passages": [
+        "The best model overall is DBMDZ (.520), showing a balanced response on both validation and test set."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "On which crowdsourcing platform was the crowd annotation run, and how many people annotated each instance?",
+      "ground_truth": "Figure Eight, with each instance annotated by ten people",
+      "expected_passages": [
+        "The resulting selection of 59 stanzas is uploaded to Figure Eight for annotation.",
+        "Each instance is annotated by ten people."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "synthesis",
+      "question": "Why do the authors argue that basic emotion categories (Ekman/Plutchik) are inadequate for analysing poetry?",
+      "ground_truth": "Because basic emotion sets evolved to motivate survival-relevant behaviour, whereas art reception presupposes a situation of safety and lets readers engage in a broader range of more complex, subtle and mixed emotions. Emotion terms for aesthetic evaluation also include far more positive (and mixed) emotions than the negativity-biased classical catalogues.",
+      "expected_passages": [
+        "However, art reception typically presupposes a situation of safety and therefore offers special opportunities to engage in a broader range of more complex and subtle emotions. These differences between real-life and art contexts have not been considered in natural language processing work so far.",
+        "Contrary to the negativity bias of classical emotion catalogues, emotion terms used for aesthetic evaluation purposes include far more positive than negative emotions."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is the 'reader perspective' the authors adopt, and why did they choose it?",
+      "ground_truth": "They label emotions as they are elicited in the reader, rather than what is expressed in the text or intended by the author. They chose it because their focus is the actual emotional experience of readers (some concepts like Disgust or Love may be expressed but fail to elicit the feeling), a choice grounded in prior NLP and empirical-aesthetics work on poetry reception.",
+      "expected_passages": [
+        "We consider emotions as they are elicited in the reader, rather than what is expressed in the text or intended by the author.",
+        "Our focus here was on the actual emotional experience of the readers rather than on hypothetical intentions of authors."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "What unit of annotation do the authors use, and why did they choose it?",
+      "ground_truth": "They annotate at the fine-grained line (verse) level, but hierarchically within the larger context of the stanza and whole poem, and allow multiple labels per line. This caters to the structure of poems, where emotions are regularly mixed and more interpretable within the whole poem.",
+      "expected_passages": [
+        "We find that annotating fine-grained units (lines) that are hierarchically ordered within a larger context (stanza, poem) caters to the specific structure of poems, where emotions are regularly mixed and are more interpretable within the whole poem. Consequently, we allow the mixing of emotions already at line level through multi-label annotation."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "What do the authors conclude about replacing expert annotators with crowdsourcing?",
+      "ground_truth": "Substituting experts with crowds is possible only to a certain/moderate degree: the aggregated crowd annotations contain a good signal that approximates expert labels, but the best average crowd agreement with experts (about .32, or 0.24 at N=10) is still well below the agreement among experts (roughly .70).",
+      "expected_passages": [
+        "In general, however, we find that substituting experts with crowds is possible to a certain degree. Even though the crowds' labels look inconsistent at first view, there appears to be a good signal in their aggregated annotations, helping to approximate expert annotations to a certain degree.",
+        "Overall, the best average $\\kappa $ agreement (.32) is less than half of what we saw for the expert annotators (roughly.70)."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "How were the emotion labels refined during the annotation process?",
+      "ground_truth": "They started from a larger set and iteratively deleted, toned down or conflated labels that were infrequent or confused with each other. For example, Confusion, Boredom and Other were dropped for low agreement, Ugliness and Disgust were conflated into Uneasiness, and Beauty and Joy were merged into a single Beauty/Joy label.",
+      "expected_passages": [
+        "We started with a larger set of labels to then delete and substitute (tone down) labels during the initial annotation process to avoid infrequent classes and inconsistencies. Further, we conflate labels if they show considerable confusion with each other.",
+        "The labels Ugliness and Disgust were conflated into Uneasiness, as both are seldom felt in poetry (being inadequate/too strong/high in arousal), and typically lead to Uneasiness."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What F1-micro score does the BERT model achieve when tested only on the English poetry subset?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "How many crowd annotators participated in the German-language crowdsourcing experiment?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

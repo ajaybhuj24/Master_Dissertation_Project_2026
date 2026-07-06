@@ -1,0 +1,143 @@
+{
+  "paper_id": "1910.03042",
+  "paper_title": "Gunrock: A Social Bot for Complex and Engaging Long Conversations",
+  "created_at": "2026-07-01T13:05:55.285341+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "What is the sample size of people used to measure user satisfaction?",
+      "ground_truth": "34,432 user conversations",
+      "expected_passages": [
+        "From January 5, 2019 to March 5, 2019, we collected conversational data for Gunrock. During this time, no other code updates occurred. We analyzed conversations for Gunrock with at least 3 user turns to avoid conversations triggered by accident. Overall, this resulted in a total of 34,432 user conversations. Together, these users gave Gunrock an average rating of 3.65 (median: 4.0), which was elicited at the end of the conversation (“On a scale from 1 to 5 stars, how do you feel about talking to this socialbot again?\"). Users engaged with Gunrock for an average of 20.92 overall turns (median 13.0), with an average of 6.98 words per utterance, and had an average conversation time of 7.33 minutes (median: 2.87 min.). We conducted three principal analyses: users' response depth (wordcount), backstory queries (backstorypersona), and interleaving of personal and factual responses (pets)."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "factual",
+      "question": "What are all the metrics to measure user engagement?",
+      "ground_truth": "overall rating | mean number of turns",
+      "expected_passages": [
+        "We assessed the degree of conversational depth by measuring users' mean word count. Prior work has found that an increase in word count has been linked to improved user engagement (e.g., in a social dialog system). For each user conversation, we extracted the overall rating, the number of turns of the interaction, and the user's per-utterance word count (averaged across all utterances). We modeled the relationship between word count and the two metrics of user engagement (overall rating, mean number of turns) in separate linear regressions."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "What the system designs introduced?",
+      "ground_truth": "Amazon Conversational Bot Toolkit | natural language understanding (NLU) (nlu) module | dialog manager | knowledge bases | natural language generation (NLG) (nlg) module | text to speech (TTS) (tts)",
+      "expected_passages": [
+        "Figure FIGREF3 provides an overview of Gunrock's architecture. We extend the Amazon Conversational Bot Toolkit (CoBot) which is a flexible event-driven framework. CoBot provides ASR results and natural language processing pipelines through the Alexa Skills Kit (ASK). Gunrock corrects ASR according to the context (asr) and creates a natural language understanding (NLU) (nlu) module where multiple components analyze the user utterances. A dialog manager (DM) (dm) uses features from NLU to select topic dialog modules and defines an individual dialog flow. Each dialog module leverages several knowledge bases (knowledge). Then a natural language generation (NLG) (nlg) module generates a corresponding response. Finally, we markup the synthesized responses and return to the users through text to speech (TTS) (tts). While we provide an overview of the system in the following sections, for detailed system implementation details, please see the technical report."
+      ]
+    },
+    {
+      "id": "q4",
+      "category": "factual",
+      "question": "Do they specify the model they use for Gunrock?",
+      "ground_truth": "No",
+      "expected_passages": [
+        "Figure FIGREF3 provides an overview of Gunrock's architecture. We extend the Amazon Conversational Bot Toolkit (CoBot) which is a flexible event-driven framework. CoBot provides ASR results and natural language processing pipelines through the Alexa Skills Kit (ASK). Gunrock corrects ASR according to the context (asr) and creates a natural language understanding (NLU) (nlu) module where multiple components analyze the user utterances. A dialog manager (DM) (dm) uses features from NLU to select topic dialog modules and defines an individual dialog flow. Each dialog module leverages several knowledge bases (knowledge). Then a natural language generation (NLG) (nlg) module generates a corresponding response. Finally, we markup the synthesized responses and return to the users through text to speech (TTS) (tts). While we provide an overview of the system in the following sections, for detailed system implementation details, please see the technical report."
+      ]
+    },
+    {
+      "id": "q5",
+      "category": "factual",
+      "question": "Do they gather explicit user satisfaction data on Gunrock?",
+      "ground_truth": "Yes",
+      "expected_passages": [
+        "From January 5, 2019 to March 5, 2019, we collected conversational data for Gunrock. During this time, no other code updates occurred. We analyzed conversations for Gunrock with at least 3 user turns to avoid conversations triggered by accident. Overall, this resulted in a total of 34,432 user conversations. Together, these users gave Gunrock an average rating of 3.65 (median: 4.0), which was elicited at the end of the conversation (“On a scale from 1 to 5 stars, how do you feel about talking to this socialbot again?\"). Users engaged with Gunrock for an average of 20.92 overall turns (median 13.0), with an average of 6.98 words per utterance, and had an average conversation time of 7.33 minutes (median: 2.87 min.). We conducted three principal analyses: users' response depth (wordcount), backstory queries (backstorypersona), and interleaving of personal and factual responses (pets)."
+      ]
+    },
+    {
+      "id": "q6",
+      "category": "factual",
+      "question": "How do they correlate user backstory queries to user satisfaction?",
+      "ground_truth": "modeled the relationship between word count and the two metrics of user engagement (overall rating, mean number of turns) in separate linear regressions",
+      "expected_passages": [
+        "We assessed the degree of conversational depth by measuring users' mean word count. Prior work has found that an increase in word count has been linked to improved user engagement (e.g., in a social dialog system). For each user conversation, we extracted the overall rating, the number of turns of the interaction, and the user's per-utterance word count (averaged across all utterances). We modeled the relationship between word count and the two metrics of user engagement (overall rating, mean number of turns) in separate linear regressions.",
+        "Results showed that users who, on average, produced utterances with more words gave significantly higher ratings ($\\beta $=0.01, SE=0.002, t=4.79, p$<$0.001)(see Figure 2) and engaged with Gunrock for significantly greater number of turns ($\\beta $=1.85, SE=0.05, t=35.58, p$<$0.001) (see Figure 2). These results can be interpreted as evidence for Gunrock's ability to handle complex sentences, where users are not constrained to simple responses to be understood and feel engaged in the conversation – and evidence that individuals are more satisfied with the conversation when they take a more active role, rather than the system dominating the dialog. On the other hand, another interpretation is that users who are more talkative may enjoy talking to the bot in general, and thus give higher ratings in tandem with higher average word counts."
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "What competition did Gunrock win?",
+      "ground_truth": "The 2018 Amazon Alexa Prize",
+      "expected_passages": [
+        "Gunrock is the winner of the 2018 Amazon Alexa Prize, as evaluated by coherence and engagement from both real users and Amazon-selected expert conversationalists."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "What dialog act scheme is used, and how many tags does it have?",
+      "ground_truth": "MIDAS, a human-machine dialog act scheme with 23 tags",
+      "expected_passages": [
+        "In order to extract the intent for each segment, we designed MIDAS, a human-machine dialog act scheme with 23 tags and implemented a multi-label dialog act classification model using contextual information."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "synthesis",
+      "question": "What are the main contributions of the Gunrock system?",
+      "ground_truth": "(1) Multi-step language-understanding modules that handle complex sentences (including coreference) and feed richer information to the dialog manager, including a novel dialog act scheme; (2) interleaving actions that elicit users' opinions with responses to create in-depth, engaging conversations (a fact/opinion interleaving strategy); and (3) an extensive persona database that provides coherent profile/personality information.",
+      "expected_passages": [
+        "First, Gunrock's multi-step language understanding modules enable the system to provide more useful information to the dialog manager, including a novel dialog act scheme. Additionally, the natural language understanding (NLU) module can handle more complex sentences, including those with coreference. Second, Gunrock interleaves actions to elicit users' opinions and provide responses to create an in-depth, engaging conversation; while a related strategy to interleave task- and non-task functions in chatbots has been proposed, no chatbots to our knowledge have employed a fact/opinion interleaving strategy. Finally, we use an extensive persona database to provide coherent profile information, a critical challenge in building social chatbots."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does the NLU module process a user utterance?",
+      "ground_truth": "It first corrects ASR, splits the raw text into sentences by inserting break tokens (masking named entities so they stay intact), resolves coreference both within a turn and across turns, uses a constituency parser to extract noun phrases, detects topic, named entities and sentiment, and classifies the dialog act of each segment using the MIDAS scheme.",
+      "expected_passages": [
+        "We first split the corrected raw ASR text into sentences by inserting break tokens.",
+        "After segmentation, our coreference implementation leverages entity knowledge (such as person versus event) and replaces nouns with their actual reference by entity ranking. We implement coreference resolution on entities both within segments in a single turn as well as across multiple turns. For instance, him in the last segment in User_5 is replaced with bradley cooper in Table TABREF2. Next, we use a constituency parser to generate noun phrases from each modified segment."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does the ASR-correction step fix errors in named entities?",
+      "ground_truth": "It uses domain knowledge: noun phrases are compared to a knowledge base (e.g. a list of popular movie names) using their phonetic information. Specifically, primary and secondary codes are extracted with the Double Metaphone Search Algorithm for the noun phrases and the knowledge base, and a fix is suggested by code matching.",
+      "expected_passages": [
+        "Therefore, Gunrock uses domain knowledge to correct these errors by comparing noun phrases to a knowledge base (e.g. a list of the most popular movies names) based on their phonetic information. We extract the primary and secondary code using The Double Metaphone Search Algorithm for noun phrases (extracted by noun trunks) and the selected knowledge base, and suggest a potential fix by code matching."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does Gunrock's hierarchical dialog manager work?",
+      "ground_truth": "It has a high-level and a low-level dialog manager. The high-level DM uses the NLU outputs to pick the most important segment as the central element and maps the utterance to one of 11 topic dialog modules (plus a retrieval backup). The low-level topic modules use modular finite state transducers with rule-based transitions between dialog states, interleave facts, opinions and questions, and allow mixed-initiative topic switching at any point.",
+      "expected_passages": [
+        "We implemented a hierarchical dialog manager, consisting of a high level and low level DMs. The former leverages NLU outputs for each segment and selects the most important segment for the system as the central element using heuristics.",
+        "Low level dialog management is handled by the separate topic dialog modules, which use modular finite state transducers to execute various dialog segments processed by the NLU."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "What three analyses do the authors run, and what do they find?",
+      "ground_truth": "(1) Response depth: users who produced more words per utterance gave significantly higher ratings and engaged for more turns; (2) backstory queries: the more a user asked about Gunrock's backstory, the higher the rating they gave; and (3) interleaving personal and factual information: users who talked to Gunrock about their pet gave significantly higher overall ratings.",
+      "expected_passages": [
+        "Results showed that users who, on average, produced utterances with more words gave significantly higher ratings",
+        "the number of times users queried Gunrock's backstory was strongly related to the rating they gave at the end of the interaction",
+        "We found that users who talked to Gunrock about their pet showed significantly higher overall ratings of the conversation"
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What deep-learning model architecture generates Gunrock's responses?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "How much did it cost to develop the Gunrock system?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

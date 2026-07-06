@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -8,12 +9,16 @@ from pydantic import BaseModel, Field
 JobStatusLiteral = Literal["pending", "running", "completed", "failed", "cancelled"]
 
 
+
+
 class BatchRequest(BaseModel):
     paper_id: str = Field(..., min_length=1, description="Must match a saved benchmark in data/benchmarks/.")
     pipeline_ids: list[str] | None = Field(
         default=None,
         description="If null/omitted, runs ALL registered pipelines.",
     )
+
+
 
 
 class BatchResultRow(BaseModel):
@@ -42,6 +47,8 @@ class BatchResultRow(BaseModel):
     latency_ms: int
     ragas_ms: int
     error: str | None = None
+
+
 
 
 class JobStatus(BaseModel):

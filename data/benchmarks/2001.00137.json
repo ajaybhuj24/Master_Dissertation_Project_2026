@@ -1,0 +1,145 @@
+{
+  "paper_id": "2001.00137",
+  "paper_title": "Stacked DeBERT: All Attention in Incomplete Data for Text Classification",
+  "created_at": "2026-07-01T13:05:55.295878+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "Do they report results only on English datasets?",
+      "ground_truth": "Yes",
+      "expected_passages": [
+        "Even though this corpus has incorrect sentences and their emotional labels, they lack their respective corrected sentences, necessary for the training of our model. In order to obtain this missing information, we outsource native English speakers from an unbiased and anonymous platform, called Amazon Mechanical Turk (MTurk), which is a paid marketplace for Human Intelligence Tasks (HITs). We use this platform to create tasks for native English speakers to format the original incorrect tweets into correct sentences. Some examples are shown in Table TABREF12.",
+        "The dataset used to evaluate the models' performance is the Chatbot Natural Language Unerstanding (NLU) Evaluation Corpus, introduced by Braun et al. to test NLU services. It is a publicly available benchmark and is composed of sentences obtained from a German Telegram chatbot used to answer questions about public transport connections. The dataset has two intents, namely Departure Time and Find Connection with 100 train and 106 test samples, shown in Table TABREF18. Even though English is the main language of the benchmark, this dataset contains a few German station and street names."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "synthesis",
+      "question": "How do the authors define or exemplify 'incorrect words'?",
+      "ground_truth": "typos in spellings or ungrammatical words",
+      "expected_passages": [
+        "Understanding a user's intent and sentiment is of utmost importance for current intelligent chatbots to respond appropriately to human requests. However, current systems are not able to perform to their best capacity when presented with incomplete data, meaning sentences with missing or incorrect words. This scenario is likely to happen when one considers human error done in writing. In fact, it is rather naive to assume that users will always type fully grammatically correct sentences. Panko goes as far as claiming that human accuracy regarding research paper writing is none when considering the entire document. This has been aggravated with the advent of internet and social networks, which allowed language and modern communication to be been rapidly transformed,. Take Twitter for instance, where information is expected to be readily communicated in short and concise sentences with little to no regard to correct sentence grammar or word spelling."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "out_of_scope",
+      "question": "How many vanilla transformers do they use after applying an embedding layer?",
+      "ground_truth": null,
+      "expected_passages": []
+    },
+    {
+      "id": "q4",
+      "category": "factual",
+      "question": "Do they test their approach on a dataset without incomplete data?",
+      "ground_truth": "No",
+      "expected_passages": [
+        "The incomplete dataset used for training is composed of lower-cased incomplete data obtained by manipulating the original corpora. The incomplete sentences with STT error are obtained in a 2-step process shown in Fig. FIGREF22. The first step is to apply a TTS module to the available complete sentence. Here, we apply gtts, a Google Text-to-Speech python library, and macsay, a terminal command available in Mac OS as say. The second step consists of applying an STT module to the obtained audio files in order to obtain text containing STT errors. The STT module used here was witai, freely available and maintained by Wit.ai. The mentioned TTS and STT modules were chosen according to code availability and whether it's freely available or has high daily usage limitations."
+      ]
+    },
+    {
+      "id": "q5",
+      "category": "factual",
+      "question": "Should their approach be applied only when dealing with incomplete data?",
+      "ground_truth": "No",
+      "expected_passages": [
+        "Experimental results for the Twitter Sentiment Classification task on Kaggle's Sentiment140 Corpus dataset, displayed in Table TABREF37, show that our model has better F1-micros scores, outperforming the baseline models by 6$\\%$ to 8$\\%$. We evaluate our model and baseline models on three versions of the dataset. The first one (Inc) only considers the original data, containing naturally incorrect tweets, and achieves accuracy of 80$\\%$ against BERT's 72$\\%$. The second version (Corr) considers the corrected tweets, and shows higher accuracy given that it is less noisy. In that version, Stacked DeBERT achieves 82$\\%$ accuracy against BERT's 76$\\%$, an improvement of 6$\\%$. In the last case (Inc+Corr), we consider both incorrect and correct tweets as input to the models in hopes of improving performance. However, the accuracy was similar to the first aforementioned version, 80$\\%$ for our model and 74$\\%$ for the second highest performing model. Since the first and last corpus gave similar performances with our model, we conclude that the Twitter dataset does not require complete sentences to be given as training input, in addition to the original naturally incorrect tweets, in order to better model the noisy sentences."
+      ]
+    },
+    {
+      "id": "q6",
+      "category": "synthesis",
+      "question": "By how much do they outperform other models in the sentiment in intent classification tasks?",
+      "ground_truth": "In the sentiment classification task by 6% to 8% and in the intent classification task by 0.94% on average",
+      "expected_passages": [
+        "Experimental results for the Twitter Sentiment Classification task on Kaggle's Sentiment140 Corpus dataset, displayed in Table TABREF37, show that our model has better F1-micros scores, outperforming the baseline models by 6$\\%$ to 8$\\%$. We evaluate our model and baseline models on three versions of the dataset. The first one (Inc) only considers the original data, containing naturally incorrect tweets, and achieves accuracy of 80$\\%$ against BERT's 72$\\%$. The second version (Corr) considers the corrected tweets, and shows higher accuracy given that it is less noisy. In that version, Stacked DeBERT achieves 82$\\%$ accuracy against BERT's 76$\\%$, an improvement of 6$\\%$. In the last case (Inc+Corr), we consider both incorrect and correct tweets as input to the models in hopes of improving performance. However, the accuracy was similar to the first aforementioned version, 80$\\%$ for our model and 74$\\%$ for the second highest performing model. Since the first and last corpus gave similar performances with our model, we conclude that the Twitter dataset does not require complete sentences to be given as training input, in addition to the original naturally incorrect tweets, in order to better model the noisy sentences.",
+        "Experimental results for the Intent Classification task on the Chatbot NLU Corpus with STT error can be seen in Table TABREF40. When presented with data containing STT error, our model outperforms all baseline models in both combinations of TTS-STT: gtts-witai outperforms the second placing baseline model by 0.94% with F1-score of 97.17%, and macsay-witai outperforms the next highest achieving model by 1.89% with F1-score of 96.23%.",
+        "FLOAT SELECTED: Table 7: F1-micro scores for original sentences and sentences imbued with STT error in the Chatbot Corpus. The noise level is represented by the iBLEU score (See Eq. (5))."
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "What does the model name 'Stacked DeBERT' stand for?",
+      "ground_truth": "Stacked Denoising Bidirectional Encoder Representations from Transformers",
+      "expected_passages": [
+        "In this paper, we propose Stacked DeBERT, short for Stacked Denoising Bidirectional Encoder Representations from Transformers."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "Which two datasets are used for training and evaluation?",
+      "ground_truth": "The Chatbot Natural Language Understanding Evaluation Corpus (intent classification) and Kaggle's Twitter Sentiment Corpus (Sentiment140)",
+      "expected_passages": [
+        "We consider two datasets for training and evaluation: the Chatbot Natural Language Understanding Evaluation Corpus and Kaggle's Twitter Sentiment Corpus."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "factual",
+      "question": "How are the incomplete (noisy) intent sentences created?",
+      "ground_truth": "By applying a Text-to-Speech module (gtts or macsay) followed by a Speech-to-Text module (witai) to the complete sentences, producing text with STT errors",
+      "expected_passages": [
+        "The first step is to apply a TTS module to the available complete sentence. Here, we apply gtts, a Google Text-to-Speech python library, and macsay, a terminal command available in Mac OS as say. The second step consists of applying an STT module to the obtained audio files in order to obtain text containing STT errors. The STT module used here was witai, freely available and maintained by Wit.ai."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "factual",
+      "question": "What score denotes the level of noise in the STT-corrupted sentences?",
+      "ground_truth": "An inverted BLEU (iBLEU) score, ranging from 0 to 1, where higher means more noise",
+      "expected_passages": [
+        "The level of noise in the STT imbued sentences is denoted by a inverted BLEU (iBLEU) score ranging from 0 to 1.",
+        "the higher the iBLEU, the higher the noise."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "factual",
+      "question": "What baseline models is Stacked DeBERT compared against?",
+      "ground_truth": "BERT, Semantic Hashing with a neural classifier, and three NLU service platforms: Google Dialogflow, SAP Conversational AI, and Rasa",
+      "expected_passages": [
+        "We focus on the three following services, where the first two are commercial services and last one is open source with two separate backends: Google Dialogflow (formerly Api.ai), SAP Conversational AI (formerly Recast.ai) and Rasa (spacy and tensorflow backend)."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "What problem does Stacked DeBERT address, and how?",
+      "ground_truth": "It addresses the incomplete-data problem - text with missing or incorrect words, such as tweets or sentences with Speech-to-Text errors - which degrades models trained on clean data. It combines BERT with denoising strategies: on top of the usual BERT embedding and vanilla transformers it stacks denoising transformers that reconstruct richer hidden embeddings from the incomplete sentences, improving robustness.",
+      "expected_passages": [
+        "We propose a model that combines the power of BERT in the NLP domain and the strength of denoising strategies in incomplete data reconstruction to tackle the tasks of incomplete intent and sentiment classification.",
+        "The main purpose of this model is to improve the robustness and efficiency of BERT when applied to incomplete data by reconstructing hidden embeddings from sentences with missing words."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "How do the denoising transformers reconstruct the embeddings?",
+      "ground_truth": "They use stacks of multilayer perceptrons: the first set compresses the incomplete sentence embedding h_inc into progressively lower-dimensional latent representations (z), and the second set reconstructs them back into h_rec. The reconstructed embedding h_rec is compared with the complete-sentence embedding h_comp using a mean-squared-error loss, and the reconstructed embeddings are then passed to bidirectional transformers.",
+      "expected_passages": [
+        "we implement a novel encoding scheme consisting of denoising transformers, which is composed of stacks of multilayer perceptrons for the reconstruction of missing words’ embeddings by extracting more abstract and meaningful hidden feature vectors, and bidirectional transformers for improved embedding representation.",
+        "The reconstructed hidden sentence embedding h_rec is compared with the complete hidden sentence embedding h_comp through a mean square error loss function"
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is the main experimental finding about robustness to noise?",
+      "ground_truth": "Stacked DeBERT not only outperforms all baseline models but degrades much more slowly as the noise level increases (while the other models decay rapidly), giving a wider margin of improvement on noisier data. It also improved accuracy even on clean, complete-sentence data.",
+      "expected_passages": [
+        "However, while the other models decay rapidly in the presence of noise, our model does not only outperform them but does so with a wider margin.",
+        "experiments on the Twitter dataset also showed improved accuracy in clean data, with complete sentences. We infer that this is due to our model being able to extract richer data representations from the input data regardless of the completeness of the sentence."
+      ],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What accuracy does Stacked DeBERT achieve on image classification?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

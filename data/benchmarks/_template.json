@@ -1,0 +1,117 @@
+{
+  "paper_id": "REPLACE_WITH_PAPER_STEM",
+  "paper_title": "REPLACE WITH FULL PAPER TITLE",
+  "created_at": "2026-05-22T00:00:00Z",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "TODO: a single-passage factual question, e.g. 'What dataset does the paper use?'",
+      "ground_truth": "TODO: the correct answer, grounded in the cited passage.",
+      "expected_passages": [
+        "TODO: a short verbatim excerpt (or summary) of the passage that contains the answer."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "factual",
+      "question": "TODO: another single-passage factual question.",
+      "ground_truth": "TODO: answer.",
+      "expected_passages": ["TODO: supporting passage."]
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "TODO: another single-passage factual question.",
+      "ground_truth": "TODO: answer.",
+      "expected_passages": ["TODO: supporting passage."]
+    },
+    {
+      "id": "q4",
+      "category": "factual",
+      "question": "TODO: another single-passage factual question.",
+      "ground_truth": "TODO: answer.",
+      "expected_passages": ["TODO: supporting passage."]
+    },
+    {
+      "id": "q5",
+      "category": "factual",
+      "question": "TODO: another single-passage factual question.",
+      "ground_truth": "TODO: answer.",
+      "expected_passages": ["TODO: supporting passage."]
+    },
+    {
+      "id": "q6",
+      "category": "factual",
+      "question": "TODO: another single-passage factual question.",
+      "ground_truth": "TODO: answer.",
+      "expected_passages": ["TODO: supporting passage."]
+    },
+    {
+      "id": "q7",
+      "category": "factual",
+      "question": "TODO: another single-passage factual question.",
+      "ground_truth": "TODO: answer.",
+      "expected_passages": ["TODO: supporting passage."]
+    },
+    {
+      "id": "q8",
+      "category": "factual",
+      "question": "TODO: another single-passage factual question.",
+      "ground_truth": "TODO: answer.",
+      "expected_passages": ["TODO: supporting passage."]
+    },
+    {
+      "id": "q9",
+      "category": "synthesis",
+      "question": "TODO: a multi-passage synthesis question, e.g. 'How does the paper combine method A with method B?'",
+      "ground_truth": "TODO: synthesised answer that requires combining 2+ passages.",
+      "expected_passages": [
+        "TODO: first supporting passage.",
+        "TODO: second supporting passage."
+      ]
+    },
+    {
+      "id": "q10",
+      "category": "synthesis",
+      "question": "TODO: another multi-passage synthesis question.",
+      "ground_truth": "TODO: synthesised answer.",
+      "expected_passages": ["TODO: passage 1.", "TODO: passage 2."]
+    },
+    {
+      "id": "q11",
+      "category": "synthesis",
+      "question": "TODO: another multi-passage synthesis question.",
+      "ground_truth": "TODO: synthesised answer.",
+      "expected_passages": ["TODO: passage 1.", "TODO: passage 2."]
+    },
+    {
+      "id": "q12",
+      "category": "synthesis",
+      "question": "TODO: another multi-passage synthesis question.",
+      "ground_truth": "TODO: synthesised answer.",
+      "expected_passages": ["TODO: passage 1.", "TODO: passage 2."]
+    },
+    {
+      "id": "q13",
+      "category": "synthesis",
+      "question": "TODO: another multi-passage synthesis question.",
+      "ground_truth": "TODO: synthesised answer.",
+      "expected_passages": ["TODO: passage 1.", "TODO: passage 2."]
+    },
+    {
+      "id": "q14",
+      "category": "out_of_scope",
+      "question": "TODO: a question whose answer is NOT in the paper (e.g. 'What is the capital of Mongolia?'). System should refuse.",
+      "ground_truth": null,
+      "expected_passages": []
+    },
+    {
+      "id": "q15",
+      "category": "out_of_scope",
+      "question": "TODO: another out-of-scope question.",
+      "ground_truth": null,
+      "expected_passages": []
+    }
+  ]
+}

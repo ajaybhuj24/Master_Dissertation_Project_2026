@@ -4,6 +4,8 @@ import type {
   BenchmarkFile,
   BenchmarkSummary,
   BenchmarkUploadResponse,
+  CorpusListResponse,
+  CorpusPaper,
   CurrentPaperResponse,
   DeletePaperResponse,
   FastApiError,
@@ -11,6 +13,9 @@ import type {
   PipelineInfo,
   ResultFileEntry,
   ResultRunFile,
+  SweepRequest,
+  SweepResult,
+  SweepSummary,
   UploadResponse,
   ValidationErrorItem,
 } from "@/types"
@@ -279,6 +284,109 @@ export async function cancelJob(
   return handle<{ job_id: string; cancel_requested: boolean; status: string }>(
     res
   )
+}
+
+
+export async function listCorpusPapers(): Promise<CorpusListResponse> {
+  let res: Response
+  try {
+    res = await fetch(`${API_BASE}/corpus/papers`)
+  } catch {
+    throw new ApiError(0, NETWORK_HINT)
+  }
+  return handle<CorpusListResponse>(res)
+}
+
+export async function addCorpusPaper(file: File): Promise<CorpusPaper> {
+  const form = new FormData()
+  form.append("file", file)
+  let res: Response
+  try {
+    res = await fetch(`${API_BASE}/corpus/papers`, { method: "POST", body: form })
+  } catch {
+    throw new ApiError(0, NETWORK_HINT)
+  }
+  return handle<CorpusPaper>(res)
+}
+
+export async function deleteCorpusPaper(
+  paperId: string
+): Promise<{ deleted: boolean; paper_id: string }> {
+  let res: Response
+  try {
+    res = await fetch(
+      `${API_BASE}/corpus/papers/${encodeURIComponent(paperId)}`,
+      { method: "DELETE" }
+    )
+  } catch {
+    throw new ApiError(0, NETWORK_HINT)
+  }
+  return handle<{ deleted: boolean; paper_id: string }>(res)
+}
+
+export async function clearCorpus(): Promise<{
+  cleared: boolean
+  removed_papers: number
+  namespace: string
+}> {
+  let res: Response
+  try {
+    res = await fetch(`${API_BASE}/corpus`, { method: "DELETE" })
+  } catch {
+    throw new ApiError(0, NETWORK_HINT)
+  }
+  return handle<{ cleared: boolean; removed_papers: number; namespace: string }>(
+    res
+  )
+}
+
+export async function startSweep(req: SweepRequest): Promise<JobStatus> {
+  let res: Response
+  try {
+    res = await fetch(`${API_BASE}/corpus/sweep`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req),
+    })
+  } catch {
+    throw new ApiError(0, NETWORK_HINT)
+  }
+  return handle<JobStatus>(res)
+}
+
+export async function listSweeps(): Promise<SweepSummary[]> {
+  let res: Response
+  try {
+    res = await fetch(`${API_BASE}/corpus/sweeps`)
+  } catch {
+    throw new ApiError(0, NETWORK_HINT)
+  }
+  return handle<SweepSummary[]>(res)
+}
+
+export async function getSweep(sweepId: string): Promise<SweepResult> {
+  let res: Response
+  try {
+    res = await fetch(`${API_BASE}/corpus/sweeps/${encodeURIComponent(sweepId)}`)
+  } catch {
+    throw new ApiError(0, NETWORK_HINT)
+  }
+  return handle<SweepResult>(res)
+}
+
+export async function deleteSweep(
+  sweepId: string
+): Promise<{ deleted: boolean; sweep_id: string }> {
+  let res: Response
+  try {
+    res = await fetch(
+      `${API_BASE}/corpus/sweeps/${encodeURIComponent(sweepId)}`,
+      { method: "DELETE" }
+    )
+  } catch {
+    throw new ApiError(0, NETWORK_HINT)
+  }
+  return handle<{ deleted: boolean; sweep_id: string }>(res)
 }
 
 export function benchmarkValidationErrors(

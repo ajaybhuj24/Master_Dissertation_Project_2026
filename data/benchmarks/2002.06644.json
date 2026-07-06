@@ -1,0 +1,146 @@
+{
+  "paper_id": "2002.06644",
+  "paper_title": "Towards Detection of Subjective Bias using Contextualized Word Embeddings",
+  "created_at": "2026-07-01T13:05:55.298397+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "out_of_scope",
+      "question": "Do the authors report only on English?",
+      "ground_truth": null,
+      "expected_passages": []
+    },
+    {
+      "id": "q2",
+      "category": "factual",
+      "question": "What is the baseline for the experiments?",
+      "ground_truth": "FastText | BiLSTM | BERT",
+      "expected_passages": [
+        "FastText: It uses bag of words and bag of n-grams as features for text classification, capturing partial information about the local word order efficiently.",
+        "BiLSTM: Unlike feedforward neural networks, recurrent neural networks like BiLSTMs use memory based on history information to learn long-distance features and then predict the output. We use a two-layer BiLSTM architecture with GloVe word embeddings as a strong RNN baseline.",
+        "BERT: It is a contextualized word representation model that uses bidirectional transformers, pretrained on a large $3.3B$ word corpus. We use the $BERT_{large}$ model finetuned on the training dataset."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "synthesis",
+      "question": "Which experiments are perfomed?",
+      "ground_truth": "They used BERT-based models to detect subjective language in the WNC corpus",
+      "expected_passages": [
+        "In natural language, subjectivity refers to the aspects of communication used to express opinions, evaluations, and speculations, often influenced by one's emotional state and viewpoints. Writers and editors of texts like news and textbooks try to avoid the use of biased language, yet subjective bias is pervasive in these texts. More than $56\\%$ of Americans believe that news sources do not report the news objectively, thus implying the prevalence of the bias. Therefore, when presenting factual information, it becomes necessary to differentiate subjective language from objective language.",
+        "In this work, we investigate the application of BERT-based models for the task of subjective language detection. We explore various BERT-based models, including BERT, RoBERTa, ALBERT, with their base and large specifications along with their native classifiers. We propose an ensemble model exploiting predictions from these models using multiple ensembling techniques. We show that our model outperforms the baselines by a margin of $5.6$ of F1 score and $5.95\\%$ of Accuracy.",
+        "Experiments::: Dataset and Experimental Settings",
+        "We perform our experiments on the WNC dataset open-sourced by the authors of. It consists of aligned pre and post neutralized sentences made by Wikipedia editors under the neutral point of view. It contains $180k$ biased sentences, and their neutral counterparts crawled from $423,823$ Wikipedia revisions between 2004 and 2019. We randomly shuffled these sentences and split this dataset into two parts in a $90:10$ Train-Test split and perform the evaluation on the held-out test dataset."
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "What dataset is used, and how many labeled instances does it contain?",
+      "ground_truth": "The Wiki Neutrality Corpus (WNC), consisting of about 360k labeled instances",
+      "expected_passages": [
+        "In this work, we perform comprehensive experiments for detecting subjective bias using BERT-based models on the Wiki Neutrality Corpus(WNC). The dataset consists of 360k labeled instances, from Wikipedia edits that remove various instances of the bias."
+      ],
+      "id": "q4"
+    },
+    {
+      "category": "factual",
+      "question": "From how many Wikipedia revisions is the corpus drawn, and over what period?",
+      "ground_truth": "423,823 Wikipedia revisions, made between 2004 and 2019",
+      "expected_passages": [
+        "It contains 180k biased sentences, and their neutral counterparts crawled from 423,823 Wikipedia revisions between 2004 and 2019."
+      ],
+      "id": "q5"
+    },
+    {
+      "category": "factual",
+      "question": "By what margin does the proposed ensemble outperform BERT-large?",
+      "ground_truth": "By 5.6 F1 score (and 5.95% accuracy)",
+      "expected_passages": [
+        "We show that our model outperforms the baselines by a margin of 5.6 of F1 score and 5.95% of Accuracy."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "What F1, precision, and accuracy does the best (ensemble) model achieve?",
+      "ground_truth": "0.704 F1, 0.733 precision, and 71.61% accuracy",
+      "expected_passages": [
+        "Our proposed ensemble comprising of $RoBERTa_{large}$, $ALBERT_{xxlarge.v2}$, $DistilRoBERTa$ and $BERT$ outperforms all the proposed models obtaining $0.704$ F1 score, $0.733$ precision, and $71.61\\%$ Accuracy."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "Which BERT-based models are explored?",
+      "ground_truth": "BERT, RoBERTa, and ALBERT (in base and large specifications), along with distilled variants",
+      "expected_passages": [
+        "We explore various BERT-based models, including BERT, RoBERTa, ALBERT, with their base and large specifications along with their native classifiers."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "factual",
+      "question": "What ensembling technique is used, and which models make up the best ensemble?",
+      "ground_truth": "A weighted-average ensembling technique, combining RoBERTa-large, ALBERT-xxlarge.v2, DistilRoBERTa, and BERT",
+      "expected_passages": [
+        "Lastly, we use the weighted-average ensembling technique to exploit the predictions made by different variations of the above models.",
+        "We experiment with variations of $RoBERTa_{large}$, $ALBERT_{xxlarge.v2}$, $DistilRoBERTa$ and $BERT$ and outline selected combinations in tab:experimental-results."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "factual",
+      "question": "What fine-tuning settings are used for the BERT-based models?",
+      "ground_truth": "A learning rate of 2e-5, a maximum sequence length of 50, and a weight decay of 0.01, with a 90:10 train-test split",
+      "expected_passages": [
+        "For all BERT-based models, we use a learning rate of 2e-5, a maximum sequence length of 50, and a weight decay of 0.01 while finetuning the model."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is subjective bias, and why is detecting it important?",
+      "ground_truth": "Subjective bias refers to aspects of communication that express opinions, evaluations and speculations - introduced through inflammatory words and phrases, casting doubt over facts, and presupposing the truth. Detecting it is important for applications like propaganda detection, content recommendation, sentiment analysis, and bias neutralization.",
+      "expected_passages": [
+        "Subjective bias detection is critical for applications like propaganda detection, content recommendation, sentiment analysis, and bias neutralization. This bias is introduced in natural language via inflammatory words and phrases, casting doubt over facts, and presupposing the truth.",
+        "In natural language, subjectivity refers to the aspects of communication used to express opinions, evaluations, and speculations, often influenced by one's emotional state and viewpoints."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does this work extend prior work on subjective bias?",
+      "ground_truth": "Prior work focused on detecting and mitigating subjective bias for single-word edits (using logistic regression with linguistic features, and later a BERT-based model). This work extends that by incorporating multi-word edits and detecting bias at the sentence level, and by evaluating on the full WNC corpus in a general setting rather than a controlled one.",
+      "expected_passages": [
+        "However, they primarily focused on detecting and mitigating subjective bias for single-word edits. We extend their work by incorporating multi-word edits by detecting bias at the sentence level. We further use their version of the NPOV corpus called Wiki Neutrality Corpus(WNC) for this work."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "What three approaches do the authors propose?",
+      "ground_truth": "Optimized BERT-based models (such as RoBERTa and ALBERT), distilled pretrained BERT-based models (such as DistilRoBERTa), and ensemble methods that combine the predictions of several models.",
+      "expected_passages": [
+        "We further propose three approaches: optimized BERT-based models, distilled pretrained models, and the use of ensemble methods for the task of subjectivity detection."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "synthesis",
+      "question": "What do the authors find about distilled models and ensembles?",
+      "ground_truth": "Ensemble models perform best overall. The distilled DistilRoBERTa model performs competitively (about 69.69% accuracy and 0.672 F1), showing that distilled pretrained models can replace their undistilled counterparts in a low-computing environment.",
+      "expected_passages": [
+        "We note that DistillRoBERTa, a distilled model, performs competitively, achieving 69.69% accuracy, and 0.672 F1 score. This observation shows that distilled pretrained models can replace their undistilled counterparts in a low-computing environment.",
+        "We further observe that ensemble models perform better than optimized BERT-based models and distilled pretrained models."
+      ],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What accuracy does the model achieve at detecting subjective bias in news articles?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

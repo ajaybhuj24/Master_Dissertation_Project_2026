@@ -1,0 +1,148 @@
+{
+  "paper_id": "1912.13072",
+  "paper_title": "AraNet: A Deep Learning Toolkit for Arabic Social Media",
+  "created_at": "2026-07-01T13:05:55.292872+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "Did they experiment on all the tasks?",
+      "ground_truth": "Yes",
+      "expected_passages": [
+        "Implementation & Models Parameters. For all our tasks, we use the BERT-Base Multilingual Cased model released by the authors. The model is trained on 104 languages (including Arabic) with 12 layer, 768 hidden units each, 12 attention heads, and has 110M parameters in entire model. The model has 119,547 shared WordPieces vocabulary, and was pre-trained on the entire Wikipedia for each language. For fine-tuning, we use a maximum sequence size of 50 tokens and a batch size of 32. We set the learning rate to $2e-5$ and train for 15 epochs and choose the best model based on performance on a development set. We use the same hyper-parameters in all of our BERT models. We fine-tune BERT on each respective labeled dataset for each task. For BERT input, we apply WordPiece tokenization, setting the maximal sequence length to 50 words/WordPieces. For all tasks, we use a TensorFlow implementation. An exception is the sentiment analysis task, where we used a PyTorch implementation with the same hyper-parameters but with a learning rate $2e-6$.",
+        "We presented AraNet, a deep learning toolkit for a host of Arabic social media processing. AraNet predicts age, dialect, gender, emotion, irony, and sentiment from social media posts. It delivers state-of-the-art and competitive performance on these tasks and has the advantage of using a unified, simple framework based on the recently-developed BERT model. AraNet has the potential to alleviate issues related to comparing across different Arabic social media NLP tasks, by providing one way to test new models against AraNet predictions. Our toolkit can be used to make important discoveries on the wide region of the Arab world, and can enhance our understating of Arab online communication. AraNet will be publicly available upon acceptance."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "factual",
+      "question": "What models did they compare to?",
+      "ground_truth": "we do not explicitly compare to previous research since most existing works either exploit smaller data (and so it will not be a fair comparison), use methods pre-dating BERT (and so will likely be outperformed by our models)",
+      "expected_passages": [
+        "Although we create new models for tasks such as sentiment analysis and gender detection as part of AraNet, our focus is more on putting together the toolkit itself and providing strong baselines that can be compared to. Hence, although we provide some baseline models for some of the tasks, we do not explicitly compare to previous research since most existing works either exploit smaller data (and so it will not be a fair comparison), use methods pre-dating BERT (and so will likely be outperformed by our models). For many of the tasks we model, there have not been standard benchmarks for comparisons across models. This makes it difficult to measure progress and identify areas worthy of allocating efforts and budgets. As such, by publishing our toolkit models, we believe model-based comparisons will be one way to relieve this bottleneck. For these reasons, we also package models from our recent works on dialect and irony as part of AraNet."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "What datasets are used in training?",
+      "ground_truth": "Arap-Tweet | an in-house Twitter dataset for gender | the MADAR shared task 2 | the LAMA-DINA dataset from | LAMA-DIST | Arabic tweets released by IDAT@FIRE2019 shared-task | ,,,,,,,,,,",
+      "expected_passages": [
+        "Arab-Tweet. For modeling age and gender, we use Arap-Tweet, which we will refer to as Arab-Tweet. Arab-tweet is a tweet dataset of 11 Arabic regions from 17 different countries. For each region, data from 100 Twitter users were crawled. Users needed to have posted at least 2,000 and were selected based on an initial list of seed words characteristic of each region. The seed list included words such as <برشة> /barsha/ ‘many’ for Tunisian Arabic and <وايد> /wayed/ ‘many’ for Gulf Arabic. employed human annotators to verify that users do belong to each respective region. Annotators also assigned gender labels from the set male, female and age group labels from the set under-25, 25-to34, above-35 at the user-level, which in turn is assigned at tweet level. Tweets with less than 3 words and re-tweets were removed. Refer to for details about how annotation was carried out. We provide a description of the data in Table TABREF10. Table TABREF10 also provides class breakdown across our splits.We note that do not report classification models exploiting the data.",
+        "UBC Twitter Gender Dataset. We also develop an in-house Twitter dataset for gender. We manually labeled 1,989 users from each of the 21 Arab countries. The data had 1,246 “male\", 528 “female\", and 215 unknown users. We remove the “unknown\" category and balance the dataset to have 528 from each of the two `male\" and “female\" categories. We ended with 69,509 tweets for `male\" and 67,511 tweets for “female\". We split the users into 80% TRAIN set (110,750 tweets for 845 users), 10% DEV set (14,158 tweets for 106 users), and 10% TEST set (12,112 tweets for 105 users). We, then, model this dataset with BERT-Base, Multilingual Cased model and evaluate on development and test sets. Table TABREF15 shows that fine-tuned model obtains 62.42% acc on DEV and 60.54% acc on TEST.",
+        "The dialect identification model in AraNet is based on our winning system in the MADAR shared task 2 as described in. The corpus is divided into train, dev and test, and the organizers masked test set labels. We lost some tweets from training data when we crawled using tweet ids, ultimately acquiring 2,036 (TRAIN-A), 281 (DEV) and 466 (TEST). We also make use of the task 1 corpus (95,000 sentences). More specifically, we concatenate the task 1 data to the training data of task 2, to create TRAIN-B. Again, note that TEST labels were only released to participants after the official task evaluation. Table TABREF17 shows statistics of the data. We used tweets from 21 Arab countries as distributed by task organizers, except that we lost some tweets when we crawled using tweet ids. We had 2,036 (TRAIN-A), 281 (DEV) and 466 (TEST). For our experiments, we also make use of the task 1 corpus (95,000 sentences). More specifically, we concatenate the task 1 data to the training data of task 2, to create TRAIN-B. Note that both DEV and TEST across our experiments are exclusively the data released in task 2, as described above. TEST labels were only released to participants after the official task evaluation. Table TABREF17 shows statistics of the data. More information about the data is in. We use TRAIN-A to perform supervised modeling with BERT and TRAIN-B for self training, under various conditions. We refer the reader to for more information about our different experimental settings on dialect id. We acquire our best results with self-training, with a classification accuracy of 49.39% and F1 score at 35.44. This is the winning system model in the MADAR shared task and we showed in that our tweet-level predictions can be ported to user-level prediction. On user-level detection, our models perform superbly, with 77.40% acc and 71.70% F1 score on unseen MADAR blind test data.",
+        "We make use of two datasets, the LAMA-DINA dataset from, a Twitter dataset with a combination of gold labels from and distant supervision labels. The tweets are labeled with the Plutchik 8 primary emotions from the set: {anger, anticipation, disgust, fear, joy, sadness, surprise, trust}. The distant supervision approach depends on use of seed phrases with the Arabic first person pronoun انا> (Eng. “I\") + a seed word expressing an emotion, e.g., فرحان> (Eng. “happy\"). The manually labeled part of the data comprises tweets carrying the seed phrases verified by human annotators $9,064$ tweets for inclusion of the respective emotion. The rest of the dataset is only labeled using distant supervision (LAMA-DIST) ($182,605$ tweets). For more information about the dataset, readers are referred to. The data distribution over the emotion classes is in Table TABREF20. We combine LAMA+DINA and LAMA-DIST training set and refer to this new training set as LAMA-D2 (189,903 tweets). We fine-tune BERT-Based, Multilingual Cased on the LAMA-D2 and evaluate the model with same DEV and TEST sets from LAMA+DINA. On DEV set, the fine-tuned BERT model obtains 61.43% on accuracy and 58.83 on $F_1$ score. On TEST set, we acquire 62.38% acc and 60.32% $F_1$ score.",
+        "We use the dataset for irony identification on Arabic tweets released by IDAT@FIRE2019 shared-task. The shared task dataset contains 5,030 tweets related to different political issues and events in the Middle East taking place between 2011 and 2018. Tweets are collected using pre-defined keywords (i.e., targeted political figures or events) and the positive class involves ironic hashtags such as #sokhria, #tahakoum, and #maskhara (Arabic variants for “irony\"). Duplicates, retweets, and non-intelligible tweets are removed by organizers. Tweets involve both MSA as well as dialects at various degrees of granularity such as Egyptian, Gulf, and Levantine.",
+        "We collect 15 datasets related to sentiment analysis of Arabic, including MSA and dialects,,,,,,,,,,. Table TABREF28 shows all the corpora we use. These datasets involve different types of sentiment analysis tasks such as binary classification (i.e., negative or positive), 3-way classification (i.e., negative, neutral, or positive), and subjective language detection. To combine these datasets for binary sentiment classification, we normalize different types of label to binary labels in the set $\\lbrace `positive^{\\prime }, `negative^{\\prime }\\rbrace $ by following rules:"
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "What six prediction tasks does AraNet cover?",
+      "ground_truth": "Age, dialect, gender, emotion, irony, and sentiment",
+      "expected_passages": [
+        "We presented AraNet, a deep learning toolkit for a host of Arabic social media processing. AraNet predicts age, dialect, gender, emotion, irony, and sentiment from social media posts."
+      ],
+      "id": "q4"
+    },
+    {
+      "category": "factual",
+      "question": "What base model and fine-tuning hyperparameters are used across the tasks?",
+      "ground_truth": "The BERT-Base Multilingual Cased model, fine-tuned with a maximum sequence length of 50 tokens, batch size 32, learning rate 2e-5, and 15 epochs (sentiment uses learning rate 2e-6)",
+      "expected_passages": [
+        "For all our tasks, we use the BERT-Base Multilingual Cased model released by the authors. The model is trained on 104 languages (including Arabic) with 12 layer, 768 hidden units each, 12 attention heads, and has 110M parameters in entire model.",
+        "For fine-tuning, we use a maximum sequence size of 50 tokens and a batch size of 32. We set the learning rate to 2e-5 and train for 15 epochs and choose the best model based on performance on a development set."
+      ],
+      "id": "q5"
+    },
+    {
+      "category": "factual",
+      "question": "What eight emotion categories are used for the emotion task?",
+      "ground_truth": "The Plutchik 8 primary emotions: anger, anticipation, disgust, fear, joy, sadness, surprise, and trust",
+      "expected_passages": [
+        "The tweets are labeled with the Plutchik 8 primary emotions from the set: {anger, anticipation, disgust, fear, joy, sadness, surprise, trust}."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "How is AraNet distributed for use?",
+      "ground_truth": "As a Python library and a command-line tool, available through pip or from source on GitHub",
+      "expected_passages": [
+        "AraNet can be used as a Python library or a command-line tool:",
+        "AraNet is available through pip or from source on GitHub with detailed documentation."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "For which task do the authors use semi-supervised self-training?",
+      "ground_truth": "The dialect identification task",
+      "expected_passages": [
+        "Only for the dialect id task, we investigate augmenting our human-labeled training data with automatically-predicted data from self-training."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is AraNet and what is its main advantage?",
+      "ground_truth": "AraNet is a collection of deep-learning tools for Arabic social-media processing that uses BERT to predict age, dialect, gender, emotion, irony and sentiment. Its main advantages are a unified, simple BERT-based framework that is feature-engineering free, and that it is (to the authors' knowledge) the first to perform predictions across such a wide range of tasks for Arabic NLP.",
+      "expected_passages": [
+        "We describe AraNet, a collection of deep learning Arabic social media processing tools. Namely, we exploit an extensive host of publicly available and novel social media datasets to train bidirectional encoders from transformer models (BERT) to predict age, dialect, gender, emotion, irony, and sentiment.",
+        "In addition, AraNet has the advantage of being exclusively based on a deep learning framework and hence feature engineering free."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does the self-training method work for dialect identification?",
+      "ground_truth": "A classifier is first trained on a (usually small) set of labeled samples, then used to classify an unlabeled sample set. The most confident predictions from the supervised model are added to the labeled set and the model is iteratively re-trained, using different confidence thresholds and different percentages of the predicted data.",
+      "expected_passages": [
+        "Self-training is a wrapper method for semi-supervised learning, where a classifier is initially trained on a (usually small) set of labeled samples $\\textbf {\\textit {D}}^{l}$, then is used to classify an unlabeled sample set $\\textbf {\\textit {D}}^{u}$. Most confident predictions acquired by the original supervised model are added to the labeled set, and the model is iteratively re-trained."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does the fine-tuned BERT compare with the small-GRU baseline on age, gender and irony?",
+      "ground_truth": "BERT significantly outperforms the small-GRU baseline: on Arab-Tweet it improves accuracy by 15.13% for age and 11.93% for gender over the small-GRU, and on the irony task BERT reaches 81.64% accuracy versus the small-GRU's 73.70%.",
+      "expected_passages": [
+        "We can find that BERT models significantly perform better than our baseline on the two tasks. It improve with 15.13% (for age) and 11.93% acc (for gender) over the small-GRU.",
+        "The small-GRU obtain 73.70% accuracy and 73.47% F1 score. BERT model significantly out-performance than small-GRU, which achieve 81.64% accuracy and 81.62% F1 score."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "Why don't the authors explicitly compare AraNet to previous research?",
+      "ground_truth": "Because most existing works either use smaller data (making comparison unfair) or use methods that pre-date BERT (and would likely be outperformed), and for many of the tasks there are no standard benchmarks. Instead the authors provide strong baselines and publish their toolkit models so that future model-based comparisons become possible.",
+      "expected_passages": [
+        "we do not explicitly compare to previous research since most existing works either exploit smaller data (and so it will not be a fair comparison), use methods pre-dating BERT (and so will likely be outperformed by our models). For many of the tasks we model, there have not been standard benchmarks for comparisons across models."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does user-level dialect prediction compare with tweet-level prediction?",
+      "ground_truth": "At the tweet level the best dialect-identification result (with self-training) is 49.39% accuracy and 35.44 F1, but porting the tweet-level predictions to the user level performs much better, reaching 77.40% accuracy and 71.70% F1 on the unseen MADAR blind test data.",
+      "expected_passages": [
+        "We acquire our best results with self-training, with a classification accuracy of 49.39% and F1 score at 35.44. This is the winning system model in the MADAR shared task and we showed in that our tweet-level predictions can be ported to user-level prediction. On user-level detection, our models perform superbly, with 77.40% acc and 71.70% F1 score on unseen MADAR blind test data."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What accuracy does AraNet achieve on English sentiment analysis?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "How many parameters does AraNet's sentiment classifier add on top of BERT?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI, OpenAIError
@@ -12,6 +13,7 @@ from .evaluation.ragas_runner import evaluate_one
 from .routers.ask import router as ask_router
 from .routers.batch import router as batch_router
 from .routers.benchmark import router as benchmark_router
+from .routers.corpus import router as corpus_router
 from .routers.results import router as results_router
 from .routers.upload import router as paper_router
 from .schemas.evaluation import HealthRagasResponse
@@ -60,6 +62,14 @@ def root() -> dict:
             "GET /results/master": "download the master append-only CSV",
             "GET /results/files": "list every file in data/results/",
             "GET /results/files/{name}": "download one specific result file",
+            "POST /corpus/papers": "add a PDF to the corpus experiment (additive, tagged)",
+            "GET /corpus/papers": "list corpus PDFs + total word count",
+            "DELETE /corpus/papers/{paper_id}": "remove one corpus PDF",
+            "DELETE /corpus": "clear the corpus namespace + registry",
+            "POST /corpus/sweep": "launch a word-count-vs-performance sweep (returns a job_id)",
+            "GET /corpus/sweeps": "list past sweeps (newest first)",
+            "GET /corpus/sweeps/{sweep_id}": "full sweep result (all points) for the trend chart",
+            "DELETE /corpus/sweeps/{sweep_id}": "delete one persisted sweep",
             "GET /docs": "Swagger UI",
             "GET /redoc": "ReDoc UI",
         },
@@ -71,6 +81,7 @@ app.include_router(ask_router)
 app.include_router(benchmark_router)
 app.include_router(batch_router)
 app.include_router(results_router)
+app.include_router(corpus_router)
 
 
 @app.get("/health", tags=["health"])

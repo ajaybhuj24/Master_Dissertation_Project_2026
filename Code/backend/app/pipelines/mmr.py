@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 from ..schemas.ask import PipelineResult, RetrievedContext
@@ -13,12 +14,14 @@ class MMRPipeline(Pipeline):
 
     def run(self, question: str, ctx: PipelineCtx) -> PipelineResult:
         t0 = self._now_ms()
-        vector_store = ctx.get_vector_store(self.namespace)
+        ns = ctx.namespace_override or self.namespace
+        vector_store = ctx.get_vector_store(ns)
         docs = vector_store.max_marginal_relevance_search(
             query=question,
             k=ctx.top_k,
             fetch_k=ctx.settings.mmr_fetch_k,
             lambda_mult=ctx.settings.mmr_lambda,
+            filter=ctx.retrieval_filter,
         )
         contexts: list[RetrievedContext] = [
             RetrievedContext(

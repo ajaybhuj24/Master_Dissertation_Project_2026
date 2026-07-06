@@ -1,0 +1,143 @@
+{
+  "paper_id": "1907.05664",
+  "paper_title": "Saliency Maps Generation for Automatic Text Summarization",
+  "created_at": "2026-07-01T13:05:55.272641+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "Which baselines did they compare?",
+      "ground_truth": "The baseline model is a deep sequence-to-sequence encoder/decoder model with attention. The encoder is a bidirectional Long-Short Term Memory(LSTM) cell and the decoder a single LSTM cell with attention mechanism. The attention mechanism is computed as in and we use a greedy search for decoding. We train end-to-end including the words embeddings. The embedding size used is of 128 and the hidden state size of the LSTM cells is of 254.",
+      "expected_passages": [
+        "We present in this section the baseline model from See et al. See2017 trained on the CNN/Daily Mail dataset. We reproduce the results from See et al. See2017 to then apply LRP on it.",
+        "The baseline model is a deep sequence-to-sequence encoder/decoder model with attention. The encoder is a bidirectional Long-Short Term Memory(LSTM) cell and the decoder a single LSTM cell with attention mechanism. The attention mechanism is computed as in and we use a greedy search for decoding. We train end-to-end including the words embeddings. The embedding size used is of 128 and the hidden state size of the LSTM cells is of 254."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "synthesis",
+      "question": "How many attention layers are there in their model?",
+      "ground_truth": "one",
+      "expected_passages": [
+        "The baseline model is a deep sequence-to-sequence encoder/decoder model with attention. The encoder is a bidirectional Long-Short Term Memory(LSTM) cell and the decoder a single LSTM cell with attention mechanism. The attention mechanism is computed as in and we use a greedy search for decoding. We train end-to-end including the words embeddings. The embedding size used is of 128 and the hidden state size of the LSTM cells is of 254."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "Is the explanation from saliency map correct?",
+      "ground_truth": "No",
+      "expected_passages": [
+        "We showed that in some cases the saliency maps are truthful to the network's computation, meaning that they do highlight the input features that the network focused on. But we also showed that in some cases the saliency maps seem to not capture the important input features. This brought us to discuss the fact that these attributions are not sufficient by themselves, and that we need to define the counter-factual case and test it to measure how truthful the saliency maps are.",
+        "The second observation we can make is that the saliency map doesn't seem to highlight the right things in the input for the summary it generates. The saliency maps on Figure 3 correspond to the summary from Figure 1, and we don't see the word “video\" highlighted in the input text, which seems to be important for the output."
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "Which explanation/attribution technique is applied to the summarization model?",
+      "ground_truth": "Layer-Wise Relevance Propagation (LRP)",
+      "expected_passages": [
+        "We use in this paper Layer-Wise Relevance Propagation (LRP) which aims at redistributing the value of the classifying function on the input to obtain the importance attribution."
+      ],
+      "id": "q4"
+    },
+    {
+      "category": "factual",
+      "question": "What dataset is used, and how large is it?",
+      "ground_truth": "The CNN/Daily Mail summarization dataset - around three hundred thousand news articles with ~3-sentence summaries; 287,000 training pairs and 11,500 test pairs, with articles averaging 780 words and summaries 50 words",
+      "expected_passages": [
+        "It contains around three hundred thousand news articles coupled with summaries of about three sentences.",
+        "Articles have an average length of 780 words and the summaries of 50 words. We had 287 000 training pairs and 11 500 test pairs."
+      ],
+      "id": "q5"
+    },
+    {
+      "category": "factual",
+      "question": "What vocabulary size and input/output length limits are used during training?",
+      "ground_truth": "A vocabulary of 50,000; the input text is limited to 400 words and summaries of 200 words are generated",
+      "expected_passages": [
+        "Similarly to See et al. See2017, we limit during training and prediction the input text to 400 words and generate summaries of 200 words. We pad the shorter texts using an UNKNOWN token and truncate the longer texts. We embed the texts and summaries using a vocabulary of size 50 000, thus recreating the same parameters as See et al. See2017."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "What are the word-embedding size and the LSTM hidden-state size of the model?",
+      "ground_truth": "Embedding size 128 and LSTM hidden-state size 254",
+      "expected_passages": [
+        "We train end-to-end including the words embeddings. The embedding size used is of 128 and the hidden state size of the LSTM cells is of 254."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "How many parameters does the network have, and for how many epochs is it trained?",
+      "ground_truth": "21,350,992 parameters, trained for about 60 epochs",
+      "expected_passages": [
+        "We train the 21 350 992 parameters of the network for about 60 epochs until we achieve results that are qualitatively equivalent to the results of See et al. See2017."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "factual",
+      "question": "What value is the epsilon stabilizer set to in the LRP propagation rule?",
+      "ground_truth": "0.00001",
+      "expected_passages": [
+        "epsilon is the stabilizing term set to 0.00001 and D_l is the dimension of the l -th layer."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is the goal of this paper?",
+      "ground_truth": "To test the limits of saliency-map (attribution) techniques on a complex generative task - abstractive text summarization - rather than the usual classification tasks, and to question whether the resulting saliency maps are truthful explanations of the model's behaviour.",
+      "expected_passages": [
+        "Our goal in this paper is to test the limits of the use of such a technique for more complex tasks, where the notion of input importance might not be as simple as in topic classification or sentiment analysis. We changed from a classification task to a generative task and chose a more complex one than text translation"
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is LRP, and what do positive and negative relevance mean?",
+      "ground_truth": "LRP (Layer-Wise Relevance Propagation) redistributes the model's output value backward through the layers to the input to attribute importance, called relevance. Positive relevance represents evidence that led to the result, while negative relevance represents evidence that participated negatively in the prediction.",
+      "expected_passages": [
+        "LRP redistributes the output of the model from the output layer to the input by transmitting information backwards through the layers. We call this propagated backwards importance the relevance. LRP has the particularity to attribute negative and positive relevance: a positive relevance is supposed to represent evidence that led to the classifier's result while negative relevance represents evidence that participated negatively in the prediction."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "What two main observations do the authors make about the generated saliency maps?",
+      "ground_truth": "First, the roughly 50 saliency maps for a given text are almost identical to one another and are uncorrelated with the attention distribution. Second, the maps do not always highlight the right input words for the summary that is generated.",
+      "expected_passages": [
+        "The first observation that is made is that for one text, the 50 saliency maps are almost identical. Indeed each mapping highlights mainly the same input words with only slight variations of importance.",
+        "The second observation we can make is that the saliency map doesn't seem to highlight the right things in the input for the summary it generates."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "What validation protocol do the authors propose, and what do they find?",
+      "ground_truth": "A counterfactual test: incrementally delete the most important words (those with the highest average absolute relevance) from the input and compare the summary degradation against deleting the least important words. The results are mixed - for some texts deleting important words quickly degrades the summary (a truthful attribution) while for others it makes no difference (not truthful) - so attributions must be quantitatively validated before being trusted.",
+      "expected_passages": [
+        "We delete incrementally the important words (words with the highest average) in the input and compared it to the control experiment that consists of deleting the least important word and compare the degradation of the resulting summaries. We obtain mitigated results: for some texts, we observe a quick degradation when deleting important words which are not observed when deleting unimportant words (see Figure 4), but for other test examples we don't observe a significant difference between the two settings (see Figure 5).",
+        "We showed that in some cases the saliency maps are truthful to the network's computation, meaning that they do highlight the input features that the network focused on. But we also showed that in some cases the saliency maps seem to not capture the important input features."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What ROUGE score does the summarization model achieve on the test set?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "How do the LRP saliency maps compare with SHAP values?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

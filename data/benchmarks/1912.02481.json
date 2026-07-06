@@ -1,0 +1,142 @@
+{
+  "paper_id": "1912.02481",
+  "paper_title": "Massive vs. Curated Word Embeddings for Low-Resourced Languages. The Case of Yor\\`ub\\'a and Twi",
+  "created_at": "2026-07-01T13:05:55.289312+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "What turn out to be more important high volume or high quality data?",
+      "ground_truth": "only high-quality data helps",
+      "expected_passages": [
+        "The Spearman $\\rho $ correlation for fastText models on the curated small dataset (clean), C1, improves the baselines by a large margin ($\\rho =0.354$ for Twi and 0.322 for Yorùbá) even with a small dataset. The improvement could be justified just by the larger vocabulary in Twi, but in the case of Yorùbá the enhancement is there with almost half of the vocabulary size. We found out that adding some noisy texts (C2 dataset) slightly improves the correlation for Twi language but not for the Yorùbá language. The Twi language benefits from Wikipedia articles because its inclusion doubles the vocabulary and reduces the bias of the model towards religious texts. However, for Yorùbá, noisy texts often ignore diacritics or tonal marks which increases the vocabulary size at the cost of an increment in the ambiguity too. As a result, the correlation is slightly hurt. One would expect that training with more data would improve the quality of the embeddings, but we found out with the results obtained with the C3 dataset, that only high-quality data helps. The addition of JW300 boosts the vocabulary in both cases, but whereas for Twi the corpus mixes dialects and is noisy, for Yorùbá it is very clean and with full diacritics. Consequently, the best embeddings for Yorùbá are obtained when training with the C3 dataset, whereas for Twi, C2 is the best option. In both cases, the curated embeddings improve the correlation with human judgements on the similarity task a $\\Delta \\rho =+0.25$ or, equivalently, by an increment on $\\rho $ of 170% (Twi) and 180% (Yorùbá)."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "out_of_scope",
+      "question": "How much is model improved by massive data and how much by quality?",
+      "ground_truth": null,
+      "expected_passages": []
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "What two architectures are used?",
+      "ground_truth": "fastText | CWE-LP",
+      "expected_passages": [
+        "As a first experiment, we compare the quality of fastText embeddings trained on (high-quality) curated data and (low-quality) massively extracted data for Twi and Yorùbá languages.",
+        "The huge ambiguity in the written Twi language motivates the exploration of different approaches to word embedding estimations. In this work, we compare the standard fastText methodology to include sub-word information with the character-enhanced approach with position-based clustered embeddings (CWE-LP as introduced in Section SECREF17). With the latter, we expect to specifically address the ambiguity present in a language that does not translate the different oral tones on vowels into the written language."
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "Which two low-resourced African languages does the paper study?",
+      "ground_truth": "Yorùbá and Twi",
+      "expected_passages": [
+        "In this work, we focus on two African languages, Yorùbá and Twi, and carry out several experiments to verify this claim."
+      ],
+      "id": "q4"
+    },
+    {
+      "category": "factual",
+      "question": "What word-similarity test set is used, and how is it obtained for these languages?",
+      "ground_truth": "wordsim-353 (353 word pairs scored 0 to 10), manually translated from English by native speakers of Yorùbá and Twi",
+      "expected_passages": [
+        "wordsim-353 is a collection of 353 pairs annotated with semantic similarity scores in a scale from 0 to 10.",
+        "All the 353 word pairs were translated from English to Yorùbá by 3 native speakers."
+      ],
+      "id": "q5"
+    },
+    {
+      "category": "factual",
+      "question": "How many tokens are in the pre-trained Twi fastText model's vocabulary?",
+      "ground_truth": "Only 935 tokens",
+      "expected_passages": [
+        "The pre-trained Twi model has only 935 tokens. For Yorùbá, things are apparently better with more than 150 k tokens when both Wikipedia and Common Crawl are used but correlation is even lower. An inspection of the pre-trained embeddings indicates that over 135 k words belong to other languages mostly English, French and Arabic."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "What tasks and metrics are used to evaluate the embeddings?",
+      "ground_truth": "A word similarity/relatedness task (Spearman correlation with human judgements on wordsim-353) and a named entity recognition task (F1 score)",
+      "expected_passages": [
+        "Also, we discuss the quality of the embeddings as measured by the correlation with human judgements on the translated wordSim-353 test sets and by the F1 score in a NER task."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "What Spearman correlations do the best curated embeddings reach for Yorùbá and Twi?",
+      "ground_truth": "About 0.39 for Yorùbá and 0.44 for Twi (up from 0.14 with the massive Wikipedia embeddings)",
+      "expected_passages": [
+        "By carefully gathering high-quality data and optimising the models to the characteristics of each language, we deliver embeddings with correlations of 0.39 (Yorùbá) and 0.44 (Twi) on the same test set, still far from the high-resourced models, but representing an improvement over 170% on the task."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "factual",
+      "question": "What F1 does multilingual BERT achieve on Yorùbá NER before fine-tuning, compared with English?",
+      "ground_truth": "An F1 score of 0 on Yorùbá, versus 58.1 on English (after 4 epochs)",
+      "expected_passages": [
+        "we find out that fine-tuning the pre-trained multilingual-uncased BERT for 4 epochs on the NER task gives an F1 score of 0. If we do the same experiment in English, F1 is 58.1 after 4 epochs."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is the main claim and finding of the paper?",
+      "ground_truth": "That massively generated embeddings perform poorly for low-resourced languages compared with high-resourced ones, due to both the quantity and the quality of the data. By carefully gathering high-quality data and choosing models suited to each language, the authors obtain much better embeddings (an improvement of 170-180% on the similarity task), though still below high-resourced levels.",
+      "expected_passages": [
+        "In our analysis, we show how massively generated embeddings perform poorly for low-resourced languages as compared to the performance for high-resourced ones. This is due both to the quantity but also the quality of the data used."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "Why do the massive Wikipedia/Common Crawl embeddings perform so poorly for these languages?",
+      "ground_truth": "Mainly because of limited and noisy vocabulary: the pre-trained Twi model has only 935 tokens, and for Yorùbá over 135k of its ~150k words actually belong to other languages (English, French, Arabic). The Wikipedia text also lacks diacritics for Yorùbá and mixes dialects and English sentences for Twi.",
+      "expected_passages": [
+        "An important reason for the low performance is the limited vocabulary. The pre-trained Twi model has only 935 tokens.",
+        "An inspection of the pre-trained embeddings indicates that over 135 k words belong to other languages mostly English, French and Arabic."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "What do the authors find about data quantity versus data quality?",
+      "ground_truth": "More data does not always help - only high-quality data does. Adding noisy text hurt Yorùbá (because it drops diacritics and increases ambiguity), and Twi embeddings were significantly better when trained on 742k carefully selected tokens than on 16 million noisy tokens.",
+      "expected_passages": [
+        "One would expect that training with more data would improve the quality of the embeddings, but we found out with the results obtained with the C3 dataset, that only high-quality data helps.",
+        "Twi word embeddings are significantly better when training on 742 k selected tokens than on 16 million noisy tokens, and when using a model that takes into account single character information (CWE-LP) instead of n-gram information (fastText)."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "How do the CWE-LP and fastText models compare across the two languages?",
+      "ground_truth": "The character-enhanced CWE-LP model is especially beneficial for Twi, whose written form is highly ambiguous, giving the best correlation there. For clean Yorùbá text, which lacks that character-level ambiguity, the fastText character-n-gram approach works better - though on noisy Yorùbá (without diacritics) CWE's character information helps more.",
+      "expected_passages": [
+        "According to the results, CWE is specially beneficial for Twi but not always for Yorùbá. Clean Yorùbá text, does not have the ambiguity issues at character-level, therefore the n-gram approximation works better when enough clean data is used"
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "synthesis",
+      "question": "What is found when fine-tuning BERT for the Yorùbá NER task?",
+      "ground_truth": "The pre-trained multilingual BERT alone gives an F1 of 0 on Yorùbá, but fine-tuning it on the Yorùbá corpus raises the average F1 to over 47%, and using only Yorùbá vocabulary adds a further ~4% over the multilingual vocabulary. So fine-tuning on even a limited amount of monolingual low-resource data helps.",
+      "expected_passages": [
+        "These models are able to achieve a better performance on the NER task with an average F1 score of over 47% (see Table TABREF26 for the comparative). The fine-tuned BERT model with only Yorùbá vocabulary further increases by more than 4% in F1 score obtained with the tuning that uses the multilingual vocabulary."
+      ],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What BLEU score does the model achieve when translating Yorùbá into English?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

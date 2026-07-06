@@ -1,0 +1,141 @@
+{
+  "paper_id": "1712.09127",
+  "paper_title": "Generative Adversarial Nets for Multiple Text Corpora",
+  "created_at": "2026-07-01T13:05:55.262128+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "Which GAN do they use?",
+      "ground_truth": "We construct a GAN model which combines different sets of word embeddings INLINEFORM4, INLINEFORM5, into a single set of word embeddings INLINEFORM6.",
+      "expected_passages": [
+        "We assume that for each corpora INLINEFORM0, we are given word embeddings for each word INLINEFORM1, where INLINEFORM2 is the dimension of each word embedding. We are also given a classification task on documents that is represented by a parametric model INLINEFORM3 taking document embeddings as feature vectors. We construct a GAN model which combines different sets of word embeddings INLINEFORM4, INLINEFORM5, into a single set of word embeddings INLINEFORM6. Note that INLINEFORM7 are given but INLINEFORM8 is trained. Here we consider INLINEFORM9 as the generator, and the goal of the discriminator is to distinguish documents represented by the original embeddings INLINEFORM10 and the same documents represented by the new embeddings INLINEFORM11."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "factual",
+      "question": "Do they evaluate grammaticality of generated text?",
+      "ground_truth": "No",
+      "expected_passages": [
+        "We hypothesize that because weGAN takes into account document labels in a semi-supervised way, the embeddings trained from weGAN can better incorporate the labeling information and therefore, produce document embeddings which are better separated. The results are shown in Table 1 and averaged over 5 randomized runs. Performing the Welch's t-test, both changes after weGAN training are statistically significant at a INLINEFORM0 significance level. Because the Rand index captures matching accuracy, we observe from the Table 1 that weGAN tends to improve both metrics."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "factual",
+      "question": "Which corpora do they use?",
+      "ground_truth": "CNN, TIME, 20 Newsgroups, and Reuters-21578",
+      "expected_passages": [
+        "In the experiments, we consider four data sets, two of them newly created and the remaining two already public: CNN, TIME, 20 Newsgroups, and Reuters-21578. The code and the two new data sets are available at github.com/baiyangwang/emgan. For the pre-processing of all the documents, we transformed all characters to lower case, stemmed the documents, and ran the word2vec model on each corpora to obtain word embeddings with a size of 300. In all subsequent models, we only consider the most frequent INLINEFORM0 words across all corpora in a data set."
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "What is the dimensionality of the word2vec embeddings used in the experiments?",
+      "ground_truth": "300",
+      "expected_passages": [
+        "For the pre-processing of all the documents, we transformed all characters to lower case, stemmed the documents, and ran the word2vec model on each corpora to obtain word embeddings with a size of 300."
+      ],
+      "id": "q4"
+    },
+    {
+      "category": "factual",
+      "question": "Which of the four datasets are newly created by the authors and which are already public?",
+      "ground_truth": "CNN and TIME are newly created; 20 Newsgroups and Reuters-21578 are already public",
+      "expected_passages": [
+        "In the experiments, we consider four data sets, two of them newly created and the remaining two already public: CNN, TIME, 20 Newsgroups, and Reuters-21578. The code and the two new data sets are available at github.com/baiyangwang/emgan."
+      ],
+      "id": "q5"
+    },
+    {
+      "category": "factual",
+      "question": "For how many epochs and with what batch size are the models trained?",
+      "ground_truth": "100 epochs with a batch size of 50 per corpus",
+      "expected_passages": [
+        "For training our models, we apply a learning rate which increases linearly from INLINEFORM0 to INLINEFORM1 and train the models for 100 epochs with a batch size of 50 per corpus."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "What are the names of the two GAN models proposed, and what does each one produce?",
+      "ground_truth": "weGAN, which trains cross-corpus word embeddings, and deGAN, which generates document embeddings for multiple corpora",
+      "expected_passages": [
+        "We name the GAN model to train cross-corpus word embeddings as “weGAN,” where “we” stands for “word embeddings,” and the GAN model to generate document embeddings for multiple corpora as “deGAN,” where “de” stands for “document embeddings.”"
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "Which of the two models do the authors recommend, and on how many datasets does it outperform the other?",
+      "ground_truth": "weGAN is recommended; it outperforms deGAN in supervised learning on 3 out of 4 datasets",
+      "expected_passages": [
+        "The weGAN model outperforms deGAN in terms of supervised learning for 3 out of 4 data sets, and is thereby recommended."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "synthesis",
+      "question": "What two problems of training multi-corpus text data does the paper set out to solve with GANs?",
+      "ground_truth": "(1) Given a separate set of word embeddings per corpus, how to obtain a better set of cross-corpus word embeddings from them; and (2) how to incorporate the generation of document embeddings from different corpora within a single GAN model.",
+      "expected_passages": [
+        "We consider two problems associated with training multi-corpus text data: (1) Given a separate set of word embeddings from each corpus, such as the word2vec embeddings (Mikolov et al., 2013), how to obtain a better set of cross-corpus word embeddings from them? (2) How to incorporate the generation of document embeddings from different corpora in a single GAN model?"
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does weGAN train cross-corpus word embeddings, and what roles do the generator, discriminator, and classifier play?",
+      "ground_truth": "weGAN treats the combined cross-corpus word embeddings as the generator; the discriminator tries to distinguish documents represented by the original per-corpus embeddings from the same documents represented by the new combined embeddings, pushing the combined embeddings to resemble each original set. A classifier that predicts each document's corpus membership adds a semi-supervised signal so the embeddings also incorporate the labeling information.",
+      "expected_passages": [
+        "We construct a GAN model which combines different sets of word embeddings INLINEFORM4, INLINEFORM5, into a single set of word embeddings INLINEFORM6. Note that INLINEFORM7 are given but INLINEFORM8 is trained. Here we consider INLINEFORM9 as the generator, and the goal of the discriminator is to distinguish documents represented by the original embeddings INLINEFORM10 and the same documents represented by the new embeddings INLINEFORM11.",
+        "Meanwhile, we also consider classifier INLINEFORM4 with INLINEFORM5 outcomes, and associates INLINEFORM6 with label INLINEFORM7, so that the generator INLINEFORM8 can learn from the document labeling in a semi-supervised way."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does deGAN generate document embeddings for multiple corpora?",
+      "ground_truth": "deGAN builds one generator per corpus; each maps a noise vector to hidden topic vectors (one for general topics and one for corpus-specific topics) and then to a generated document embedding such as tf-idf. A single discriminator with 2K categories is used - K for the original corpora and K for the generated embeddings - and the generators are trained so their outputs are classified into the target corpus rather than the fake categories.",
+      "expected_passages": [
+        "For a generator INLINEFORM0 represented by its parameters, we first map the noise vector INLINEFORM1 to the hidden layer, which represents different topics. We consider two hidden vectors, INLINEFORM2 for general topics and INLINEFORM3 for specific topics per corpus",
+        "Because there are multiple corpora of text documents, here we consider INLINEFORM1 categories as output of INLINEFORM2, from which categories INLINEFORM3 represent the original corpora INLINEFORM4, and categories INLINEFORM5 represent the generated document embeddings (e.g. bag-of-words) from INLINEFORM6."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "How do the authors evaluate whether the GAN-trained embeddings improve over standard word2vec embeddings?",
+      "ground_truth": "For weGAN they use two metrics: clustering the documents into K clusters with K-means and computing the Rand index against the true corpus membership, and finetuning a classifier and comparing its error against an FFNN of the same structure initialized with word2vec. For deGAN they finetune its discriminator for document classification and compare against the same FFNN.",
+      "expected_passages": [
+        "For weGAN, we consider two metrics for comparing the embeddings trained from weGAN and those trained from all documents: (1) applying the document embeddings to cluster the documents into INLINEFORM0 clusters with the K-means algorithm, and calculating the Rand index (RI) (Rand, 1971) against the original corpus membership; (2) finetuning the classifier INLINEFORM1 and comparing the classification error against an FFNN of the same structure initialized with word2vec (w2v). For deGAN, we compare the performance of finetuning the discriminator of deGAN for document classification, and the performance of the same FFNN."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "What effect does weGAN training have on the nearest-neighbour synonyms of words?",
+      "ground_truth": "weGAN makes only small adjustments rather than structural changes - on average the top 10 synonyms of a word differ by about one word after training - but the resulting synonyms tend to be more relevant and up-to-date (e.g. 'Tillerson' becomes more similar to 'Obama', 'Clinton' appears among 'Trump' synonyms, and 'American' replaces 'British' for 'U.S.').",
+      "expected_passages": [
+        "On average, the top 10 synonyms of each word differ by INLINEFORM0 word after weGAN training, and INLINEFORM1 of all words have different top 10 synonyms after training. Therefore, weGAN tends to provide small adjustments rather than structural changes.",
+        "We observe from Table 2 that for “Obama,” ”Trump” and “Tillerson” are more similar after weGAN training, which means that the structure of the weGAN embeddings can be more up-to-date."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What GAN architecture do the authors use to generate photorealistic images of human faces?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What BLEU score does the model's generated text achieve on the test set?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}

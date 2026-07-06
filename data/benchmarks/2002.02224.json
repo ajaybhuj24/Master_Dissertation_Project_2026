@@ -1,0 +1,143 @@
+{
+  "paper_id": "2002.02224",
+  "paper_title": "Citation Data of Czech Apex Courts",
+  "created_at": "2026-07-01T13:05:55.297391+00:00",
+  "questions": [
+    {
+      "id": "q1",
+      "category": "factual",
+      "question": "Did they experiment on this dataset?",
+      "ground_truth": "Yes",
+      "expected_passages": [
+        "In order to obtain the citation data of the Czech apex courts, it was necessary to recognize and extract the references from the CzCDC 1.0. Given that training data for both the reference recognition model, and the text segmentation model are publicly available, we were able to conduct extensive error analysis and put together a pipeline to arguably achieve the maximum efficiency in the task. The pipeline described in this part is graphically represented in Figure FIGREF10.",
+        "At this point, it is necessary to evaluate the performance of the above mentioned part of the pipeline before proceeding further. The evaluation of the performance is summarised in Table TABREF11. It shows that organising the two models into the pipeline boosted the performance of the reference recognition model, leading to a higher F1 measure in the initial recognition of the text spans and their classification."
+      ]
+    },
+    {
+      "id": "q2",
+      "category": "factual",
+      "question": "How is quality of the citation measured?",
+      "ground_truth": "it is necessary to evaluate the performance of the above mentioned part of the pipeline before proceeding further. The evaluation of the performance is summarised in Table TABREF11. It shows that organising the two models into the pipeline boosted the performance of the reference recognition model, leading to a higher F1 measure in the initial recognition of the text spans and their classification.",
+      "expected_passages": [
+        "In order to obtain the citation data of the Czech apex courts, it was necessary to recognize and extract the references from the CzCDC 1.0. Given that training data for both the reference recognition model, and the text segmentation model are publicly available, we were able to conduct extensive error analysis and put together a pipeline to arguably achieve the maximum efficiency in the task. The pipeline described in this part is graphically represented in Figure FIGREF10.",
+        "At this point, it is necessary to evaluate the performance of the above mentioned part of the pipeline before proceeding further. The evaluation of the performance is summarised in Table TABREF11. It shows that organising the two models into the pipeline boosted the performance of the reference recognition model, leading to a higher F1 measure in the initial recognition of the text spans and their classification."
+      ]
+    },
+    {
+      "id": "q3",
+      "category": "synthesis",
+      "question": "How big is the dataset?",
+      "ground_truth": "903019 references",
+      "expected_passages": [
+        "Overall, through the process described in Section SECREF3, we have retrieved three datasets of extracted references - one dataset per each of the apex courts. These datasets consist of the individual pairs containing the identification of the decision from which the reference was retrieved, and the identification of the referred documents. As we only extracted references to other judicial decisions, we obtained 471,319 references from Supreme Court decisions, 167,237 references from Supreme Administrative Court decisions and 264,463 references from Constitutional Court Decisions. These are numbers of text spans identified as references prior the further processing described in Section SECREF3."
+      ]
+    },
+    {
+      "category": "factual",
+      "question": "Which three Czech courts' citation data does the dataset cover?",
+      "ground_truth": "The Supreme Court, the Supreme Administrative Court, and the Constitutional Court",
+      "expected_passages": [
+        "In this paper, we introduce the citation data of the Czech apex courts (Supreme Court, Supreme Administrative Court and Constitutional Court). This dataset was automatically extracted from the corpus of texts of Czech court decisions - CzCDC 1.0."
+      ],
+      "id": "q4"
+    },
+    {
+      "category": "factual",
+      "question": "From what corpus is the citation data extracted, and how many decisions does it contain?",
+      "ground_truth": "The Czech Court Decisions Corpus (CzCDC 1.0), which contains 237,723 decisions published between 1 January 1993 and 30 September 2018",
+      "expected_passages": [
+        "The dataset contains 237,723 decisions published between 1st January 1993 and the 30th September 2018. These decisions are organised into three sub-corpora."
+      ],
+      "id": "q5"
+    },
+    {
+      "category": "factual",
+      "question": "What two models make up the NLP pipeline?",
+      "ground_truth": "A document (text) segmentation model and a reference recognition model",
+      "expected_passages": [
+        "The pipeline included the (i) document segmentation model and the (ii) reference recognition model."
+      ],
+      "id": "q6"
+    },
+    {
+      "category": "factual",
+      "question": "What machine-learning method are both the segmentation and reference-recognition models based on?",
+      "ground_truth": "Conditional random fields (CRF)",
+      "expected_passages": [
+        "The model was trained using conditional random fields, which is a random field model that is globally conditioned on an observation sequence O.",
+        "The model for automatic segmentation of the text was trained using conditional random fields. The model was trained for each type independently."
+      ],
+      "id": "q7"
+    },
+    {
+      "category": "factual",
+      "question": "How many decisions are in each of the three sub-corpora of CzCDC 1.0?",
+      "ground_truth": "111,977 (Supreme Court), 52,660 (Supreme Administrative Court), and 73,086 (Constitutional Court)",
+      "expected_passages": [
+        "The sub-corpus of the Supreme Court contains 111,977 decisions, the sub-corpus of the Supreme Administrative Court contains 52,660 decisions and the sub-corpus of the Constitutional Court contains 73,086 decisions."
+      ],
+      "id": "q8"
+    },
+    {
+      "category": "factual",
+      "question": "How many references were extracted from each apex court's decisions?",
+      "ground_truth": "471,319 from the Supreme Court, 167,237 from the Supreme Administrative Court, and 264,463 from the Constitutional Court",
+      "expected_passages": [
+        "As we only extracted references to other judicial decisions, we obtained 471,319 references from Supreme Court decisions, 167,237 references from Supreme Administrative Court decisions and 264,463 references from Constitutional Court Decisions."
+      ],
+      "id": "q9"
+    },
+    {
+      "category": "synthesis",
+      "question": "What does the paper introduce, and why is it valuable?",
+      "ground_truth": "It introduces the first citation dataset of the three Czech apex courts, automatically extracted from CzCDC 1.0 with an NLP pipeline and then manually refined for higher quality. It is valuable because it is currently the only freely available resource of its kind for Czech court decisions, significantly reducing the cost of conducting legal citation and network-analysis studies.",
+      "expected_passages": [
+        "This paper introduced the first dataset of citation data of the three Czech apex courts.",
+        "the presented dataset is currently the only available resource of its kind focusing on the Czech court decisions that is freely available to research teams. This significantly reduces the costs necessary to conduct these types of studies involving network analysis, and the similar techniques requiring a large amount of citation data."
+      ],
+      "id": "q10"
+    },
+    {
+      "category": "synthesis",
+      "question": "How does the two-model pipeline extract the references?",
+      "ground_truth": "First, every document in CzCDC 1.0 is segmented by the text segmentation model, and only the part recognized as the court's argumentation is kept. That argumentation segment is then processed by the reference recognition model, which recognizes court-decision identifiers. Organizing the two models into a pipeline boosted the reference-recognition F1.",
+      "expected_passages": [
+        "As the first step, every document in the CzCDC 1.0 was segmented using the text segmentation model. This allowed us to treat different parts of processed court documents differently in the further text processing. Specifically, it allowed us to subject only the specific part of a court decision, in this case the court argumentation, to further the reference recognition and extraction.",
+        "As the second step, parts recognised by the text segmentation model as a court argumentation was processed using the reference recognition model."
+      ],
+      "id": "q11"
+    },
+    {
+      "category": "synthesis",
+      "question": "Into what topical segments does the segmentation model divide a court decision?",
+      "ground_truth": "Header (case introduction), History (procedural history), Submission/Rejoinder (petition and response), Argumentation (the court's reasoning), Footer (legally required information), Dissent, and Footnotes.",
+      "expected_passages": [
+        "These segments include the Header (introduction of given case), History (procedural history prior the apex court proceeding), Submission/Rejoinder (petition of plaintiff and response of defendant), Argumentation (argumentation of the court hearing the case), Footer (legally required information, such as information about further proceedings), Dissent and Footnotes."
+      ],
+      "id": "q12"
+    },
+    {
+      "category": "synthesis",
+      "question": "What manual post-processing steps refine the raw extracted references?",
+      "ground_truth": "Manually controlling and repairing incompletely identified court identifiers; identifying and sorting identifiers by which apex court they belong to; standardising the different types of court identifiers; and parsing/linking the identifiers to the decisions available in CzCDC 1.0.",
+      "expected_passages": [
+        "Further processing included: control and repair of incompletely identified court identifiers (manual); identification and sorting of identifiers as belonging to Supreme Court, Supreme Administrative Court or Constitutional Court (rule-based, manual); standardisation of different types of court identifiers (rule-based, manual); parsing of identifiers with court decisions available in CzCDC 1.0."
+      ],
+      "id": "q13"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What accuracy does the pipeline achieve on English court decisions?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q14"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "Which individual judge authored the most-cited decision in the dataset?",
+      "ground_truth": null,
+      "expected_passages": [],
+      "id": "q15"
+    }
+  ]
+}
