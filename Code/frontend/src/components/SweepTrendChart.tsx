@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react";
 import {
   CartesianGrid,
   Legend,
@@ -7,54 +7,73 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts"
+} from "recharts";
 
-import type { SweepPoint } from "@/types"
-import type { MetricKey } from "@/lib/metrics"
-import { pipelineColor, shortPipelineName } from "@/lib/metrics"
+import type { SweepPoint } from "@/types";
+import type { MetricKey } from "@/lib/metrics";
+import { METRICS, pipelineColor, shortPipelineName } from "@/lib/metrics";
 
-const HEIGHT = 340
+const HEIGHT = 340;
 
 export function SweepTrendChart({
   points,
   pipelineIds,
   metric,
+  pipeline = null,
 }: {
-  points: SweepPoint[]
-  pipelineIds: string[]
-  metric: MetricKey
+  points: SweepPoint[];
+  pipelineIds: string[];
+  metric: MetricKey | "all";
+  pipeline?: string | null;
 }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [width, setWidth] = useState(0)
+  const ref = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
 
   useEffect(() => {
-    const el = ref.current
-    if (!el) return
+    const el = ref.current;
+    if (!el) return;
     const update = () => {
-      const w = el.clientWidth
-      if (w > 0) setWidth(w)
-    }
-    update()
-    const raf = requestAnimationFrame(update)
-    const ro = new ResizeObserver(update)
-    ro.observe(el)
+      const w = el.clientWidth;
+      if (w > 0) setWidth(w);
+    };
+    update();
+    const raf = requestAnimationFrame(update);
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
     return () => {
-      cancelAnimationFrame(raf)
-      ro.disconnect()
-    }
-  }, [])
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, []);
 
-  const meanKey = `${metric}_mean` as `${MetricKey}_mean`
+  const effectiveMetric: MetricKey | "all" =
+    pipeline == null && metric === "all" ? "faithfulness" : metric;
+  const singleMode = pipeline != null;
+  const shownMetrics = singleMode
+    ? effectiveMetric === "all"
+      ? [...METRICS]
+      : METRICS.filter((m) => m.key === effectiveMetric)
+    : [];
+
   const data = points.map((pt) => {
     const row: Record<string, number | null> = {
       words: pt.cumulative_word_count,
+    };
+    if (singleMode) {
+      const pm = pt.by_pipeline[pipeline as string];
+      for (const m of shownMetrics) {
+        row[m.key] = pm ? pm[`${m.key}_mean` as `${MetricKey}_mean`] : null;
+      }
+    } else {
+      const meanKey =
+        `${effectiveMetric as MetricKey}_mean` as `${MetricKey}_mean`;
+      for (const pid of pipelineIds) {
+        const pm = pt.by_pipeline[pid];
+        row[pid] = pm ? pm[meanKey] : null;
+      }
     }
-    for (const pid of pipelineIds) {
-      const pm = pt.by_pipeline[pid]
-      row[pid] = pm ? pm[meanKey] : null
-    }
-    return row
-  })
+    return row;
+  });
 
   return (
     <div ref={ref} className="w-full" style={{ height: HEIGHT }}>
@@ -100,42 +119,72 @@ export function SweepTrendChart({
             labelFormatter={(v) => `${Number(v).toLocaleString()} words`}
             formatter={(value, name) => [
               typeof value === "number" ? value.toFixed(3) : "—",
-              shortPipelineName(String(name), String(name)),
+              singleMode
+                ? (METRICS.find((m) => m.key === String(name))?.label ??
+                  String(name))
+                : shortPipelineName(String(name), String(name)),
             ]}
           />
           <Legend
             content={() => (
               <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1 pt-1 text-xs">
-                {pipelineIds.map((pid, i) => (
-                  <li key={pid} className="flex items-center gap-1.5">
-                    <span
-                      className="inline-block h-0.5 w-3.5 rounded-full"
-                      style={{ background: pipelineColor(pid, i) }}
-                    />
-                    <span className="text-muted-foreground">
-                      {shortPipelineName(pid, pid)}
-                    </span>
-                  </li>
-                ))}
+                {singleMode
+                  ? shownMetrics.map((m) => (
+                      <li key={m.key} className="flex items-center gap-1.5">
+                        <span
+                          className="inline-block h-0.5 w-3.5 rounded-full"
+                          style={{ background: m.color }}
+                        />
+                        <span className="text-muted-foreground">
+                          {m.label}
+                        </span>
+                      </li>
+                    ))
+                  : pipelineIds.map((pid, i) => (
+                      <li key={pid} className="flex items-center gap-1.5">
+                        <span
+                          className="inline-block h-0.5 w-3.5 rounded-full"
+                          style={{ background: pipelineColor(pid, i) }}
+                        />
+                        <span className="text-muted-foreground">
+                          {shortPipelineName(pid, pid)}
+                        </span>
+                      </li>
+                    ))}
               </ul>
             )}
           />
-          {pipelineIds.map((pid, i) => (
-            <Line
-              key={pid}
-              type="monotone"
-              dataKey={pid}
-              name={pid}
-              stroke={pipelineColor(pid, i)}
-              strokeWidth={2}
-              dot={{ r: 3 }}
-              activeDot={{ r: 4 }}
-              connectNulls
-              isAnimationActive={false}
-            />
-          ))}
+          {singleMode
+            ? shownMetrics.map((m) => (
+                <Line
+                  key={m.key}
+                  type="monotone"
+                  dataKey={m.key}
+                  name={m.key}
+                  stroke={m.color}
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 4 }}
+                  connectNulls
+                  isAnimationActive={false}
+                />
+              ))
+            : pipelineIds.map((pid, i) => (
+                <Line
+                  key={pid}
+                  type="monotone"
+                  dataKey={pid}
+                  name={pid}
+                  stroke={pipelineColor(pid, i)}
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 4 }}
+                  connectNulls
+                  isAnimationActive={false}
+                />
+              ))}
         </LineChart>
       )}
     </div>
-  )
+  );
 }

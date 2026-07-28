@@ -96,7 +96,7 @@ async def submit_batch(
     )
     register(job)
 
-    asyncio.create_task(run_batch(job))
+    asyncio.create_task(run_batch(job, payload.concurrency))
 
     return _to_status(job)
 

@@ -20,15 +20,15 @@ from .store import JobState
 logger = logging.getLogger(__name__)
 
 
-async def run_batch(job: JobState) -> None:
+async def run_batch(job: JobState, concurrency: int = 5) -> None:
     try:
-        await _run_batch_impl(job)
+        await _run_batch_impl(job, concurrency)
     except Exception as e:
         logger.exception("Batch %s crashed", job.job_id)
         job.mark_failed(repr(e))
 
 
-async def _run_batch_impl(job: JobState) -> None:
+async def _run_batch_impl(job: JobState, concurrency: int = 5) -> None:
     settings = get_settings()
     openai_client = get_openai_client()
     pinecone_client = get_pinecone_client()
@@ -51,18 +51,14 @@ async def _run_batch_impl(job: JobState) -> None:
     job.mark_started()
     run_timestamp = datetime.now(timezone.utc)
 
-    for question in benchmark.questions:
-        if job.cancel_requested:
-            job.mark_cancelled()
-            return
-        job.current_question_id = question.id
+    sem = asyncio.Semaphore(max(1, concurrency))
 
-        for pipeline_id in job.pipeline_ids:
+    async def _bounded(pipeline_id: str, question: BenchmarkQuestion) -> None:
+        async with sem:
             if job.cancel_requested:
-                job.mark_cancelled()
                 return
+            job.current_question_id = question.id
             job.current_pipeline_id = pipeline_id
-
             row = await _run_unit(
                 pipeline_id=pipeline_id,
                 question=question,
@@ -73,6 +69,17 @@ async def _run_batch_impl(job: JobState) -> None:
             )
             job.results.append(row)
             job.completed_units += 1
+
+    await asyncio.gather(
+        *(
+            _bounded(pipeline_id, question)
+            for question in benchmark.questions
+            for pipeline_id in job.pipeline_ids
+        )
+    )
+    if job.cancel_requested:
+        job.mark_cancelled()
+        return
 
     job.current_question_id = None
     job.current_pipeline_id = None

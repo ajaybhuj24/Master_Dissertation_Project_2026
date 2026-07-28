@@ -22,7 +22,9 @@ export default defineConfig({
         // 127.0.0.1, not "localhost": Node resolves localhost to IPv6 ::1,
         // but uvicorn binds IPv4 127.0.0.1 by default — the mismatch would
         // make the proxy ECONNREFUSED even with the backend running.
-        target: "http://127.0.0.1:8000",
+        // VITE_API_TARGET overrides the backend for testing against a
+        // secondary instance (e.g. VITE_API_TARGET=http://127.0.0.1:8001).
+        target: process.env.VITE_API_TARGET || "http://127.0.0.1:8000",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },

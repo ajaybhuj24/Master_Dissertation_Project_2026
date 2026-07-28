@@ -60,6 +60,7 @@ def root() -> dict:
             "POST /jobs/{job_id}/cancel": "best-effort cancellation",
             "POST /jobs/{job_id}/persist": "re-trigger CSV/JSON export for a completed job",
             "GET /results/master": "download the master append-only CSV",
+            "GET /results/master/rows": "trimmed master rows for the all-papers view (dedup=latest|none)",
             "GET /results/files": "list every file in data/results/",
             "GET /results/files/{name}": "download one specific result file",
             "POST /corpus/papers": "add a PDF to the corpus experiment (additive, tagged)",

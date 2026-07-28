@@ -36,6 +36,13 @@ class SweepRequest(BaseModel):
         description="Explicit # of distractors at each sweep step, e.g. "
         "[0, 2, 4]. If null, auto-generated from n_points.",
     )
+    concurrency: int = Field(
+        default=5,
+        ge=1,
+        le=8,
+        description="Max units in flight within one corpus size; 1 = the old "
+        "serial behaviour.",
+    )
     n_points: int = Field(
         default=7,
         ge=2,

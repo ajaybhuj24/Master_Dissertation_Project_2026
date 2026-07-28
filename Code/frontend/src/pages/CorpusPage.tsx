@@ -1,4 +1,11 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react"
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   AlertCircle,
   CheckCircle2,
@@ -9,7 +16,7 @@ import {
   RefreshCw,
   Trash2,
   Upload,
-} from "lucide-react"
+} from "lucide-react";
 
 import {
   addCorpusPaper,
@@ -22,7 +29,7 @@ import {
   listCorpusPapers,
   listSweeps,
   startSweep,
-} from "@/api/client"
+} from "@/api/client";
 import type {
   BenchmarkSummary,
   CorpusPaper,
@@ -30,9 +37,9 @@ import type {
   PipelineInfo,
   SweepResult,
   SweepSummary,
-} from "@/types"
-import { DEFAULT_PIPELINES } from "@/lib/stages"
-import { Button } from "@/components/ui/button"
+} from "@/types";
+import { DEFAULT_PIPELINES } from "@/lib/stages";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -40,300 +47,308 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Dropzone } from "@/components/Dropzone"
-import { PipelineSelector } from "@/components/PipelineSelector"
-import { ProgressTracker } from "@/components/ProgressTracker"
+} from "@/components/ui/card";
+import { Dropzone } from "@/components/Dropzone";
+import { PipelineSelector } from "@/components/PipelineSelector";
+import { ProgressTracker } from "@/components/ProgressTracker";
 import {
   METRICS,
   formatScore,
   pipelineColor,
   shortPipelineName,
-} from "@/lib/metrics"
-import type { MetricKey } from "@/lib/metrics"
+} from "@/lib/metrics";
+import type { MetricKey } from "@/lib/metrics";
 
 const SweepTrendChart = lazy(() =>
   import("@/components/SweepTrendChart").then((m) => ({
     default: m.SweepTrendChart,
-  }))
-)
+  })),
+);
 
-const SWEEP_DEFAULT_IDS = ["naive", "mmr", "rerank", "crag"]
+const SWEEP_DEFAULT_IDS = ["naive", "mmr", "rerank", "crag"];
 
 function formatDateTime(iso: string | null | undefined): string {
-  if (!iso) return "—"
-  const d = new Date(iso)
-  return Number.isNaN(d.getTime()) ? iso : d.toLocaleString()
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? iso : d.toLocaleString();
 }
 
 function computeSteps(nAvailable: number, nPoints: number): number[] {
-  if (nAvailable <= 0) return [0]
-  const steps = new Set<number>()
+  if (nAvailable <= 0) return [0];
+  const steps = new Set<number>();
   for (let i = 0; i < nPoints; i++) {
-    steps.add(Math.round((i * nAvailable) / (nPoints - 1)))
+    steps.add(Math.round((i * nAvailable) / (nPoints - 1)));
   }
-  return [...steps].sort((a, b) => a - b)
+  return [...steps].sort((a, b) => a - b);
 }
 
 export function CorpusPage() {
-  const [papers, setPapers] = useState<CorpusPaper[]>([])
-  const [totalWords, setTotalWords] = useState(0)
+  const [papers, setPapers] = useState<CorpusPaper[]>([]);
+  const [totalWords, setTotalWords] = useState(0);
   const [corpusState, setCorpusState] = useState<"loading" | "ok" | "error">(
-    "loading"
-  )
-  const [corpusError, setCorpusError] = useState<string | null>(null)
+    "loading",
+  );
+  const [corpusError, setCorpusError] = useState<string | null>(null);
 
-  const [benchmarks, setBenchmarks] = useState<BenchmarkSummary[]>([])
+  const [benchmarks, setBenchmarks] = useState<BenchmarkSummary[]>([]);
 
-  const [pipelines, setPipelines] = useState<PipelineInfo[]>(DEFAULT_PIPELINES)
+  const [pipelines, setPipelines] = useState<PipelineInfo[]>(DEFAULT_PIPELINES);
   const [runSelected, setRunSelected] = useState<Set<string>>(
-    () => new Set(SWEEP_DEFAULT_IDS)
-  )
+    () => new Set(SWEEP_DEFAULT_IDS),
+  );
 
-  const [targetId, setTargetId] = useState<string | null>(null)
-  const [nPoints, setNPoints] = useState(7)
+  const [targetId, setTargetId] = useState<string | null>(null);
+  const [nPoints, setNPoints] = useState(7);
+  const [sweepConcurrency, setSweepConcurrency] = useState(5);
 
-  const [adding, setAdding] = useState(false)
-  const [addError, setAddError] = useState<string | null>(null)
-  const [addedName, setAddedName] = useState<string | null>(null)
+  const [adding, setAdding] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
+  const [addedName, setAddedName] = useState<string | null>(null);
 
   const [confirmDeletePaper, setConfirmDeletePaper] = useState<string | null>(
-    null
-  )
-  const [deletingPaperId, setDeletingPaperId] = useState<string | null>(null)
-  const [confirmClear, setConfirmClear] = useState(false)
-  const [clearing, setClearing] = useState(false)
+    null,
+  );
+  const [deletingPaperId, setDeletingPaperId] = useState<string | null>(null);
+  const [confirmClear, setConfirmClear] = useState(false);
+  const [clearing, setClearing] = useState(false);
 
-  const [starting, setStarting] = useState(false)
-  const [startError, setStartError] = useState<string | null>(null)
+  const [starting, setStarting] = useState(false);
+  const [startError, setStartError] = useState<string | null>(null);
   const [activeJob, setActiveJob] = useState<{
-    jobId: string
-    total: number
-  } | null>(null)
+    jobId: string;
+    total: number;
+  } | null>(null);
   const [jobDoneStatus, setJobDoneStatus] = useState<JobStatusLiteral | null>(
-    null
-  )
+    null,
+  );
 
-  const [sweeps, setSweeps] = useState<SweepSummary[]>([])
+  const [sweeps, setSweeps] = useState<SweepSummary[]>([]);
   const [confirmDeleteSweep, setConfirmDeleteSweep] = useState<string | null>(
-    null
-  )
-  const [deletingSweepId, setDeletingSweepId] = useState<string | null>(null)
+    null,
+  );
+  const [deletingSweepId, setDeletingSweepId] = useState<string | null>(null);
 
-  const [selectedSweepId, setSelectedSweepId] = useState<string | null>(null)
-  const [loadedSweep, setLoadedSweep] = useState<SweepResult | null>(null)
-  const [sweepLoading, setSweepLoading] = useState(false)
-  const [sweepError, setSweepError] = useState<string | null>(null)
-  const [chartMetric, setChartMetric] = useState<MetricKey>("faithfulness")
+  const [selectedSweepId, setSelectedSweepId] = useState<string | null>(null);
+  const [loadedSweep, setLoadedSweep] = useState<SweepResult | null>(null);
+  const [sweepLoading, setSweepLoading] = useState(false);
+  const [sweepError, setSweepError] = useState<string | null>(null);
+  const [chartMetric, setChartMetric] = useState<MetricKey | "all">(
+    "faithfulness"
+  );
+  const [chartPipeline, setChartPipeline] = useState<string>("all");
+  const tableMetric: MetricKey =
+    chartMetric === "all" ? "faithfulness" : chartMetric;
 
   const loadCorpus = useCallback(async () => {
-    setCorpusState("loading")
-    setCorpusError(null)
+    setCorpusState("loading");
+    setCorpusError(null);
     try {
-      const res = await listCorpusPapers()
-      setPapers(res.papers)
-      setTotalWords(res.total_word_count)
-      setCorpusState("ok")
+      const res = await listCorpusPapers();
+      setPapers(res.papers);
+      setTotalWords(res.total_word_count);
+      setCorpusState("ok");
     } catch (err) {
-      setCorpusError(err instanceof Error ? err.message : "Failed to load.")
-      setCorpusState("error")
+      setCorpusError(err instanceof Error ? err.message : "Failed to load.");
+      setCorpusState("error");
     }
-  }, [])
+  }, []);
 
   const loadBenchmarks = useCallback(async () => {
     try {
-      setBenchmarks(await listBenchmarks())
-    } catch {
-    }
-  }, [])
+      setBenchmarks(await listBenchmarks());
+    } catch {}
+  }, []);
 
   const loadSweeps = useCallback(async () => {
     try {
-      setSweeps(await listSweeps())
-    } catch {
-    }
-  }, [])
+      setSweeps(await listSweeps());
+    } catch {}
+  }, []);
 
   useEffect(() => {
-    void loadCorpus()
-    void loadBenchmarks()
-    void loadSweeps()
-  }, [loadCorpus, loadBenchmarks, loadSweeps])
+    void loadCorpus();
+    void loadBenchmarks();
+    void loadSweeps();
+  }, [loadCorpus, loadBenchmarks, loadSweeps]);
 
   useEffect(() => {
-    let active = true
+    let active = true;
     getPipelines()
       .then((list) => {
-        if (!active || list.length === 0) return
-        setPipelines(list)
+        if (!active || list.length === 0) return;
+        setPipelines(list);
         setRunSelected(
           new Set(
             list
               .filter((p) => SWEEP_DEFAULT_IDS.includes(p.pipeline_id))
-              .map((p) => p.pipeline_id)
-          )
-        )
+              .map((p) => p.pipeline_id),
+          ),
+        );
       })
-      .catch(() => {
-      })
+      .catch(() => {});
     return () => {
-      active = false
-    }
-  }, [])
+      active = false;
+    };
+  }, []);
 
   const benchmarkIds = useMemo(
     () => new Set(benchmarks.map((b) => b.paper_id)),
-    [benchmarks]
-  )
+    [benchmarks],
+  );
   const validTargets = useMemo(
     () => papers.filter((p) => benchmarkIds.has(p.paper_id)),
-    [papers, benchmarkIds]
-  )
+    [papers, benchmarkIds],
+  );
 
   useEffect(() => {
-    if (targetId && validTargets.some((p) => p.paper_id === targetId)) return
-    setTargetId(validTargets[0]?.paper_id ?? null)
-  }, [validTargets, targetId])
+    if (targetId && validTargets.some((p) => p.paper_id === targetId)) return;
+    setTargetId(validTargets[0]?.paper_id ?? null);
+  }, [validTargets, targetId]);
 
   useEffect(() => {
     if (sweeps.length === 0) {
-      setSelectedSweepId(null)
-      return
+      setSelectedSweepId(null);
+      return;
     }
     setSelectedSweepId((prev) =>
-      prev && sweeps.some((s) => s.sweep_id === prev) ? prev : sweeps[0].sweep_id
-    )
-  }, [sweeps])
+      prev && sweeps.some((s) => s.sweep_id === prev)
+        ? prev
+        : sweeps[0].sweep_id,
+    );
+  }, [sweeps]);
 
   useEffect(() => {
     if (!selectedSweepId) {
-      setLoadedSweep(null)
-      return
+      setLoadedSweep(null);
+      return;
     }
-    let active = true
-    setSweepLoading(true)
-    setSweepError(null)
+    let active = true;
+    setSweepLoading(true);
+    setSweepError(null);
     getSweep(selectedSweepId)
       .then((res) => {
-        if (active) setLoadedSweep(res)
+        if (active) setLoadedSweep(res);
       })
       .catch((err) => {
         if (active)
           setSweepError(
-            err instanceof Error ? err.message : "Failed to load the sweep."
-          )
+            err instanceof Error ? err.message : "Failed to load the sweep.",
+          );
       })
       .finally(() => {
-        if (active) setSweepLoading(false)
-      })
+        if (active) setSweepLoading(false);
+      });
     return () => {
-      active = false
-    }
-  }, [selectedSweepId])
+      active = false;
+    };
+  }, [selectedSweepId]);
 
   const runOrderedIds = useMemo(
     () =>
       pipelines
         .filter((p) => runSelected.has(p.pipeline_id))
         .map((p) => p.pipeline_id),
-    [pipelines, runSelected]
-  )
+    [pipelines, runSelected],
+  );
 
-  const targetBenchmark = benchmarks.find((b) => b.paper_id === targetId)
-  const questionCount = targetBenchmark?.question_count ?? 15
-  const nDistractors = Math.max(0, papers.length - 1)
+  const targetBenchmark = benchmarks.find((b) => b.paper_id === targetId);
+  const questionCount = targetBenchmark?.question_count ?? 15;
+  const nDistractors = Math.max(0, papers.length - 1);
   const steps = useMemo(
     () => computeSteps(nDistractors, nPoints),
-    [nDistractors, nPoints]
-  )
-  const unitsEstimate = steps.length * questionCount * runOrderedIds.length
-  const runInProgress = activeJob !== null && jobDoneStatus === null
+    [nDistractors, nPoints],
+  );
+  const unitsEstimate = steps.length * questionCount * runOrderedIds.length;
+  const runInProgress = activeJob !== null && jobDoneStatus === null;
   const canStart =
-    !!targetId && runOrderedIds.length > 0 && !starting && !activeJob
+    !!targetId && runOrderedIds.length > 0 && !starting && !activeJob;
 
   const onAddFile = async (file: File) => {
     if (!file.name.toLowerCase().endsWith(".pdf")) {
-      setAddError("Please choose a .pdf file.")
-      return
+      setAddError("Please choose a .pdf file.");
+      return;
     }
-    setAdding(true)
-    setAddError(null)
-    setAddedName(null)
+    setAdding(true);
+    setAddError(null);
+    setAddedName(null);
     try {
-      const entry = await addCorpusPaper(file)
-      setAddedName(entry.filename)
-      await loadCorpus()
+      const entry = await addCorpusPaper(file);
+      setAddedName(entry.filename);
+      await loadCorpus();
     } catch (err) {
-      setAddError(err instanceof Error ? err.message : "Failed to add the PDF.")
+      setAddError(
+        err instanceof Error ? err.message : "Failed to add the PDF.",
+      );
     } finally {
-      setAdding(false)
+      setAdding(false);
     }
-  }
+  };
 
   const doDeletePaper = async (paperId: string) => {
-    setDeletingPaperId(paperId)
+    setDeletingPaperId(paperId);
     try {
-      await deleteCorpusPaper(paperId)
-      setConfirmDeletePaper(null)
-      await loadCorpus()
+      await deleteCorpusPaper(paperId);
+      setConfirmDeletePaper(null);
+      await loadCorpus();
     } catch (err) {
-      setCorpusError(err instanceof Error ? err.message : "Delete failed.")
+      setCorpusError(err instanceof Error ? err.message : "Delete failed.");
     } finally {
-      setDeletingPaperId(null)
+      setDeletingPaperId(null);
     }
-  }
+  };
 
   const doClear = async () => {
-    setClearing(true)
+    setClearing(true);
     try {
-      await clearCorpus()
-      setConfirmClear(false)
-      await loadCorpus()
+      await clearCorpus();
+      setConfirmClear(false);
+      await loadCorpus();
     } catch (err) {
-      setCorpusError(err instanceof Error ? err.message : "Clear failed.")
+      setCorpusError(err instanceof Error ? err.message : "Clear failed.");
     } finally {
-      setClearing(false)
+      setClearing(false);
     }
-  }
+  };
 
   const startRun = async () => {
-    if (!targetId || runOrderedIds.length === 0) return
-    setStarting(true)
-    setStartError(null)
-    setJobDoneStatus(null)
+    if (!targetId || runOrderedIds.length === 0) return;
+    setStarting(true);
+    setStartError(null);
+    setJobDoneStatus(null);
     try {
       const job = await startSweep({
         target_paper_id: targetId,
         pipeline_ids: runOrderedIds,
         n_points: nPoints,
-      })
-      setActiveJob({ jobId: job.job_id, total: job.total_units })
+        concurrency: sweepConcurrency,
+      });
+      setActiveJob({ jobId: job.job_id, total: job.total_units });
     } catch (err) {
       setStartError(
-        err instanceof Error ? err.message : "Failed to start the sweep."
-      )
+        err instanceof Error ? err.message : "Failed to start the sweep.",
+      );
     } finally {
-      setStarting(false)
+      setStarting(false);
     }
-  }
+  };
 
   const resetRun = () => {
-    setActiveJob(null)
-    setJobDoneStatus(null)
-    setStartError(null)
-  }
+    setActiveJob(null);
+    setJobDoneStatus(null);
+    setStartError(null);
+  };
 
   const doDeleteSweep = async (sweepId: string) => {
-    setDeletingSweepId(sweepId)
+    setDeletingSweepId(sweepId);
     try {
-      await deleteSweep(sweepId)
-      setConfirmDeleteSweep(null)
-      await loadSweeps()
+      await deleteSweep(sweepId);
+      setConfirmDeleteSweep(null);
+      await loadSweeps();
     } catch {
     } finally {
-      setDeletingSweepId(null)
+      setDeletingSweepId(null);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -342,20 +357,15 @@ export function CorpusPage() {
           Corpus experiment
         </h1>
         <p className="text-muted-foreground">
-          Measure how RAGAS scores shift as the document corpus grows. One target
-          paper’s benchmark is re-run against a widening set of distractor PDFs —
-          the trend’s x-axis is cumulative word count.
+          Measure how RAGAS scores shift as the document corpus grows. One
+          target paper’s benchmark is re-run against a widening set of
+          distractor PDFs.
         </p>
       </header>
 
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Run sweep</CardTitle>
-          <CardDescription>
-            Re-runs the target benchmark at a series of growing corpus sizes
-            (target + first k distractors). Heavy — sizes × questions × pipelines
-            RAGAS units, run serially, using OpenAI credits.
-          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {validTargets.length === 0 ? (
@@ -403,19 +413,39 @@ export function CorpusPage() {
                     value={nPoints}
                     disabled={runInProgress}
                     onChange={(e) => {
-                      const n = Number(e.target.value)
+                      const n = Number(e.target.value);
                       setNPoints(
                         Number.isFinite(n)
                           ? Math.min(20, Math.max(2, Math.round(n)))
-                          : 7
-                      )
+                          : 7,
+                      );
+                    }}
+                    className="h-9 w-24 rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-60"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Concurrency</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={8}
+                    value={sweepConcurrency}
+                    disabled={runInProgress}
+                    onChange={(e) => {
+                      const n = Number(e.target.value);
+                      setSweepConcurrency(
+                        Number.isFinite(n)
+                          ? Math.min(8, Math.max(1, Math.round(n)))
+                          : 5,
+                      );
                     }}
                     className="h-9 w-24 rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-60"
                   />
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {nDistractors} distractor{nDistractors === 1 ? "" : "s"}{" "}
-                  available · corpus sizes (distractors): {steps.join(", ")}
+                  available · corpus sizes (distractors): {steps.join(", ")} ·
+                  units run {sweepConcurrency} at a time
                 </p>
               </div>
 
@@ -449,10 +479,10 @@ export function CorpusPage() {
                     jobId={activeJob.jobId}
                     total={activeJob.total}
                     onDone={(status) => {
-                      setJobDoneStatus(status)
+                      setJobDoneStatus(status);
                       if (status === "completed") {
-                        void loadSweeps()
-                        if (activeJob) setSelectedSweepId(activeJob.jobId)
+                        void loadSweeps();
+                        if (activeJob) setSelectedSweepId(activeJob.jobId);
                       }
                     }}
                   />
@@ -490,7 +520,11 @@ export function CorpusPage() {
                   <label className="text-sm font-medium">Sweep</label>
                   <select
                     value={selectedSweepId ?? ""}
-                    onChange={(e) => setSelectedSweepId(e.target.value)}
+                    onChange={(e) => {
+                      setSelectedSweepId(e.target.value);
+                      setChartPipeline("all");
+                      if (chartMetric === "all") setChartMetric("faithfulness");
+                    }}
                     className="h-9 w-full min-w-64 rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                   >
                     {sweeps.map((s) => (
@@ -501,13 +535,60 @@ export function CorpusPage() {
                     ))}
                   </select>
                 </div>
+                {loadedSweep && (
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium">Technique</label>
+                    <div className="flex flex-wrap gap-1.5">
+                      <Button
+                        variant={
+                          chartPipeline === "all" ? "secondary" : "outline"
+                        }
+                        size="sm"
+                        onClick={() => {
+                          setChartPipeline("all");
+                          if (chartMetric === "all")
+                            setChartMetric("faithfulness");
+                        }}
+                      >
+                        All
+                      </Button>
+                      {loadedSweep.pipeline_ids.map((pid, i) => (
+                        <Button
+                          key={pid}
+                          variant={
+                            chartPipeline === pid ? "secondary" : "outline"
+                          }
+                          size="sm"
+                          onClick={() => setChartPipeline(pid)}
+                        >
+                          <span
+                            className="inline-block size-2 rounded-full"
+                            style={{ background: pipelineColor(pid, i) }}
+                          />
+                          {shortPipelineName(pid, pid)}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium">Metric</label>
                   <div className="flex flex-wrap gap-1.5">
+                    {chartPipeline !== "all" && (
+                      <Button
+                        variant={chartMetric === "all" ? "secondary" : "outline"}
+                        size="sm"
+                        onClick={() => setChartMetric("all")}
+                      >
+                        All metrics
+                      </Button>
+                    )}
                     {METRICS.map((m) => (
                       <Button
                         key={m.key}
-                        variant={chartMetric === m.key ? "secondary" : "outline"}
+                        variant={
+                          chartMetric === m.key ? "secondary" : "outline"
+                        }
                         size="sm"
                         onClick={() => setChartMetric(m.key)}
                       >
@@ -548,6 +629,9 @@ export function CorpusPage() {
                         points={loadedSweep.points}
                         pipelineIds={loadedSweep.pipeline_ids}
                         metric={chartMetric}
+                        pipeline={
+                          chartPipeline === "all" ? null : chartPipeline
+                        }
                       />
                     </Suspense>
 
@@ -557,17 +641,37 @@ export function CorpusPage() {
                           <tr className="border-b text-left text-muted-foreground">
                             <th className="py-2 pr-3 font-medium">Words</th>
                             <th className="py-2 pr-3 font-medium">Papers</th>
-                            {loadedSweep.pipeline_ids.map((pid, i) => (
-                              <th key={pid} className="py-2 pr-3 font-medium">
-                                <span className="inline-flex items-center gap-1.5">
-                                  <span
-                                    className="inline-block size-2 rounded-full"
-                                    style={{ background: pipelineColor(pid, i) }}
-                                  />
-                                  {shortPipelineName(pid, pid)}
-                                </span>
-                              </th>
-                            ))}
+                            {chartPipeline === "all"
+                              ? loadedSweep.pipeline_ids.map((pid, i) => (
+                                  <th
+                                    key={pid}
+                                    className="py-2 pr-3 font-medium"
+                                  >
+                                    <span className="inline-flex items-center gap-1.5">
+                                      <span
+                                        className="inline-block size-2 rounded-full"
+                                        style={{
+                                          background: pipelineColor(pid, i),
+                                        }}
+                                      />
+                                      {shortPipelineName(pid, pid)}
+                                    </span>
+                                  </th>
+                                ))
+                              : METRICS.map((m) => (
+                                  <th
+                                    key={m.key}
+                                    className="py-2 pr-3 font-medium"
+                                  >
+                                    <span className="inline-flex items-center gap-1.5">
+                                      <span
+                                        className="inline-block size-2 rounded-full"
+                                        style={{ background: m.color }}
+                                      />
+                                      {m.label}
+                                    </span>
+                                  </th>
+                                ))}
                           </tr>
                         </thead>
                         <tbody>
@@ -582,17 +686,39 @@ export function CorpusPage() {
                               <td className="py-2 pr-3 tabular-nums text-muted-foreground">
                                 {pt.n_papers}
                               </td>
-                              {loadedSweep.pipeline_ids.map((pid) => {
-                                const pm = pt.by_pipeline[pid]
-                                const v = pm
-                                  ? pm[`${chartMetric}_mean` as `${MetricKey}_mean`]
-                                  : null
-                                return (
-                                  <td key={pid} className="py-2 pr-3 tabular-nums">
-                                    {formatScore(v)}
-                                  </td>
-                                )
-                              })}
+                              {chartPipeline === "all"
+                                ? loadedSweep.pipeline_ids.map((pid) => {
+                                    const pm = pt.by_pipeline[pid];
+                                    const v = pm
+                                      ? pm[
+                                          `${tableMetric}_mean` as `${MetricKey}_mean`
+                                        ]
+                                      : null;
+                                    return (
+                                      <td
+                                        key={pid}
+                                        className="py-2 pr-3 tabular-nums"
+                                      >
+                                        {formatScore(v)}
+                                      </td>
+                                    );
+                                  })
+                                : METRICS.map((m) => {
+                                    const pm = pt.by_pipeline[chartPipeline];
+                                    const v = pm
+                                      ? pm[
+                                          `${m.key}_mean` as `${MetricKey}_mean`
+                                        ]
+                                      : null;
+                                    return (
+                                      <td
+                                        key={m.key}
+                                        className="py-2 pr-3 tabular-nums"
+                                      >
+                                        {formatScore(v)}
+                                      </td>
+                                    );
+                                  })}
                             </tr>
                           ))}
                         </tbody>
@@ -601,9 +727,14 @@ export function CorpusPage() {
                     <p className="text-xs text-muted-foreground">
                       Showing{" "}
                       <span className="font-medium">
-                        {METRICS.find((m) => m.key === chartMetric)?.label}
+                        {chartPipeline === "all"
+                          ? METRICS.find((m) => m.key === tableMetric)?.label
+                          : chartMetric === "all"
+                            ? `all four metric means for ${shortPipelineName(chartPipeline, chartPipeline)}`
+                            : `${METRICS.find((m) => m.key === chartMetric)?.label} for ${shortPipelineName(chartPipeline, chartPipeline)}`}
                       </span>{" "}
-                      means across {loadedSweep.points.length} corpus size
+                      {chartPipeline === "all" ? "means " : ""}across{" "}
+                      {loadedSweep.points.length} corpus size
                       {loadedSweep.points.length === 1 ? "" : "s"}.
                       {loadedSweep.total_errors > 0 &&
                         ` ${loadedSweep.total_errors} unit(s) errored and are excluded from the means.`}
@@ -713,12 +844,6 @@ export function CorpusPage() {
                       <code>{p.paper_id}</code> ·{" "}
                       {p.word_count.toLocaleString()} words · {p.pages} pages ·{" "}
                       {p.n_chunks} chunks
-                      {benchmarkIds.has(p.paper_id) && (
-                        <span className="text-stage-during">
-                          {" "}
-                          · benchmark ✓ (eligible target)
-                        </span>
-                      )}
                     </p>
                   </div>
                   {confirmDeletePaper === p.paper_id ? (
@@ -766,8 +891,8 @@ export function CorpusPage() {
         <CardHeader>
           <CardTitle className="text-base">Add a PDF</CardTitle>
           <CardDescription>
-            Added additively — existing corpus papers are kept. Chunked (naive) +
-            embedded into the <code>corpus</code> namespace.
+            Added additively — existing corpus papers are kept. Chunked (naive)
+            + embedded into the <code>corpus</code> namespace.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -859,8 +984,10 @@ export function CorpusPage() {
                     <p className="text-sm text-muted-foreground">
                       {s.n_points} sizes · {s.n_questions} Q ·{" "}
                       {s.pipeline_ids.length} pipelines · {s.total_units} units
-                      {s.total_errors > 0 ? ` · ${s.total_errors} errors` : ""} ·{" "}
-                      {formatDateTime(s.created_at)}
+                      {s.total_errors > 0
+                        ? ` · ${s.total_errors} errors`
+                        : ""}{" "}
+                      · {formatDateTime(s.created_at)}
                     </p>
                   </div>
                   {confirmDeleteSweep === s.sweep_id ? (
@@ -904,5 +1031,5 @@ export function CorpusPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

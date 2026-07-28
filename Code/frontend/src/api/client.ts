@@ -10,6 +10,7 @@ import type {
   DeletePaperResponse,
   FastApiError,
   JobStatus,
+  MasterRowsResponse,
   PipelineInfo,
   ResultFileEntry,
   ResultRunFile,
@@ -203,6 +204,18 @@ export async function getResultRun(filename: string): Promise<ResultRunFile> {
     throw new ApiError(0, NETWORK_HINT)
   }
   return handle<ResultRunFile>(res)
+}
+
+export async function getMasterRows(
+  dedup: "latest" | "none" = "latest"
+): Promise<MasterRowsResponse> {
+  let res: Response
+  try {
+    res = await fetch(`${API_BASE}/results/master/rows?dedup=${dedup}`)
+  } catch {
+    throw new ApiError(0, NETWORK_HINT)
+  }
+  return handle<MasterRowsResponse>(res)
 }
 
 export async function listBenchmarks(): Promise<BenchmarkSummary[]> {

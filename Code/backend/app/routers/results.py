@@ -2,13 +2,16 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from typing import Literal
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 
+from ..evaluation.master_reader import read_master_rows
 from ..evaluation.results_writer import MASTER_CSV, write_job_results
 from ..jobs.store import JOBS
 from ..paths import PROJECT_ROOT, RESULTS_DIR
+from ..schemas.results import MasterRowsResponse
 
 router = APIRouter(tags=["results"])
 
@@ -27,6 +30,17 @@ def download_master_csv() -> FileResponse:
         media_type="text/csv",
         filename="all_results.csv",
     )
+
+
+@router.get("/results/master/rows", response_model=MasterRowsResponse)
+def master_rows(dedup: Literal["latest", "none"] = "latest") -> MasterRowsResponse:
+    data = read_master_rows(dedup)
+    if data is None:
+        raise HTTPException(
+            status_code=404,
+            detail="No master CSV yet. Run a batch via POST /batch first.",
+        )
+    return MasterRowsResponse(**data)
 
 
 @router.get("/results/files")

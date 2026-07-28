@@ -151,7 +151,7 @@ async def submit_sweep(payload: SweepRequest) -> JobStatus:
         total_units=total_units,
     )
     register(job)
-    asyncio.create_task(run_sweep(job, steps))
+    asyncio.create_task(run_sweep(job, steps, payload.concurrency))
 
     return JobStatus(
         job_id=job.job_id,

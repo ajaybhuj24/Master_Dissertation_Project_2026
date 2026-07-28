@@ -49,15 +49,19 @@ def compute_distractor_counts(
     return sorted(steps)
 
 
-async def run_sweep(job: JobState, distractor_counts: list[int]) -> None:
+async def run_sweep(
+    job: JobState, distractor_counts: list[int], concurrency: int = 5
+) -> None:
     try:
-        await _run_sweep_impl(job, distractor_counts)
+        await _run_sweep_impl(job, distractor_counts, concurrency)
     except Exception as e:
         logger.exception("Sweep %s crashed", job.job_id)
         job.mark_failed(repr(e))
 
 
-async def _run_sweep_impl(job: JobState, distractor_counts: list[int]) -> None:
+async def _run_sweep_impl(
+    job: JobState, distractor_counts: list[int], concurrency: int = 5
+) -> None:
     settings = get_settings()
 
     benchmark = load_benchmark(job.paper_id)
@@ -89,6 +93,20 @@ async def _run_sweep_impl(job: JobState, distractor_counts: list[int]) -> None:
     created_at = datetime.now(timezone.utc)
     points: list[SweepPoint] = []
 
+    sem = asyncio.Semaphore(max(1, concurrency))
+
+    async def _bounded_unit(
+        pipeline_id: str, question: BenchmarkQuestion
+    ) -> dict | None:
+        async with sem:
+            if job.cancel_requested:
+                return None
+            job.current_question_id = question.id
+            job.current_pipeline_id = pipeline_id
+            unit = await _run_unit(pipeline_id, question, ctx)
+            job.completed_units += 1
+            return unit
+
     for k in distractor_counts:
         if job.cancel_requested:
             job.mark_cancelled()
@@ -99,21 +117,17 @@ async def _run_sweep_impl(job: JobState, distractor_counts: list[int]) -> None:
         cumulative_words = sum(p["word_count"] for p in included)
         ctx.retrieval_filter = {"paper_id": {"$in": paper_ids}}
 
-        units: list[dict] = []
-        for question in benchmark.questions:
-            if job.cancel_requested:
-                job.mark_cancelled()
-                return
-            job.current_question_id = question.id
-
-            for pipeline_id in job.pipeline_ids:
-                if job.cancel_requested:
-                    job.mark_cancelled()
-                    return
-                job.current_pipeline_id = pipeline_id
-
-                units.append(await _run_unit(pipeline_id, question, ctx))
-                job.completed_units += 1
+        results = await asyncio.gather(
+            *(
+                _bounded_unit(pipeline_id, question)
+                for question in benchmark.questions
+                for pipeline_id in job.pipeline_ids
+            )
+        )
+        if job.cancel_requested:
+            job.mark_cancelled()
+            return
+        units = [u for u in results if u is not None]
 
         points.append(
             SweepPoint(

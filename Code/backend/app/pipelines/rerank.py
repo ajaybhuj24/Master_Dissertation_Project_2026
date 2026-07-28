@@ -1,6 +1,7 @@
 
 from __future__ import annotations
 
+import threading
 from typing import TYPE_CHECKING
 
 from ..schemas.ask import PipelineResult, RetrievedContext
@@ -19,6 +20,7 @@ class RerankPipeline(Pipeline):
 
     _encoder: "CrossEncoder | None" = None
     _encoder_name: str | None = None
+    _encoder_lock = threading.Lock()
 
     @classmethod
     def _get_encoder(cls, model_name: str) -> "CrossEncoder":
@@ -45,9 +47,10 @@ class RerankPipeline(Pipeline):
                 debug={"short_circuit": "no_contexts_retrieved"},
             )
 
-        encoder = self._get_encoder(ctx.settings.rerank_model)
         pairs = [[question, c.text] for c in candidates]
-        ce_scores = encoder.predict(pairs)
+        with self._encoder_lock:
+            encoder = self._get_encoder(ctx.settings.rerank_model)
+            ce_scores = encoder.predict(pairs)
 
         rescored: list[RetrievedContext] = []
         for c, ce_score in zip(candidates, ce_scores):

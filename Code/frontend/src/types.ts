@@ -129,6 +129,28 @@ export interface StageMetrics {
   latency_ms: number | null
 }
 
+export interface MasterRow extends BatchResultRow {
+  paper_id: string
+  run_id: string
+  run_timestamp: string
+}
+
+export interface MasterRunInfo {
+  run_id: string
+  paper_id: string
+  paper_title: string
+  run_timestamp: string
+  n_rows: number
+}
+
+export interface MasterRowsResponse {
+  dedup: "latest" | "none"
+  total_rows: number
+  included_rows: number
+  runs: MasterRunInfo[]
+  rows: MasterRow[]
+}
+
 
 export type BenchmarkCategory = "factual" | "synthesis" | "out_of_scope"
 
@@ -266,4 +288,5 @@ export interface SweepRequest {
   pipeline_ids?: string[] | null
   distractor_counts?: number[] | null
   n_points?: number
+  concurrency?: number
 }

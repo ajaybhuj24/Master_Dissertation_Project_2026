@@ -17,6 +17,12 @@ class BatchRequest(BaseModel):
         default=None,
         description="If null/omitted, runs ALL registered pipelines.",
     )
+    concurrency: int = Field(
+        default=5,
+        ge=1,
+        le=8,
+        description="Max units in flight at once; 1 = the old serial behaviour.",
+    )
 
 
 

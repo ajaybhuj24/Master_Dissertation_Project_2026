@@ -1,9 +1,10 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from "react"
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { AlertCircle, BarChart3, Download, Loader2, RefreshCw } from "lucide-react"
 
-import { getResultRun, listResultFiles } from "@/api/client"
+import { getMasterRows, getResultRun, listResultFiles } from "@/api/client"
 import type {
+  MasterRowsResponse,
   PipelineMetrics,
   ResultFileEntry,
   ResultRunFile,
@@ -30,11 +31,21 @@ const StageGroupedBars = lazy(() =>
 
 const API_BASE = "/api"
 
-type Loaded = {
-  run: ResultRunFile
-  byPipeline: PipelineMetrics[]
-  byStage: StageMetrics[]
-}
+const MASTER_KEY = "__master__"
+
+type Loaded =
+  | {
+      kind: "run"
+      run: ResultRunFile
+      byPipeline: PipelineMetrics[]
+      byStage: StageMetrics[]
+    }
+  | {
+      kind: "master"
+      master: MasterRowsResponse
+      byPipeline: PipelineMetrics[]
+      byStage: StageMetrics[]
+    }
 type State =
   | { phase: "loading" }
   | { phase: "empty" }
@@ -58,7 +69,9 @@ function prettyRunLabel(filename: string): string {
 export function ResultsPage() {
   const [files, setFiles] = useState<ResultFileEntry[]>([])
   const [selected, setSelected] = useState<string>("")
+  const [includeAllRuns, setIncludeAllRuns] = useState(false)
   const [state, setState] = useState<State>({ phase: "loading" })
+  const includeAllRunsRef = useRef(false)
 
   const loadRun = useCallback(async (filename: string) => {
     setState({ phase: "loading" })
@@ -67,9 +80,31 @@ export function ResultsPage() {
       setState({
         phase: "loaded",
         data: {
+          kind: "run",
           run,
           byPipeline: aggregateByPipeline(run.results),
           byStage: aggregateByStage(run.results),
+        },
+      })
+    } catch (err) {
+      setState({
+        phase: "error",
+        message: err instanceof Error ? err.message : "Failed to load results.",
+      })
+    }
+  }, [])
+
+  const loadMaster = useCallback(async (includeAll: boolean) => {
+    setState({ phase: "loading" })
+    try {
+      const master = await getMasterRows(includeAll ? "none" : "latest")
+      setState({
+        phase: "loaded",
+        data: {
+          kind: "master",
+          master,
+          byPipeline: aggregateByPipeline(master.rows),
+          byStage: aggregateByStage(master.rows),
         },
       })
     } catch (err) {
@@ -93,6 +128,11 @@ export function ResultsPage() {
           setState({ phase: "empty" })
           return
         }
+        if (prefer === MASTER_KEY) {
+          setSelected(MASTER_KEY)
+          await loadMaster(includeAllRunsRef.current)
+          return
+        }
         const target =
           prefer && jsons.some((f) => f.filename === prefer)
             ? prefer
@@ -108,7 +148,7 @@ export function ResultsPage() {
         })
       }
     },
-    [loadRun]
+    [loadRun, loadMaster]
   )
 
   useEffect(() => {
@@ -117,7 +157,17 @@ export function ResultsPage() {
 
   const onSelect = (filename: string) => {
     setSelected(filename)
-    void loadRun(filename)
+    if (filename === MASTER_KEY) {
+      void loadMaster(includeAllRuns)
+    } else {
+      void loadRun(filename)
+    }
+  }
+
+  const onToggleAllRuns = (checked: boolean) => {
+    includeAllRunsRef.current = checked
+    setIncludeAllRuns(checked)
+    void loadMaster(checked)
   }
 
   const csvHref = selected
@@ -144,6 +194,7 @@ export function ResultsPage() {
             onChange={(e) => onSelect(e.target.value)}
             className="h-9 max-w-full rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
+            <option value={MASTER_KEY}>📊 All papers (master)</option>
             {files.map((f) => (
               <option key={f.filename} value={f.filename}>
                 {prettyRunLabel(f.filename)}
@@ -151,12 +202,14 @@ export function ResultsPage() {
             ))}
           </select>
           <div className="ml-auto flex flex-wrap items-center gap-2">
-            <Button asChild variant="outline" size="sm">
-              <a href={csvHref} download>
-                <Download className="size-3.5" />
-                This run (CSV)
-              </a>
-            </Button>
+            {selected !== MASTER_KEY && (
+              <Button asChild variant="outline" size="sm">
+                <a href={csvHref} download>
+                  <Download className="size-3.5" />
+                  This run (CSV)
+                </a>
+              </Button>
+            )}
             <Button asChild variant="outline" size="sm">
               <a href={`${API_BASE}/results/master`} download>
                 <Download className="size-3.5" />
@@ -218,30 +271,78 @@ export function ResultsPage() {
 
       {state.phase === "loaded" && (
         <div className="space-y-6">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">paper: {state.data.run.paper_id}</Badge>
-            <Badge variant="secondary">
-              {state.data.run.results.length} units
-            </Badge>
-            {(() => {
-              const errs = state.data.run.results.filter((r) => r.error).length
-              return (
-                <Badge variant={errs ? "destructive" : "outline"}>
-                  {errs} errors
-                </Badge>
-              )
-            })()}
-            <Badge variant="outline">
-              {state.data.byPipeline.length} pipelines
-            </Badge>
-            <span className="text-sm text-muted-foreground">
-              {formatDateTime(state.data.run.exported_at)}
-            </span>
-          </div>
+          {state.data.kind === "run" ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="secondary">
+                paper: {state.data.run.paper_id}
+              </Badge>
+              <Badge variant="secondary">
+                {state.data.run.results.length} units
+              </Badge>
+              {(() => {
+                const errs = state.data.run.results.filter(
+                  (r) => r.error
+                ).length
+                return (
+                  <Badge variant={errs ? "destructive" : "outline"}>
+                    {errs} errors
+                  </Badge>
+                )
+              })()}
+              <Badge variant="outline">
+                {state.data.byPipeline.length} pipelines
+              </Badge>
+              <span className="text-sm text-muted-foreground">
+                {formatDateTime(state.data.run.exported_at)}
+              </span>
+            </div>
+          ) : (
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="secondary">
+                {new Set(state.data.master.runs.map((r) => r.paper_id)).size}{" "}
+                papers
+              </Badge>
+              <Badge variant="secondary">
+                {state.data.master.runs.length} runs
+              </Badge>
+              <Badge variant="secondary">
+                {state.data.master.included_rows} units
+              </Badge>
+              {(() => {
+                const errs = state.data.master.rows.filter(
+                  (r) => r.error
+                ).length
+                return (
+                  <Badge variant={errs ? "destructive" : "outline"}>
+                    {errs} errors
+                  </Badge>
+                )
+              })()}
+              <Badge variant="outline">
+                {state.data.byPipeline.length} pipelines
+              </Badge>
+              <label className="ml-auto flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={includeAllRuns}
+                  onChange={(e) => onToggleAllRuns(e.target.checked)}
+                  className="accent-foreground"
+                />
+                include duplicate runs
+              </label>
+            </div>
+          )}
 
-          {state.data.run.paper_title && (
+          {state.data.kind === "run" && state.data.run.paper_title && (
             <p className="text-sm text-muted-foreground">
               {state.data.run.paper_title}
+            </p>
+          )}
+          {state.data.kind === "master" && (
+            <p className="text-sm text-muted-foreground">
+              {includeAllRuns
+                ? "Every appended run pooled — a paper batch-run twice counts twice."
+                : "Latest run per paper — question-level scores pooled across papers."}
             </p>
           )}
 
@@ -251,8 +352,9 @@ export function ResultsPage() {
                 RAGAS metrics by pipeline
               </CardTitle>
               <CardDescription>
-                Mean of each metric across the benchmark questions (0–1, higher
-                is better).
+                {state.data.kind === "master"
+                  ? "Mean of each metric pooled across all papers' benchmark questions (0–1, higher is better)."
+                  : "Mean of each metric across the benchmark questions (0–1, higher is better)."}
               </CardDescription>
             </CardHeader>
             <CardContent>
