@@ -6,33 +6,6 @@ pydantic
 pydantic-settings
 openai
 pinecone
-# ---------------------------------------------------------------------------
-# LangChain stack — capped to the 0.3.x generation (NOT exact-pinned).
-#
-# Why: this project was built + verified against LangChain 0.3.x, and our
-# evaluator ragas 0.2.x targets that same generation. LangChain 1.x is a
-# breaking release:
-#   * langchain-core jumped to 1.x with API changes across the whole stack;
-#   * langchain-experimental has NO 1.x release, so when core==1.x pip
-#     backtracks experimental all the way to 0.0.42 — which PREDATES
-#     SemanticChunker (langchain_experimental.text_splitter), crashing
-#     ingestion at import time.
-#
-# `langchain-core<1.0` is the master lever: every langchain-* package declares
-# a bounded dependency on langchain-core, so this single cap cascades and pulls
-# langchain / langchain-openai / langchain-pinecone / langchain-text-splitters
-# back onto their newest 0.3.x-compatible release. We still get the *latest*
-# patch within 0.3.x, honouring the no-exact-pin policy.
-#
-# Extra caps:
-#   * langchain-community<0.4 — ragas imports the Vertex chat-model shim that
-#     community removed in 0.4 (ModuleNotFoundError: ...chat_models.vertexai).
-#   * langchain-experimental>=0.3,<0.4 — the 0.3.x line is the one that BOTH
-#     ships SemanticChunker AND is compatible with core 0.3.x.
-#
-# Revisit (drop caps) only when ragas ships a langchain-1.x-compatible release
-# AND SemanticChunker has a 1.x home.
-# ---------------------------------------------------------------------------
 langchain<1.0
 langchain-core<1.0
 langchain-community<0.4
