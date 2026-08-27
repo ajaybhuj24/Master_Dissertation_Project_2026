@@ -1,6 +1,6 @@
 # Naive RAG vs. Enhanced RAG: A Comparative Evaluation of Hallucination Mitigation Techniques
 
-**MSc Data Science dissertation project** — a full-stack application that benchmarks a naive Retrieval-Augmented Generation baseline against seven enhanced RAG techniques, measuring each with RAGAS metrics on hand-authored, paper-grounded question sets.
+**MSc Data Science dissertation project** — a full-stack application that benchmarks a naive Retrieval-Augmented Generation baseline against seven enhanced RAG techniques, measuring each with RAGAS metrics, paper-grounded question sets.
 
 **Author:** Ajay Bhuj (25051512)
 
@@ -92,19 +92,22 @@ npm run dev
 
 The frontend serves on http://localhost:5173 and proxies /api to the backend on port 8000.
 
-Usage
-Page	Purpose
-Upload	Ingest a PDF — chunks and embeds it into the naive and semantic namespaces
-Interactive	Ask one question and compare all pipelines' answers side by side
-Batch	Run a paper's full 15-question benchmark across the selected pipelines
-Results	Per-pipeline and per-stage RAGAS charts, per run or pooled across all papers
-Corpus	The word-count-vs-performance experiment
-Benchmarks
+## Usage
 
-Each benchmark is a JSON file containing exactly 15 hand-authored questions grounded in its paper:
+| Page | Purpose |
+|---|---|
+| **Upload** | Ingest a PDF — chunks and embeds it into the naive and semantic namespaces |
+| **Interactive** | Ask one question and compare all pipelines' answers side by side |
+| **Batch** | Run a paper's full 15-question benchmark across the selected pipelines |
+| **Results** | View per-pipeline and per-stage RAGAS charts, either per run or pooled across all papers |
+| **Corpus** | Run the word-count-vs-performance experiment |
 
-8 factual — direct lookups with a verbatim supporting passage
-5 synthesis — explanatory questions requiring multiple passages
-2 out-of-scope — plausible questions the paper cannot answer; the correct response is refusal, so ground_truth is null
+## Benchmarks
 
-Question sets were seeded from QASPER.
+Each benchmark is a JSON file containing exactly **15 hand-authored questions** grounded in its paper:
+
+- **8 factual** — direct lookups with a verbatim supporting passage.
+- **5 synthesis** — explanatory questions requiring multiple passages.
+- **2 out-of-scope** — plausible questions the paper cannot answer. The correct response is a refusal, so `ground_truth` is `null`.
+
+Question sets were seeded from **QASPER**.
