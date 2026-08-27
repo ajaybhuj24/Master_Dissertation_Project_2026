@@ -1,6 +1,6 @@
 # Naive RAG vs. Enhanced RAG: A Comparative Evaluation of Hallucination Mitigation Techniques
 
-**MSc Data Science dissertation project** — a full-stack application that benchmarks a naive Retrieval-Augmented Generation baseline against seven enhanced RAG techniques, measuring each with RAGAS metrics, paper-grounded question sets.
+**MSc Data Science dissertation project** — a full-stack application that benchmarks a naive Retrieval-Augmented Generation baseline against seven enhanced RAG techniques, measuring each with RAGAS metrics and paper-grounded question sets.
 
 **Author:** Ajay Bhuj (25051512)
 
@@ -24,7 +24,7 @@ Techniques are grouped by the stage of the RAG pipeline they modify.
 | Baseline | **Naive RAG** | Fixed-size chunking, top-k dense retrieval, single generation call |
 | Pre-retrieval | **Semantic Chunking** | Splits on embedding-similarity boundaries instead of character counts |
 | Pre-retrieval | **Multi-Query Retrieval** | Generates query paraphrases and unions their retrieved sets |
-| During-retrieval | **MMR** | Maximal Marginal Relevance — trades relevance for diversity (λ = 0.5) |
+| During-retrieval | **MMR** | Maximal Marginal Relevance — trades relevance for diversity ($\lambda = 0.5$) |
 | During-retrieval | **Cross-Encoder Re-rank** | Re-scores a wide candidate pool with `ms-marco-MiniLM-L-6-v2` |
 | During-retrieval | **CRAG** | Corrective RAG — grades retrieved passages and discards irrelevant ones |
 | Post-retrieval | **Contextual Compression** | Extracts only answer-bearing sentences from each passage |
@@ -63,34 +63,30 @@ OPENAI_API_KEY=sk-...
 PINECONE_API_KEY=...
 PINECONE_INDEX_NAME=rag-comparison
 
-
-Optional tunables (with defaults):
-
+# Optional tunables (with defaults):
 LLM_MODEL=gpt-4o-mini
 EMBEDDING_MODEL=text-embedding-3-small
 TOP_K=4
 MMR_LAMBDA=0.5
 RERANK_FETCH_K=20
 
-2. Backend
+## Backend
 cd Code/backend
 python -m venv .venv
+
+# On Windows
 venv\Scripts\activate
+# On Linux/macOS
+# source .venv/bin/activate
+
 pip install -r requirements.txt
 uvicorn app.main:app --port 8000
 
+## Frontend
 
-The backend serves on http://127.0.0.1:8000, with interactive API documentation available at /docs.
-
-Important: The backend loads .env by relative path, so it must be started from Code/backend. Avoid --reload while an evaluation is running — jobs are held in memory and a hot-reload silently discards them.
-
-3. Frontend
 cd Code/frontend
 npm install
 npm run dev
-
-
-The frontend serves on http://localhost:5173 and proxies /api to the backend on port 8000.
 
 ## Usage
 
@@ -102,12 +98,14 @@ The frontend serves on http://localhost:5173 and proxies /api to the backend on 
 | **Results** | View per-pipeline and per-stage RAGAS charts, either per run or pooled across all papers |
 | **Corpus** | Run the word-count-vs-performance experiment |
 
+---
+
 ## Benchmarks
 
 Each benchmark is a JSON file containing exactly **15 hand-authored questions** grounded in its paper:
 
-- **8 factual** — direct lookups with a verbatim supporting passage.
-- **5 synthesis** — explanatory questions requiring multiple passages.
-- **2 out-of-scope** — plausible questions the paper cannot answer. The correct response is a refusal, so `ground_truth` is `null`.
+* **8 factual** — direct lookups with a verbatim supporting passage.
+* **5 synthesis** — explanatory questions requiring multiple passages.
+* **2 out-of-scope** — plausible questions the paper cannot answer. The correct response is a refusal, so `ground_truth` is `null`.
 
 Question sets were seeded from **QASPER**.
