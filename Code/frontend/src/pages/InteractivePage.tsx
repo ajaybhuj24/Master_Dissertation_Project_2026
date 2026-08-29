@@ -1,103 +1,106 @@
-import { useEffect, useMemo, useState } from "react"
-import { Link } from "react-router-dom"
-import { AlertCircle, FileText, Loader2, Send } from "lucide-react"
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { AlertCircle, FileText, Loader2, Send } from "lucide-react";
 
-import { ask, getCurrentPaper, getPipelines } from "@/api/client"
-import type { CurrentPaperResponse, PipelineInfo, PipelineResult } from "@/types"
-import { DEFAULT_PIPELINES, stageIndex } from "@/lib/stages"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { ask, getCurrentPaper, getPipelines } from "@/api/client";
+import type {
+  CurrentPaperResponse,
+  PipelineInfo,
+  PipelineResult,
+} from "@/types";
+import { DEFAULT_PIPELINES, stageIndex } from "@/lib/stages";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { PipelineCard } from "@/components/PipelineCard"
-import { PipelineSelector } from "@/components/PipelineSelector"
+} from "@/components/ui/card";
+import { PipelineCard } from "@/components/PipelineCard";
+import { PipelineSelector } from "@/components/PipelineSelector";
 
-type Phase = "idle" | "running" | "done" | "error"
+type Phase = "idle" | "running" | "done" | "error";
 
 export function InteractivePage() {
-  const [question, setQuestion] = useState("")
-  const [pipelines, setPipelines] = useState<PipelineInfo[]>(DEFAULT_PIPELINES)
+  const [question, setQuestion] = useState("");
+  const [pipelines, setPipelines] = useState<PipelineInfo[]>(DEFAULT_PIPELINES);
   const [selected, setSelected] = useState<Set<string>>(
-    () => new Set(DEFAULT_PIPELINES.map((p) => p.pipeline_id))
-  )
+    () => new Set(DEFAULT_PIPELINES.map((p) => p.pipeline_id)),
+  );
 
-  const [phase, setPhase] = useState<Phase>("idle")
-  const [results, setResults] = useState<PipelineResult[]>([])
-  const [ranQuestion, setRanQuestion] = useState("")
-  const [ranPaperId, setRanPaperId] = useState<string | null>(null)
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [phase, setPhase] = useState<Phase>("idle");
+  const [results, setResults] = useState<PipelineResult[]>([]);
+  const [ranQuestion, setRanQuestion] = useState("");
+  const [ranPaperId, setRanPaperId] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const [paper, setPaper] = useState<CurrentPaperResponse | null>(null)
-  const [paperKnown, setPaperKnown] = useState(false)
+  const [paper, setPaper] = useState<CurrentPaperResponse | null>(null);
+  const [paperKnown, setPaperKnown] = useState(false);
 
   useEffect(() => {
-    let active = true
+    let active = true;
     getPipelines()
       .then((list) => {
-        if (!active || list.length === 0) return
-        setPipelines(list)
-        setSelected(new Set(list.map((p) => p.pipeline_id)))
+        if (!active || list.length === 0) return;
+        setPipelines(list);
+        setSelected(new Set(list.map((p) => p.pipeline_id)));
       })
-      .catch(() => {
-      })
+      .catch(() => {});
     getCurrentPaper()
       .then((p) => {
-        if (!active) return
-        setPaper(p.paper_id ? p : null)
-        setPaperKnown(true)
+        if (!active) return;
+        setPaper(p.paper_id ? p : null);
+        setPaperKnown(true);
       })
       .catch(() => {
-        if (active) setPaperKnown(false)
-      })
+        if (active) setPaperKnown(false);
+      });
     return () => {
-      active = false
-    }
-  }, [])
+      active = false;
+    };
+  }, []);
 
   const orderedSelectedIds = useMemo(
     () =>
       pipelines
         .filter((p) => selected.has(p.pipeline_id))
         .map((p) => p.pipeline_id),
-    [pipelines, selected]
-  )
+    [pipelines, selected],
+  );
 
-  const noPaper = paperKnown && !paper
-  const running = phase === "running"
+  const noPaper = paperKnown && !paper;
+  const running = phase === "running";
   const canRun =
     question.trim().length > 0 &&
     orderedSelectedIds.length > 0 &&
     !running &&
-    !noPaper
+    !noPaper;
 
   const run = async () => {
-    if (!canRun) return
-    setPhase("running")
-    setErrorMsg(null)
-    setResults([])
+    if (!canRun) return;
+    setPhase("running");
+    setErrorMsg(null);
+    setResults([]);
     try {
-      const res = await ask(question.trim(), orderedSelectedIds)
+      const res = await ask(question.trim(), orderedSelectedIds);
       const sorted = [...res.results].sort(
-        (a, b) => stageIndex(a.stage) - stageIndex(b.stage)
-      )
-      setResults(sorted)
-      setRanQuestion(res.question)
-      setRanPaperId(res.paper_id)
-      setPhase("done")
+        (a, b) => stageIndex(a.stage) - stageIndex(b.stage),
+      );
+      setResults(sorted);
+      setRanQuestion(res.question);
+      setRanPaperId(res.paper_id);
+      setPhase("done");
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : "Request failed.")
-      setPhase("error")
+      setErrorMsg(err instanceof Error ? err.message : "Request failed.");
+      setPhase("error");
     }
-  }
+  };
 
   const runningNames = pipelines
     .filter((p) => selected.has(p.pipeline_id))
-    .map((p) => p.pipeline_name)
+    .map((p) => p.pipeline_name);
 
   return (
     <div className="space-y-6">
@@ -115,9 +118,13 @@ export function InteractivePage() {
         <CardHeader>
           <CardTitle className="text-base">Ask a question</CardTitle>
           <CardDescription>
-            {paper
-              ? <>Active paper: <code>{paper.filename}</code></>
-              : "The question is answered against the currently-loaded paper."}
+            {paper ? (
+              <>
+                Active paper: <code>{paper.filename}</code>
+              </>
+            ) : (
+              "The question is answered against the currently-loaded paper."
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -126,8 +133,8 @@ export function InteractivePage() {
             onChange={(e) => setQuestion(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-                e.preventDefault()
-                void run()
+                e.preventDefault();
+                void run();
               }
             }}
             placeholder="e.g. What dataset does the paper use, and how is it preprocessed?"
@@ -159,10 +166,7 @@ export function InteractivePage() {
             <span className="text-sm text-muted-foreground">
               {orderedSelectedIds.length} pipeline
               {orderedSelectedIds.length === 1 ? "" : "s"} selected
-              <span className="hidden sm:inline">
-                {" "}
-                · ⌘/Ctrl + Enter to run
-              </span>
+              <span className="hidden sm:inline"> · ⌘/Ctrl + Enter to run</span>
             </span>
           </div>
         </CardContent>
@@ -171,10 +175,7 @@ export function InteractivePage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Pipelines</CardTitle>
-          <CardDescription>
-            Choose which pipelines to run. They execute serially, so all 8 can
-            take ~1–2 minutes.
-          </CardDescription>
+          <CardDescription>Choose which pipelines to run.</CardDescription>
         </CardHeader>
         <CardContent>
           <PipelineSelector
@@ -215,7 +216,7 @@ export function InteractivePage() {
                 {runningNames.length === 1 ? "" : "s"}…
               </p>
               <p className="text-sm text-muted-foreground">
-                The backend runs them one at a time — this can take a minute or
+                The backend runs them one at a time,this can take a minute or
                 two for the full set.
               </p>
             </div>
@@ -251,5 +252,5 @@ export function InteractivePage() {
         </div>
       )}
     </div>
-  )
+  );
 }

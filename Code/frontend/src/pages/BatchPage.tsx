@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { Link } from "react-router-dom"
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   AlertCircle,
   BarChart3,
@@ -10,7 +10,7 @@ import {
   RefreshCw,
   Trash2,
   X,
-} from "lucide-react"
+} from "lucide-react";
 
 import {
   deleteBenchmark,
@@ -18,166 +18,164 @@ import {
   getPipelines,
   listBenchmarks,
   startBatch,
-} from "@/api/client"
+} from "@/api/client";
 import type {
   BenchmarkFile,
   BenchmarkSummary,
   JobStatusLiteral,
   PipelineInfo,
-} from "@/types"
-import { DEFAULT_PIPELINES } from "@/lib/stages"
-import { Button } from "@/components/ui/button"
+} from "@/types";
+import { DEFAULT_PIPELINES } from "@/lib/stages";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { BenchmarkUploader } from "@/components/BenchmarkUploader"
-import { BenchmarkPreview } from "@/components/BenchmarkPreview"
-import { PipelineSelector } from "@/components/PipelineSelector"
-import { ProgressTracker } from "@/components/ProgressTracker"
+} from "@/components/ui/card";
+import { BenchmarkUploader } from "@/components/BenchmarkUploader";
+import { BenchmarkPreview } from "@/components/BenchmarkPreview";
+import { PipelineSelector } from "@/components/PipelineSelector";
+import { ProgressTracker } from "@/components/ProgressTracker";
 
 function formatDateTime(iso: string | null | undefined): string {
-  if (!iso) return "—"
-  const d = new Date(iso)
-  return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString()
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString();
 }
 
 export function BatchPage() {
-  const [benchmarks, setBenchmarks] = useState<BenchmarkSummary[]>([])
+  const [benchmarks, setBenchmarks] = useState<BenchmarkSummary[]>([]);
   const [listState, setListState] = useState<"loading" | "ok" | "error">(
-    "loading"
-  )
-  const [listError, setListError] = useState<string | null>(null)
+    "loading",
+  );
+  const [listError, setListError] = useState<string | null>(null);
 
-  const [preview, setPreview] = useState<BenchmarkFile | null>(null)
-  const [previewLoadingId, setPreviewLoadingId] = useState<string | null>(null)
-  const [previewError, setPreviewError] = useState<string | null>(null)
+  const [preview, setPreview] = useState<BenchmarkFile | null>(null);
+  const [previewLoadingId, setPreviewLoadingId] = useState<string | null>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
 
-  const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
-  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const [pipelines, setPipelines] = useState<PipelineInfo[]>(DEFAULT_PIPELINES)
+  const [pipelines, setPipelines] = useState<PipelineInfo[]>(DEFAULT_PIPELINES);
   const [runSelected, setRunSelected] = useState<Set<string>>(
-    () => new Set(DEFAULT_PIPELINES.map((p) => p.pipeline_id))
-  )
-  const [runPaperId, setRunPaperId] = useState<string | null>(null)
-  const [starting, setStarting] = useState(false)
-  const [startError, setStartError] = useState<string | null>(null)
+    () => new Set(DEFAULT_PIPELINES.map((p) => p.pipeline_id)),
+  );
+  const [runPaperId, setRunPaperId] = useState<string | null>(null);
+  const [starting, setStarting] = useState(false);
+  const [startError, setStartError] = useState<string | null>(null);
   const [activeJob, setActiveJob] = useState<{
-    jobId: string
-    total: number
-  } | null>(null)
+    jobId: string;
+    total: number;
+  } | null>(null);
   const [jobDoneStatus, setJobDoneStatus] = useState<JobStatusLiteral | null>(
-    null
-  )
+    null,
+  );
 
   const refresh = useCallback(async () => {
-    setListState("loading")
-    setListError(null)
+    setListState("loading");
+    setListError(null);
     try {
-      const list = await listBenchmarks()
-      setBenchmarks(list)
-      setRunPaperId((prev) => prev ?? list[0]?.paper_id ?? null)
-      setListState("ok")
+      const list = await listBenchmarks();
+      setBenchmarks(list);
+      setRunPaperId((prev) => prev ?? list[0]?.paper_id ?? null);
+      setListState("ok");
     } catch (err) {
-      setListError(err instanceof Error ? err.message : "Failed to load.")
-      setListState("error")
+      setListError(err instanceof Error ? err.message : "Failed to load.");
+      setListState("error");
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    void refresh()
-  }, [refresh])
+    void refresh();
+  }, [refresh]);
 
   useEffect(() => {
-    let active = true
+    let active = true;
     getPipelines()
       .then((list) => {
-        if (!active || list.length === 0) return
-        setPipelines(list)
-        setRunSelected(new Set(list.map((p) => p.pipeline_id)))
+        if (!active || list.length === 0) return;
+        setPipelines(list);
+        setRunSelected(new Set(list.map((p) => p.pipeline_id)));
       })
-      .catch(() => {
-      })
+      .catch(() => {});
     return () => {
-      active = false
-    }
-  }, [])
+      active = false;
+    };
+  }, []);
 
   const openPreview = async (paperId: string) => {
-    setPreviewLoadingId(paperId)
-    setPreviewError(null)
+    setPreviewLoadingId(paperId);
+    setPreviewError(null);
     try {
-      setPreview(await getBenchmark(paperId))
+      setPreview(await getBenchmark(paperId));
     } catch (err) {
       setPreviewError(
-        err instanceof Error ? err.message : "Failed to load preview."
-      )
+        err instanceof Error ? err.message : "Failed to load preview.",
+      );
     } finally {
-      setPreviewLoadingId(null)
+      setPreviewLoadingId(null);
     }
-  }
+  };
 
   const doDelete = async (paperId: string) => {
-    setDeletingId(paperId)
+    setDeletingId(paperId);
     try {
-      await deleteBenchmark(paperId)
-      setConfirmDelete(null)
-      if (preview?.paper_id === paperId) setPreview(null)
-      await refresh()
+      await deleteBenchmark(paperId);
+      setConfirmDelete(null);
+      if (preview?.paper_id === paperId) setPreview(null);
+      await refresh();
     } catch (err) {
-      setListError(err instanceof Error ? err.message : "Delete failed.")
+      setListError(err instanceof Error ? err.message : "Delete failed.");
     } finally {
-      setDeletingId(null)
+      setDeletingId(null);
     }
-  }
+  };
 
   const runOrderedIds = useMemo(
     () =>
       pipelines
         .filter((p) => runSelected.has(p.pipeline_id))
         .map((p) => p.pipeline_id),
-    [pipelines, runSelected]
-  )
-  const selectedBenchmark = benchmarks.find((b) => b.paper_id === runPaperId)
-  const questionCount = selectedBenchmark?.question_count ?? 15
-  const runInProgress = activeJob !== null && jobDoneStatus === null
+    [pipelines, runSelected],
+  );
+  const selectedBenchmark = benchmarks.find((b) => b.paper_id === runPaperId);
+  const questionCount = selectedBenchmark?.question_count ?? 15;
+  const runInProgress = activeJob !== null && jobDoneStatus === null;
   const canStart =
-    !!runPaperId && runOrderedIds.length > 0 && !starting && !activeJob
+    !!runPaperId && runOrderedIds.length > 0 && !starting && !activeJob;
 
   const startRun = async () => {
-    if (!runPaperId || runOrderedIds.length === 0) return
-    setStarting(true)
-    setStartError(null)
-    setJobDoneStatus(null)
+    if (!runPaperId || runOrderedIds.length === 0) return;
+    setStarting(true);
+    setStartError(null);
+    setJobDoneStatus(null);
     try {
-      const job = await startBatch(runPaperId, runOrderedIds)
-      setActiveJob({ jobId: job.job_id, total: job.total_units })
+      const job = await startBatch(runPaperId, runOrderedIds);
+      setActiveJob({ jobId: job.job_id, total: job.total_units });
     } catch (err) {
       setStartError(
-        err instanceof Error ? err.message : "Failed to start the run."
-      )
+        err instanceof Error ? err.message : "Failed to start the run.",
+      );
     } finally {
-      setStarting(false)
+      setStarting(false);
     }
-  }
+  };
 
   const resetRun = () => {
-    setActiveJob(null)
-    setJobDoneStatus(null)
-    setStartError(null)
-  }
+    setActiveJob(null);
+    setJobDoneStatus(null);
+    setStartError(null);
+  };
 
   return (
     <div className="space-y-6">
       <header className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">Batch run</h1>
         <p className="text-muted-foreground">
-          Score a benchmark across the pipelines and watch live progress, or
-          manage your saved benchmarks below.
+          Score a benchmark across the pipelines
         </p>
       </header>
 
@@ -186,8 +184,6 @@ export function BatchPage() {
           <CardTitle className="text-base">Run evaluation</CardTitle>
           <CardDescription>
             Scores a benchmark across the selected pipelines with RAGAS.
-            Pipelines run serially — all 8 × 15 questions is ~30–40 min and uses
-            OpenAI credits.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -284,11 +280,7 @@ export function BatchPage() {
             <code>data/benchmarks/</code>.
           </CardDescription>
           {listState === "ok" && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => void refresh()}
-            >
+            <Button variant="outline" size="sm" onClick={() => void refresh()}>
               <RefreshCw className="size-3.5" />
               Refresh
             </Button>
@@ -408,11 +400,7 @@ export function BatchPage() {
               Preview: <code>{preview.paper_id}</code>
             </CardTitle>
             <CardDescription>{preview.paper_title}</CardDescription>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setPreview(null)}
-            >
+            <Button variant="ghost" size="sm" onClick={() => setPreview(null)}>
               <X className="size-3.5" />
               Close
             </Button>
@@ -436,5 +424,5 @@ export function BatchPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

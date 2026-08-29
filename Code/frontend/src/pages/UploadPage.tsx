@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react";
 import {
   AlertCircle,
   AlertTriangle,
@@ -9,20 +9,20 @@ import {
   Trash2,
   UploadCloud,
   X,
-} from "lucide-react"
+} from "lucide-react";
 
-import { deletePaper, getCurrentPaper, uploadPdf } from "@/api/client"
-import type { CurrentPaperResponse, UploadResponse } from "@/types"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { deletePaper, getCurrentPaper, uploadPdf } from "@/api/client";
+import type { CurrentPaperResponse, UploadResponse } from "@/types";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Dropzone } from "@/components/Dropzone"
+} from "@/components/ui/card";
+import { Dropzone } from "@/components/Dropzone";
 
 type Phase =
   | "idle"
@@ -30,126 +30,128 @@ type Phase =
   | "uploading"
   | "processing"
   | "success"
-  | "error"
+  | "error";
 
 function formatBytes(bytes: number): string {
-  if (!bytes) return "0 B"
-  const k = 1024
-  const sizes = ["B", "KB", "MB", "GB"]
-  const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1)
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`
+  if (!bytes) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(k)),
+    sizes.length - 1,
+  );
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 }
 
 function formatDateTime(iso: string | null | undefined): string {
-  if (!iso) return "—"
-  const d = new Date(iso)
-  return Number.isNaN(d.getTime()) ? iso : d.toLocaleString()
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? iso : d.toLocaleString();
 }
 
 function pdfError(file: File): string | null {
   if (!file.name.toLowerCase().endsWith(".pdf"))
-    return "Only PDF files are accepted."
-  if (file.size === 0) return "That file is empty."
-  return null
+    return "Only PDF files are accepted.";
+  if (file.size === 0) return "That file is empty.";
+  return null;
 }
 
 export function UploadPage() {
-  const [file, setFile] = useState<File | null>(null)
-  const [phase, setPhase] = useState<Phase>("idle")
-  const [uploadPct, setUploadPct] = useState(0)
-  const [result, setResult] = useState<UploadResponse | null>(null)
-  const [uploadError, setUploadError] = useState<string | null>(null)
-  const [selectError, setSelectError] = useState<string | null>(null)
+  const [file, setFile] = useState<File | null>(null);
+  const [phase, setPhase] = useState<Phase>("idle");
+  const [uploadPct, setUploadPct] = useState(0);
+  const [result, setResult] = useState<UploadResponse | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [selectError, setSelectError] = useState<string | null>(null);
 
-  const [current, setCurrent] = useState<CurrentPaperResponse | null>(null)
-  const [currentLoading, setCurrentLoading] = useState(true)
-  const [currentError, setCurrentError] = useState<string | null>(null)
-  const [confirmRemove, setConfirmRemove] = useState(false)
-  const [removing, setRemoving] = useState(false)
+  const [current, setCurrent] = useState<CurrentPaperResponse | null>(null);
+  const [currentLoading, setCurrentLoading] = useState(true);
+  const [currentError, setCurrentError] = useState<string | null>(null);
+  const [confirmRemove, setConfirmRemove] = useState(false);
+  const [removing, setRemoving] = useState(false);
 
-  const busy = phase === "uploading" || phase === "processing"
+  const busy = phase === "uploading" || phase === "processing";
 
   const refreshCurrent = useCallback(async () => {
-    setCurrentLoading(true)
-    setCurrentError(null)
+    setCurrentLoading(true);
+    setCurrentError(null);
     try {
-      const paper = await getCurrentPaper()
-      setCurrent(paper.paper_id ? paper : null)
+      const paper = await getCurrentPaper();
+      setCurrent(paper.paper_id ? paper : null);
     } catch (err) {
-      setCurrentError(err instanceof Error ? err.message : "Failed to load.")
-      setCurrent(null)
+      setCurrentError(err instanceof Error ? err.message : "Failed to load.");
+      setCurrent(null);
     } finally {
-      setCurrentLoading(false)
+      setCurrentLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    void refreshCurrent()
-  }, [refreshCurrent])
+    void refreshCurrent();
+  }, [refreshCurrent]);
 
   const onSelectFile = (picked: File) => {
-    const err = pdfError(picked)
+    const err = pdfError(picked);
     if (err) {
-      setSelectError(err)
-      return
+      setSelectError(err);
+      return;
     }
-    setSelectError(null)
-    setUploadError(null)
-    setResult(null)
-    setFile(picked)
-    setPhase("selected")
-  }
+    setSelectError(null);
+    setUploadError(null);
+    setResult(null);
+    setFile(picked);
+    setPhase("selected");
+  };
 
   const reset = () => {
-    setFile(null)
-    setPhase("idle")
-    setUploadPct(0)
-    setResult(null)
-    setUploadError(null)
-    setSelectError(null)
-  }
+    setFile(null);
+    setPhase("idle");
+    setUploadPct(0);
+    setResult(null);
+    setUploadError(null);
+    setSelectError(null);
+  };
 
   const startUpload = async () => {
-    if (!file) return
-    setPhase("uploading")
-    setUploadPct(0)
-    setUploadError(null)
+    if (!file) return;
+    setPhase("uploading");
+    setUploadPct(0);
+    setUploadError(null);
     try {
       const res = await uploadPdf(file, (pct) => {
-        setUploadPct(pct)
-        if (pct >= 100) setPhase("processing")
-      })
-      setResult(res)
-      setPhase("success")
-      void refreshCurrent()
+        setUploadPct(pct);
+        if (pct >= 100) setPhase("processing");
+      });
+      setResult(res);
+      setPhase("success");
+      void refreshCurrent();
     } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Upload failed.")
-      setPhase("error")
+      setUploadError(err instanceof Error ? err.message : "Upload failed.");
+      setPhase("error");
     }
-  }
+  };
 
   const handleRemove = async () => {
-    setRemoving(true)
-    setCurrentError(null)
+    setRemoving(true);
+    setCurrentError(null);
     try {
-      await deletePaper()
-      setCurrent(null)
-      setConfirmRemove(false)
+      await deletePaper();
+      setCurrent(null);
+      setConfirmRemove(false);
     } catch (err) {
-      setCurrentError(err instanceof Error ? err.message : "Failed to remove.")
+      setCurrentError(err instanceof Error ? err.message : "Failed to remove.");
     } finally {
-      setRemoving(false)
+      setRemoving(false);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       <header className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">Upload paper</h1>
         <p className="text-muted-foreground">
-          Ingest a PDF into the <code>naive</code> and <code>semantic</code>{" "}
-          Pinecone namespaces. Single-PDF mode — a new upload replaces the
-          resident paper.
+          Ingest a PDF into the naive and semantic Pinecone namespaces.
+          Single-PDF mode, a new upload replaces the resident paper.
         </p>
       </header>
 
@@ -336,8 +338,8 @@ export function UploadPage() {
                 <div className="flex items-center gap-2 rounded-lg border bg-muted/40 p-3 text-sm">
                   <Loader2 className="size-4 shrink-0 animate-spin" />
                   <span>
-                    Chunking &amp; embedding on the server (naive +
-                    semantic)… this can take 30–90s for a large paper.
+                    Chunking &amp; embedding on the server (naive + semantic)…
+                    this can take 30–90s for a large paper.
                   </span>
                 </div>
               )}
@@ -402,5 +404,5 @@ export function UploadPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -133,7 +133,7 @@ export function CorpusPage() {
   const [sweepLoading, setSweepLoading] = useState(false);
   const [sweepError, setSweepError] = useState<string | null>(null);
   const [chartMetric, setChartMetric] = useState<MetricKey | "all">(
-    "faithfulness"
+    "faithfulness",
   );
   const [chartPipeline, setChartPipeline] = useState<string>("all");
   const tableMetric: MetricKey =
@@ -391,7 +391,7 @@ export function CorpusPage() {
                   ))}
                 </select>
                 <p className="text-xs text-muted-foreground">
-                  The target’s benchmark is the fixed ground truth; every other
+                  The target’s benchmark is the fixed ground truth, every other
                   corpus PDF is a distractor.
                 </p>
               </div>
@@ -576,7 +576,9 @@ export function CorpusPage() {
                   <div className="flex flex-wrap gap-1.5">
                     {chartPipeline !== "all" && (
                       <Button
-                        variant={chartMetric === "all" ? "secondary" : "outline"}
+                        variant={
+                          chartMetric === "all" ? "secondary" : "outline"
+                        }
                         size="sm"
                         onClick={() => setChartMetric("all")}
                       >

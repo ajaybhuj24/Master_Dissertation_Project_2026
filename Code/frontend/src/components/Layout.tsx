@@ -58,10 +58,10 @@ export function Layout() {
             className="flex shrink-0 flex-col leading-tight"
           >
             <span className="text-sm font-semibold tracking-tight">
-              RAG Evaluation
+              Naive RAG versus Enhanced RAG
             </span>
-            <span className="hidden text-[11px] text-muted-foreground sm:block">
-              Naive vs Enhanced · Hallucination Mitigation
+            <span className="hidden text-[11px] text-muted-foreground lg:block">
+              A Comparative Evaluation of Hallucination Mitigation Techniques
             </span>
           </NavLink>
 
