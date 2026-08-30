@@ -6,18 +6,18 @@ from typing import Literal
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
-
+# Local: master-CSV reader/writer, the in-memory job store, filesystem paths and the response schema
 from ..evaluation.master_reader import read_master_rows
 from ..evaluation.results_writer import MASTER_CSV, write_job_results
 from ..jobs.store import JOBS
 from ..paths import PROJECT_ROOT, RESULTS_DIR
 from ..schemas.results import MasterRowsResponse
-
+# Router for results downloads and job-result persistence
 router = APIRouter(tags=["results"])
 
 
 
-
+# Download the master append-only CSV of every result row
 @router.get("/results/master")
 def download_master_csv() -> FileResponse:
     if not MASTER_CSV.exists():
@@ -31,7 +31,7 @@ def download_master_csv() -> FileResponse:
         filename="all_results.csv",
     )
 
-
+# Return non duplicate master rows for the all-papers view
 @router.get("/results/master/rows", response_model=MasterRowsResponse)
 def master_rows(dedup: Literal["latest", "none"] = "latest") -> MasterRowsResponse:
     data = read_master_rows(dedup)
@@ -60,7 +60,7 @@ def list_result_files() -> list[dict]:
     entries.sort(key=lambda e: e["modified_at"], reverse=True)
     return entries
 
-
+# Download one result file by name
 @router.get("/results/files/{filename}")
 def download_result_file(filename: str) -> FileResponse:
     target = RESULTS_DIR / filename

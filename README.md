@@ -102,10 +102,10 @@ npm run dev
 
 ## Benchmarks
 
-Each benchmark is a JSON file containing exactly **15 hand-authored questions** grounded in its paper:
+Each benchmark is a JSON file containing exactly **15 questions** grounded in its paper:
 
 * **8 factual** — direct lookups with a verbatim supporting passage.
 * **5 synthesis** — explanatory questions requiring multiple passages.
 * **2 out-of-scope** — plausible questions the paper cannot answer. The correct response is a refusal, so `ground_truth` is `null`.
 
-Question sets were seeded from **QASPER**.
+Question sets were brought from **QASPER**.
