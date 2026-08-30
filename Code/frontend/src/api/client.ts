@@ -1,4 +1,3 @@
-
 import type {
   AskResponse,
   BenchmarkFile,
@@ -19,402 +18,422 @@ import type {
   SweepSummary,
   UploadResponse,
   ValidationErrorItem,
-} from "@/types"
+} from "@/types";
 
-const API_BASE = "/api"
+// Base path for all API calls
 
+const API_BASE = "/api";
+// Error type that carries the HTTP status and the raw backend detail
 export class ApiError extends Error {
-  status: number
-  detail: unknown
+  status: number;
+  detail: unknown;
 
   constructor(status: number, message: string, detail: unknown = null) {
-    super(message)
-    this.name = "ApiError"
-    this.status = status
-    this.detail = detail
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.detail = detail;
   }
 }
 
 function messageFromDetail(body: unknown, fallback: string): string {
   if (!body || typeof body !== "object") {
-    return typeof body === "string" && body.trim() ? body : fallback
+    return typeof body === "string" && body.trim() ? body : fallback;
   }
-  const detail = (body as FastApiError).detail
-  if (typeof detail === "string" && detail.trim()) return detail
+  const detail = (body as FastApiError).detail;
+  if (typeof detail === "string" && detail.trim()) return detail;
+  //  FastAPI validation errors into one string
   if (Array.isArray(detail) && detail.length > 0) {
     return (detail as ValidationErrorItem[])
       .map((e) => {
-        const field = e.loc?.[e.loc.length - 1]
-        return field ? `${field}: ${e.msg}` : e.msg
+        const field = e.loc?.[e.loc.length - 1];
+        return field ? `${field}: ${e.msg}` : e.msg;
       })
-      .join("; ")
+      .join("; ");
   }
-  const obj = detail as unknown
+  const obj = detail as unknown;
   if (obj && typeof obj === "object" && !Array.isArray(obj)) {
-    const ve = (obj as { validation_errors?: unknown }).validation_errors
+    const ve = (obj as { validation_errors?: unknown }).validation_errors;
     if (Array.isArray(ve)) {
-      return `${ve.length} validation error${ve.length === 1 ? "" : "s"} in the benchmark file.`
+      return `${ve.length} validation error${ve.length === 1 ? "" : "s"} in the benchmark file.`;
     }
   }
-  return fallback
+  return fallback;
 }
+// Read a response body as JSON
 
 async function parseBody(res: Response): Promise<unknown> {
-  const text = await res.text()
-  if (!text) return null
+  const text = await res.text();
+  if (!text) return null;
   try {
-    return JSON.parse(text)
+    return JSON.parse(text);
   } catch {
-    return text
+    return text;
   }
 }
-
+// 502/503/504  mean the backend itself is unreachable
 async function handle<T>(res: Response): Promise<T> {
   if (!res.ok) {
-    const body = await parseBody(res)
-    const isGatewayDown = res.status === 502 || res.status === 503 || res.status === 504
+    const body = await parseBody(res);
+    const isGatewayDown =
+      res.status === 502 || res.status === 503 || res.status === 504;
     const fallback = isGatewayDown
       ? NETWORK_HINT
-      : `Request failed (HTTP ${res.status})`
-    throw new ApiError(res.status, messageFromDetail(body, fallback), body)
+      : `Request failed (HTTP ${res.status})`;
+    throw new ApiError(res.status, messageFromDetail(body, fallback), body);
   }
-  return (await res.json()) as T
+  return (await res.json()) as T;
 }
-
+// Message shown when the backend cannot be reached at all
 const NETWORK_HINT =
-  "Could not reach the backend. Is the API server running on http://localhost:8000?"
+  "Could not reach the backend. Is the API server running on http://localhost:8000?";
 
 export async function checkHealth(): Promise<boolean> {
   try {
-    const res = await fetch(`${API_BASE}/health`)
-    return res.ok
+    const res = await fetch(`${API_BASE}/health`);
+    return res.ok;
   } catch {
-    return false
+    return false;
   }
 }
-
+// Get the paper currently loaded in the backend
 export async function getCurrentPaper(): Promise<CurrentPaperResponse> {
-  let res: Response
+  let res: Response;
   try {
-    res = await fetch(`${API_BASE}/paper/current`)
+    res = await fetch(`${API_BASE}/paper/current`);
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<CurrentPaperResponse>(res)
+  return handle<CurrentPaperResponse>(res);
 }
-
+// Delete the current paper and its stored vectors
 export async function deletePaper(): Promise<DeletePaperResponse> {
-  let res: Response
+  let res: Response;
   try {
-    res = await fetch(`${API_BASE}/paper`, { method: "DELETE" })
+    res = await fetch(`${API_BASE}/paper`, { method: "DELETE" });
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<DeletePaperResponse>(res)
+  return handle<DeletePaperResponse>(res);
 }
-
+// Upload a PDF
 export function uploadPdf(
   file: File,
-  onProgress?: (percent: number) => void
+  onProgress?: (percent: number) => void,
 ): Promise<UploadResponse> {
   return new Promise<UploadResponse>((resolve, reject) => {
-    const xhr = new XMLHttpRequest()
-    xhr.open("POST", `${API_BASE}/upload`)
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${API_BASE}/upload`);
 
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable && onProgress) {
-        onProgress(Math.round((e.loaded / e.total) * 100))
+        onProgress(Math.round((e.loaded / e.total) * 100));
       }
-    }
+    };
 
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         try {
-          resolve(JSON.parse(xhr.responseText) as UploadResponse)
+          resolve(JSON.parse(xhr.responseText) as UploadResponse);
         } catch {
-          reject(new ApiError(xhr.status, "Malformed response from server."))
+          reject(new ApiError(xhr.status, "Malformed response from server."));
         }
-        return
+        return;
       }
-      let body: unknown = xhr.responseText
+      let body: unknown = xhr.responseText;
       try {
-        body = JSON.parse(xhr.responseText)
-      } catch {
-      }
+        body = JSON.parse(xhr.responseText);
+      } catch {}
       reject(
         new ApiError(
           xhr.status,
           messageFromDetail(body, `Upload failed (HTTP ${xhr.status})`),
-          body
-        )
-      )
-    }
+          body,
+        ),
+      );
+    };
+    // Network failure and timeout handlers
 
-    xhr.onerror = () => reject(new ApiError(0, NETWORK_HINT))
-    xhr.ontimeout = () => reject(new ApiError(0, "Upload timed out."))
+    xhr.onerror = () => reject(new ApiError(0, NETWORK_HINT));
+    xhr.ontimeout = () => reject(new ApiError(0, "Upload timed out."));
 
-    const form = new FormData()
-    form.append("file", file)
-    xhr.send(form)
-  })
+    const form = new FormData();
+    form.append("file", file);
+    xhr.send(form);
+  });
 }
+// List the available RAG pipelines
 
 export async function getPipelines(): Promise<PipelineInfo[]> {
-  let res: Response
+  let res: Response;
   try {
-    res = await fetch(`${API_BASE}/pipelines`)
+    res = await fetch(`${API_BASE}/pipelines`);
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<PipelineInfo[]>(res)
+  return handle<PipelineInfo[]>(res);
 }
-
+// Ask a single question across the selected pipelines
 export async function ask(
   question: string,
-  pipelineIds: string[] | null
+  pipelineIds: string[] | null,
 ): Promise<AskResponse> {
-  let res: Response
+  let res: Response;
   try {
     res = await fetch(`${API_BASE}/ask`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question, pipeline_ids: pipelineIds }),
-    })
+    });
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<AskResponse>(res)
+  return handle<AskResponse>(res);
 }
-
+// List all saved per-run result files
 export async function listResultFiles(): Promise<ResultFileEntry[]> {
-  let res: Response
+  let res: Response;
   try {
-    res = await fetch(`${API_BASE}/results/files`)
+    res = await fetch(`${API_BASE}/results/files`);
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<ResultFileEntry[]>(res)
+  return handle<ResultFileEntry[]>(res);
 }
 
 export async function getResultRun(filename: string): Promise<ResultRunFile> {
-  let res: Response
+  let res: Response;
   try {
-    res = await fetch(`${API_BASE}/results/files/${encodeURIComponent(filename)}`)
+    res = await fetch(
+      `${API_BASE}/results/files/${encodeURIComponent(filename)}`,
+    );
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<ResultRunFile>(res)
+  return handle<ResultRunFile>(res);
 }
-
+// Fetch the master results table
 export async function getMasterRows(
-  dedup: "latest" | "none" = "latest"
+  dedup: "latest" | "none" = "latest",
 ): Promise<MasterRowsResponse> {
-  let res: Response
+  let res: Response;
   try {
-    res = await fetch(`${API_BASE}/results/master/rows?dedup=${dedup}`)
+    res = await fetch(`${API_BASE}/results/master/rows?dedup=${dedup}`);
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<MasterRowsResponse>(res)
+  return handle<MasterRowsResponse>(res);
 }
-
+// List all benchmark files
 export async function listBenchmarks(): Promise<BenchmarkSummary[]> {
-  let res: Response
+  let res: Response;
   try {
-    res = await fetch(`${API_BASE}/benchmarks`)
+    res = await fetch(`${API_BASE}/benchmarks`);
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<BenchmarkSummary[]>(res)
+  return handle<BenchmarkSummary[]>(res);
 }
 
 export async function getBenchmark(paperId: string): Promise<BenchmarkFile> {
-  let res: Response
+  let res: Response;
   try {
-    res = await fetch(`${API_BASE}/benchmarks/${encodeURIComponent(paperId)}`)
+    res = await fetch(`${API_BASE}/benchmarks/${encodeURIComponent(paperId)}`);
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<BenchmarkFile>(res)
+  return handle<BenchmarkFile>(res);
 }
+// Upload a benchmark JSON file
 
 export async function uploadBenchmark(
-  file: File
+  file: File,
 ): Promise<BenchmarkUploadResponse> {
-  const form = new FormData()
-  form.append("file", file)
-  let res: Response
+  const form = new FormData();
+  form.append("file", file);
+  let res: Response;
   try {
-    res = await fetch(`${API_BASE}/benchmark`, { method: "POST", body: form })
+    res = await fetch(`${API_BASE}/benchmark`, { method: "POST", body: form });
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<BenchmarkUploadResponse>(res)
+  return handle<BenchmarkUploadResponse>(res);
 }
-
+// Delete a benchmark by paper id
 export async function deleteBenchmark(
-  paperId: string
+  paperId: string,
 ): Promise<{ deleted: boolean; paper_id: string }> {
-  let res: Response
+  let res: Response;
   try {
     res = await fetch(`${API_BASE}/benchmarks/${encodeURIComponent(paperId)}`, {
       method: "DELETE",
-    })
+    });
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<{ deleted: boolean; paper_id: string }>(res)
+  return handle<{ deleted: boolean; paper_id: string }>(res);
 }
-
+// Start a batch evaluation run for a paper across the chosen pipelines
 export async function startBatch(
   paperId: string,
-  pipelineIds: string[] | null
+  pipelineIds: string[] | null,
 ): Promise<JobStatus> {
-  let res: Response
+  let res: Response;
   try {
     res = await fetch(`${API_BASE}/batch`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ paper_id: paperId, pipeline_ids: pipelineIds }),
-    })
+    });
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<JobStatus>(res)
+  return handle<JobStatus>(res);
 }
-
+// Request cancellation of a running job
 export async function cancelJob(
-  jobId: string
+  jobId: string,
 ): Promise<{ job_id: string; cancel_requested: boolean; status: string }> {
-  let res: Response
+  let res: Response;
   try {
     res = await fetch(`${API_BASE}/jobs/${encodeURIComponent(jobId)}/cancel`, {
       method: "POST",
-    })
+    });
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
   return handle<{ job_id: string; cancel_requested: boolean; status: string }>(
-    res
-  )
+    res,
+  );
 }
-
-
+// List all papers currently
 export async function listCorpusPapers(): Promise<CorpusListResponse> {
-  let res: Response
+  let res: Response;
   try {
-    res = await fetch(`${API_BASE}/corpus/papers`)
+    res = await fetch(`${API_BASE}/corpus/papers`);
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<CorpusListResponse>(res)
+  return handle<CorpusListResponse>(res);
 }
-
+// Add a paper to the corpus
 export async function addCorpusPaper(file: File): Promise<CorpusPaper> {
-  const form = new FormData()
-  form.append("file", file)
-  let res: Response
+  const form = new FormData();
+  form.append("file", file);
+  let res: Response;
   try {
-    res = await fetch(`${API_BASE}/corpus/papers`, { method: "POST", body: form })
+    res = await fetch(`${API_BASE}/corpus/papers`, {
+      method: "POST",
+      body: form,
+    });
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<CorpusPaper>(res)
+  return handle<CorpusPaper>(res);
 }
-
+// Remove a single paper from the corpus by id
 export async function deleteCorpusPaper(
-  paperId: string
+  paperId: string,
 ): Promise<{ deleted: boolean; paper_id: string }> {
-  let res: Response
+  let res: Response;
   try {
     res = await fetch(
       `${API_BASE}/corpus/papers/${encodeURIComponent(paperId)}`,
-      { method: "DELETE" }
-    )
+      { method: "DELETE" },
+    );
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<{ deleted: boolean; paper_id: string }>(res)
+  return handle<{ deleted: boolean; paper_id: string }>(res);
 }
-
+// Clear the entire corpus and its vector namespace
 export async function clearCorpus(): Promise<{
-  cleared: boolean
-  removed_papers: number
-  namespace: string
+  cleared: boolean;
+  removed_papers: number;
+  namespace: string;
 }> {
-  let res: Response
+  let res: Response;
   try {
-    res = await fetch(`${API_BASE}/corpus`, { method: "DELETE" })
+    res = await fetch(`${API_BASE}/corpus`, { method: "DELETE" });
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<{ cleared: boolean; removed_papers: number; namespace: string }>(
-    res
-  )
+  return handle<{
+    cleared: boolean;
+    removed_papers: number;
+    namespace: string;
+  }>(res);
 }
-
+// Start a corpus-size sweep experiment
 export async function startSweep(req: SweepRequest): Promise<JobStatus> {
-  let res: Response
+  let res: Response;
   try {
     res = await fetch(`${API_BASE}/corpus/sweep`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(req),
-    })
+    });
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<JobStatus>(res)
+  return handle<JobStatus>(res);
 }
+// List all saved sweeps
 
 export async function listSweeps(): Promise<SweepSummary[]> {
-  let res: Response
+  let res: Response;
   try {
-    res = await fetch(`${API_BASE}/corpus/sweeps`)
+    res = await fetch(`${API_BASE}/corpus/sweeps`);
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<SweepSummary[]>(res)
+  return handle<SweepSummary[]>(res);
 }
 
 export async function getSweep(sweepId: string): Promise<SweepResult> {
-  let res: Response
-  try {
-    res = await fetch(`${API_BASE}/corpus/sweeps/${encodeURIComponent(sweepId)}`)
-  } catch {
-    throw new ApiError(0, NETWORK_HINT)
-  }
-  return handle<SweepResult>(res)
-}
-
-export async function deleteSweep(
-  sweepId: string
-): Promise<{ deleted: boolean; sweep_id: string }> {
-  let res: Response
+  let res: Response;
   try {
     res = await fetch(
       `${API_BASE}/corpus/sweeps/${encodeURIComponent(sweepId)}`,
-      { method: "DELETE" }
-    )
+    );
   } catch {
-    throw new ApiError(0, NETWORK_HINT)
+    throw new ApiError(0, NETWORK_HINT);
   }
-  return handle<{ deleted: boolean; sweep_id: string }>(res)
+  return handle<SweepResult>(res);
+}
+// Delete a sweep by id
+export async function deleteSweep(
+  sweepId: string,
+): Promise<{ deleted: boolean; sweep_id: string }> {
+  let res: Response;
+  try {
+    res = await fetch(
+      `${API_BASE}/corpus/sweeps/${encodeURIComponent(sweepId)}`,
+      { method: "DELETE" },
+    );
+  } catch {
+    throw new ApiError(0, NETWORK_HINT);
+  }
+  return handle<{ deleted: boolean; sweep_id: string }>(res);
 }
 
 export function benchmarkValidationErrors(
-  err: unknown
+  err: unknown,
 ): ValidationErrorItem[] | null {
-  if (!(err instanceof ApiError) || !err.detail || typeof err.detail !== "object")
-    return null
-  const detail = (err.detail as { detail?: unknown }).detail
+  if (
+    !(err instanceof ApiError) ||
+    !err.detail ||
+    typeof err.detail !== "object"
+  )
+    return null;
+  const detail = (err.detail as { detail?: unknown }).detail;
   if (
     detail &&
     typeof detail === "object" &&
     Array.isArray((detail as { validation_errors?: unknown }).validation_errors)
   ) {
     return (detail as { validation_errors: ValidationErrorItem[] })
-      .validation_errors
+      .validation_errors;
   }
-  return null
+  return null;
 }
