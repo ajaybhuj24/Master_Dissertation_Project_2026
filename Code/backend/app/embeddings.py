@@ -3,7 +3,7 @@ from langchain_openai import OpenAIEmbeddings
 
 from .config import Settings
 
-
+# Embeddings model used by every pipeline
 def get_embeddings(settings: Settings) -> OpenAIEmbeddings:
     return OpenAIEmbeddings(
         model=settings.embedding_model,

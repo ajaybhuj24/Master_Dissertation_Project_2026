@@ -3,7 +3,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-
+# The four RAGAS metrics for a single answer,
 class RagasScores(BaseModel):
 
     faithfulness: float | None = None
@@ -13,10 +13,3 @@ class RagasScores(BaseModel):
     skipped: list[str] = Field(default_factory=list)
     errors: dict[str, str] = Field(default_factory=dict)
 
-
-class HealthRagasResponse(BaseModel):
-
-    scenario: str
-    inputs: dict[str, Any]
-    scores: RagasScores
-    elapsed_ms: int

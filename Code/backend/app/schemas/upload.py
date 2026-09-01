@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-
+# Response after ingesting a PDF
 class UploadResponse(BaseModel):
     paper_id: str
     filename: str
@@ -13,7 +13,7 @@ class UploadResponse(BaseModel):
     namespaces_cleared: list[str]
     uploaded_at: datetime
 
-
+# Metadata for the currently-loaded paper
 class CurrentPaperResponse(BaseModel):
     paper_id: str | None = None
     filename: str | None = None

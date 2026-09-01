@@ -6,13 +6,13 @@ from pinecone import Pinecone
 
 from .config import get_settings
 
-
+# Cached OpenAI client
 @lru_cache
 def get_openai_client() -> OpenAI:
     settings = get_settings()
     return OpenAI(api_key=settings.openai_api_key)
 
-
+# Cached Pinecone client
 @lru_cache
 def get_pinecone_client() -> Pinecone:
     settings = get_settings()

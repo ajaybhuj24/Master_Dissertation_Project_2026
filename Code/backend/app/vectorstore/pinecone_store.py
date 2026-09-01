@@ -7,7 +7,7 @@ from pinecone.exceptions import NotFoundException
 from ..config import Settings
 from ..embeddings import get_embeddings
 
-
+# Build a LangChain vector store bound to one Pinecone namespace
 def get_vector_store(
     pinecone_client: Pinecone,
     settings: Settings,
@@ -21,7 +21,7 @@ def get_vector_store(
         namespace=namespace,
     )
 
-
+# Embed and upsert documents into a namespace
 def upsert_documents(
     pinecone_client: Pinecone,
     settings: Settings,
@@ -32,7 +32,7 @@ def upsert_documents(
     ids = store.add_documents(documents)
     return len(ids)
 
-
+# Delete every vector in a namespace
 def clear_namespace(
     pinecone_client: Pinecone,
     settings: Settings,
