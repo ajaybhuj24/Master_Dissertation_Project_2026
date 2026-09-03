@@ -12,6 +12,7 @@ Retrieval-Augmented Generation is widely used to reduce LLM hallucination, but t
 
 1. **Which RAG enhancement most effectively reduces hallucination?**
 2. **How does each technique behave as the document corpus grows?**
+3. **At which stage of the pipeline is intervention most effective?**
 
 ---
 
